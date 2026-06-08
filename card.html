@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product Card</title>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Raleway:wght@300;400;600;700&family=Oswald:wght@700&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  @page { size: 5.5in 7.5in; margin: 0; }
+  html, body { background:#e8e8e8; }
+  body {
+    font-family: 'Lato', sans-serif; font-weight:300;
+    display:flex; flex-direction:column; align-items:center;
+    padding:20px 0;
+  }
+
+  /* On-screen print bar (hidden when printing) */
+  .toolbar {
+    margin-bottom:16px; display:flex; gap:10px; align-items:center;
+  }
+  .toolbar button {
+    background:#4AABBF; color:#fff; border:none; padding:10px 20px;
+    border-radius:6px; font-size:14px; font-weight:700; cursor:pointer;
+    font-family:'Lato',sans-serif;
+  }
+  .toolbar button:hover { background:#3a96a8; }
+  .toolbar .hint { font-size:12px; color:#777; }
+
+  /* THE CARD — 5.5 x 7.5 with 1/4in bleed */
+  .card {
+    width:5.5in; height:7.5in; background:#fff; position:relative;
+    overflow:hidden; box-shadow:0 4px 24px rgba(0,0,0,.2);
+  }
+  .crop { position:absolute; background:#000; z-index:10; }
+  .crop.tl-h{top:.25in;left:0;width:.18in;height:.4pt;}.crop.tl-v{top:0;left:.25in;width:.4pt;height:.18in;}
+  .crop.tr-h{top:.25in;right:0;width:.18in;height:.4pt;}.crop.tr-v{top:0;right:.25in;width:.4pt;height:.18in;}
+  .crop.bl-h{bottom:.25in;left:0;width:.18in;height:.4pt;}.crop.bl-v{bottom:0;left:.25in;width:.4pt;height:.18in;}
+  .crop.br-h{bottom:.25in;right:0;width:.18in;height:.4pt;}.crop.br-v{bottom:0;right:.25in;width:.4pt;height:.18in;}
+  .page { position:absolute; top:.25in; left:.25in; right:.25in; bottom:.25in; display:flex; flex-direction:column; }
+  .logo-area { height:2in; flex-shrink:0; display:flex; align-items:center; justify-content:center; background:#fff; }
+  .brand-logo { height:1.8in; width:auto; max-width:4.5in; object-fit:contain; }
+  .logo-placeholder { width:1.55in; height:2in; border-radius:50%; background:#1a1a1a; display:flex; align-items:center; justify-content:center; }
+  .logo-placeholder span { color:#fff; font-family:'Oswald',sans-serif; font-weight:700; font-size:10pt; text-align:center; line-height:1.3; padding:10px; }
+  .title-banner { padding:.18in .25in; text-align:center; flex-shrink:0; display:flex; align-items:center; justify-content:center; min-height:.75in; }
+  .title-banner h1 { font-family:'Raleway',sans-serif; font-weight:600; font-size:22pt; color:#1a1a1a; letter-spacing:.06em; text-transform:uppercase; line-height:1.25; margin:0; }
+  .body { display:flex; flex-direction:row; gap:.18in; padding:.15in .15in .1in; flex:1; min-height:0; }
+  .col-left { flex:1.1; overflow:hidden; }
+  .description { font-family:'Lato',sans-serif; font-weight:300; font-size:13pt; color:#2a2a2a; line-height:1.5; overflow:hidden; display:-webkit-box; -webkit-line-clamp:11; -webkit-box-orient:vertical; }
+  .col-right { flex:.75; display:flex; flex-direction:column; gap:.15in; }
+  .section-label { font-family:'Lato',sans-serif; font-weight:700; font-size:12pt; color:#2a2a2a; text-align:center; display:flex; align-items:center; justify-content:center; padding:.06in 0; }
+  .terpene-box { padding:.1in .09in; display:flex; align-items:flex-start; justify-content:center; }
+  .terpene-list { font-family:'Lato',sans-serif; font-weight:400; color:#2a2a2a; text-align:center; line-height:1.6; display:flex; flex-direction:column; align-items:center; gap:4px; }
+  .cannab-table { width:100%; border-collapse:collapse; }
+  .cannab-table td { color:#1a1a1a; text-align:center; padding:.28in .03in; font-family:'Lato',sans-serif; width:50%; }
+  .cannab-name { font-weight:700; font-size:13pt; display:block; letter-spacing:.03em; }
+  .cannab-value { font-weight:700; font-size:13pt; display:block; margin-top:2px; }
+  .strain-box { border:1pt solid #2a2a2a; padding:.08in .1in; font-family:'Lato',sans-serif; font-size:10pt; color:#2a2a2a; line-height:1.7; flex-shrink:0; }
+  .strain-box strong { font-weight:700; }
+  .brand-line { text-align:center; margin-top:4px; font-weight:700; text-transform:uppercase; }
+
+  @media print {
+    html, body { background:#fff; padding:0; }
+    .toolbar { display:none; }
+    .card { box-shadow:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <button onclick="window.print()">🖨 Print / Save PDF</button>
+  <span class="hint">Paper: Custom 5.5×7.5in · Margins: None · Background graphics: ON</span>
+</div>
+
+<div class="card" id="card">
+  <div class="crop tl-h"></div><div class="crop tl-v"></div>
+  <div class="crop tr-h"></div><div class="crop tr-v"></div>
+  <div class="crop bl-h"></div><div class="crop bl-v"></div>
+  <div class="crop br-h"></div><div class="crop br-v"></div>
+  <div class="page">
+    <div class="logo-area" id="logo"></div>
+    <div class="title-banner" id="banner"><h1 id="name"></h1></div>
+    <div class="body">
+      <div class="col-left"><p class="description" id="desc"></p></div>
+      <div class="col-right">
+        <div>
+          <div class="section-label">Prominent Terpenes</div>
+          <div class="terpene-box" id="terpBox"><div class="terpene-list" id="terps"></div></div>
+        </div>
+        <div>
+          <div class="section-label">Primary Cannabinoids</div>
+          <table class="cannab-table"><tr>
+            <td id="thcCell"><span class="cannab-name">THC</span><span class="cannab-value" id="thc"></span></td>
+            <td id="cbdCell"><span class="cannab-name">CBD</span><span class="cannab-value" id="cbd"></span></td>
+          </tr></table>
+        </div>
+        <div class="strain-box">
+          <strong>Strain:</strong> &nbsp;&nbsp;&nbsp; <span id="species"></span><br>
+          <strong>Region:</strong> &nbsp;&nbsp;&nbsp; <span id="region"></span><br>
+          <div class="brand-line" id="brand"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function round1(n){ return Math.round(n*10)/10; }
+
+// Read the data param from the URL
+var params = new URLSearchParams(window.location.search);
+var raw = params.get('data') || '';
+var parts = raw.split('~|~|~');
+
+var productName = parts[0]  || '';
+var brandName   = parts[1]  || '';
+var species     = parts[2]  || '';
+var subcategory = parts[3]  || '';
+var thcMin      = parts[4]  || '';
+var thcMax      = parts[5]  || '';
+var cbdMin      = parts[6]  || '';
+var cbdMax      = parts[7]  || '';
+var terp1       = (parts[8]  || '').trim();
+var terp2       = (parts[9]  || '').trim();
+var terp3       = (parts[10] || '').trim();
+var region      = parts[11] || '';
+var logoUrl     = parts[12] || '';
+var description = parts[13] || '';
+
+// Colors by species
+var sp = species.toUpperCase();
+var cBanner='#7ECAD7', cThc='#7ECAD7', cCbd='#A8D8E8', cTerp='#C8E8F0';
+if (sp.indexOf('SATIVA')!==-1) { cBanner='#F5B266'; cThc='#F5B266'; cCbd='#F9CF9C'; cTerp='#FCE3CA'; }
+else if (sp.indexOf('HYBRID')!==-1 || sp.indexOf('BLEND')!==-1) { cBanner='#4CC88A'; cThc='#4CC88A'; cCbd='#7EDBA8'; cTerp='#B0EDCA'; }
+
+// mg/g vs %
+var combined = (subcategory + ' ').toUpperCase();
+var pctCats = ['FLOWER','PRE-ROLL','PRE-ROLLS','PREROLL','INHALABLE'];
+var usePct = pctCats.some(function(c){ return combined.indexOf(c)!==-1; });
+function fmtRange(min,max){
+  var lo=parseFloat(min), hi=parseFloat(max);
+  if (usePct){
+    lo=lo/10; hi=hi/10;
+    if (isNaN(lo)&&isNaN(hi)) return '—';
+    if (lo===0||isNaN(lo)) return '< '+round1(hi)+'%';
+    if (isNaN(hi)||lo===hi) return round1(lo)+'%';
+    return round1(lo)+'–'+round1(hi)+'%';
+  }
+  if (isNaN(lo)&&isNaN(hi)) return '—';
+  if (lo===0||isNaN(lo)) return '< '+round1(hi)+' mg/g';
+  if (isNaN(hi)||lo===hi) return round1(lo)+' mg/g';
+  return round1(lo)+'–'+round1(hi)+' mg/g';
+}
+
+// Terpenes
+var norm = [terp1,terp2,terp3].map(function(t){ return t.toUpperCase().replace(/[_\s]/g,''); });
+var terpsHtml, terpHeight='1.25in', terpFont='20pt';
+if (!terp1) { terpsHtml='Some terpenes may be present'; terpHeight='.5in'; terpFont='12pt'; }
+else if (norm.indexOf('TERPENESREMOVED')!==-1) { terpsHtml='Terpenes Removed'; terpHeight='.5in'; terpFont='12pt'; }
+else if (norm.indexOf('TERPENEVARIES')!==-1 || norm.indexOf('TERPENESVARY')!==-1) { terpsHtml='Terpenes Vary'; terpHeight='.5in'; terpFont='12pt'; }
+else { terpsHtml=[terp1,terp2,terp3].filter(function(t){return t;}).map(function(t){return '<span>'+esc(t)+'</span>';}).join(''); }
+
+// Logo
+var logoHtml = logoUrl
+  ? '<img class="brand-logo" src="'+esc(logoUrl)+'" alt="">'
+  : '<div class="logo-placeholder"><span>'+esc(brandName||'BRAND')+'</span></div>';
+
+// Inject
+document.getElementById('logo').innerHTML = logoHtml;
+document.getElementById('banner').style.background = cBanner;
+document.getElementById('name').textContent = productName;
+document.getElementById('desc').textContent = description;
+document.getElementById('terpBox').style.background = cTerp;
+document.getElementById('terpBox').style.minHeight = terpHeight;
+var terpsEl = document.getElementById('terps');
+terpsEl.innerHTML = terpsHtml;
+terpsEl.style.fontSize = terpFont;
+document.getElementById('thcCell').style.background = cThc;
+document.getElementById('cbdCell').style.background = cCbd;
+document.getElementById('thc').textContent = fmtRange(thcMin,thcMax);
+document.getElementById('cbd').textContent = fmtRange(cbdMin,cbdMax);
+document.getElementById('species').textContent = species || '—';
+document.getElementById('region').textContent = region || '—';
+document.getElementById('brand').textContent = brandName || '';
+document.title = productName || 'Product Card';
+</script>
+</body>
+</html>
