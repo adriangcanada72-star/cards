@@ -39,8 +39,8 @@
 
   .card-page { position:absolute; top:24px; left:24px; right:24px; bottom:24px; display:flex; flex-direction:column; }
 
-  .card-logo-area { height:192px; flex-shrink:0; display:flex; align-items:center; justify-content:center; background:#fff; }
-  .card-logo-area img { height:173px; width:auto; max-width:432px; object-fit:contain; }
+  .card-logo-area { height:220px; flex-shrink:0; display:flex; align-items:center; justify-content:center; background:#fff; }
+  .card-logo-area img { height:218px; width:auto; max-width:480px; object-fit:contain; }
   .card-logo-placeholder { width:100%; height:173px; display:flex; align-items:center; justify-content:center; }
   .card-logo-placeholder span { color:#1a1a1a; font-family:'Raleway',sans-serif; font-weight:700; font-size:30px; text-align:center; line-height:1.2; text-transform:uppercase; letter-spacing:.04em; padding:0 20px; }
 
@@ -49,7 +49,7 @@
 
   .card-body { display:flex; flex-direction:row; gap:17px; padding:14px 14px 10px; flex:1; min-height:0; }
   .card-col-left { flex:1.1; overflow:hidden; }
-  .card-desc { font-family:'Lato',sans-serif; font-weight:300; font-size:12.5px; color:#2a2a2a; line-height:1.5; display:-webkit-box; -webkit-line-clamp:11; -webkit-box-orient:vertical; overflow:hidden; }
+  .card-desc { font-family:'Lato',sans-serif; font-weight:300; font-size:14px; color:#2a2a2a; line-height:1.5; display:-webkit-box; -webkit-line-clamp:11; -webkit-box-orient:vertical; overflow:hidden; }
 
   .card-col-right { flex:0.75; display:flex; flex-direction:column; gap:14px; }
   .card-section-label { font-family:'Lato',sans-serif; font-weight:700; font-size:11.5px; color:#2a2a2a; text-align:center; display:flex; align-items:center; justify-content:center; padding:6px 0; }
@@ -58,12 +58,14 @@
   .card-terpene-list { font-family:'Lato',sans-serif; font-weight:400; font-size:19px; color:#2a2a2a; text-align:center; line-height:1.6; display:flex; flex-direction:column; align-items:center; gap:4px; }
 
   .card-cannab-table { width:100%; border-collapse:collapse; }
-  .card-cannab-table td { color:#1a1a1a; text-align:center; padding:16px 3px; font-family:'Lato',sans-serif; width:50%; }
+  .card-cannab-table td { color:#1a1a1a; text-align:center; padding:10px 3px; font-family:'Lato',sans-serif; width:50%; }
   .cannab-n { font-weight:700; font-size:12.5px; display:block; letter-spacing:.03em; }
   .cannab-v { font-weight:700; font-size:12.5px; display:block; margin-top:2px; }
 
   .card-strain { border:1px solid #2a2a2a; padding:8px 10px; font-family:'Lato',sans-serif; font-size:9.6px; color:#2a2a2a; line-height:1.7; flex-shrink:0; }
   .card-strain strong { font-weight:700; }
+  .card-strain .sr-row { display:flex; }
+  .card-strain .sr-row strong { width:50%; flex-shrink:0; }
   .brand-line { text-align:center; margin-top:4px; font-weight:700; text-transform:uppercase; }
 
   @media print {
@@ -109,9 +111,9 @@
           </tr></table>
         </div>
         <div class="card-strain">
-          <strong>Strain:</strong> &nbsp;&nbsp;&nbsp; <span id="species"></span><br>
-          <strong>Region:</strong> &nbsp;&nbsp;&nbsp; <span id="region"></span><br>
-          <div class="brand-line" id="brand"></div>
+          <div class="sr-row"><strong>Strain:</strong><span id="species"></span></div>
+          <div class="sr-row"><strong>Region:</strong><span id="region"></span></div>
+          <div class="sr-row"><strong>Category:</strong><span id="brand"></span></div>
         </div>
       </div>
     </div>
@@ -189,7 +191,7 @@ document.getElementById('thc').textContent = fmtRange(thcMin,thcMax);
 document.getElementById('cbd').textContent = fmtRange(cbdMin,cbdMax);
 document.getElementById('species').textContent = species || '—';
 document.getElementById('region').textContent = region || '—';
-document.getElementById('brand').textContent = brandName || '';
+document.getElementById('brand').textContent = subcategory || '';
 document.title = productName || 'Product Card';
 </script>
 </body>
