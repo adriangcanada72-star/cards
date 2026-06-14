@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terpene Sommelier Certificate</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,400&family=DM+Sans:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  @page { size: 11in 8.5in landscape; margin: 0; }
+
+  body {
+    margin: 0;
+    background: #e8e0d0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .certificate {
+    position: relative;
+    width: 1100px;
+    aspect-ratio: 3648 / 2634;
+    background: url('certificate_bg.png') center/contain no-repeat;
+    overflow: hidden;
+  }
+
+  .name {
+    position: absolute;
+    top: 51.5%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 42px;
+    color: #2d2510;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .date {
+    position: absolute;
+    bottom: 10.5%;
+    left: 22%;
+    transform: translateX(-50%);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    color: #2d2510;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .print-btn {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: #31AA64;
+    color: white;
+    border: none;
+    padding: 14px 32px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(49, 170, 100, 0.3);
+    z-index: 100;
+  }
+  .print-btn:hover { background: #2a9456; }
+
+  @media print {
+    body { background: none; min-height: auto; }
+    .certificate { width: 100vw; }
+    .print-btn { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="certificate">
+  <div class="name" id="staffName"></div>
+  <div class="date" id="certDate"></div>
+</div>
+
+<button class="print-btn" onclick="window.print()">🖨️ Print Certificate</button>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const name = params.get('name');
+  const date = params.get('date');
+
+  document.getElementById('staffName').textContent = name
+    ? decodeURIComponent(name)
+    : '—';
+
+  document.getElementById('certDate').textContent = date
+    ? decodeURIComponent(date)
+    : new Date().toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' });
+</script>
+</body>
+</html>
