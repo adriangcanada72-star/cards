@@ -57,7 +57,7 @@
   .card-section-label { font-family:'Lato',sans-serif; font-weight:700; font-size:11.5px; color:#2a2a2a; text-align:center; display:flex; align-items:center; justify-content:center; padding:6px 0; }
 
   .card-terpene-box { padding:0 9px; min-height:120px; display:flex; align-items:stretch; justify-content:center; }
-  .card-terpene-list { font-family:'Lato',sans-serif; font-weight:400; font-size:14px; color:#2a2a2a; text-align:center; line-height:1.2; display:flex; flex-direction:column; align-items:center; justify-content:space-evenly; width:100%; }
+  .card-terpene-list { font-family:'Lato',sans-serif; font-weight:400; font-size:16px; color:#2a2a2a; text-align:center; line-height:1.2; display:flex; flex-direction:column; align-items:center; justify-content:space-evenly; width:100%; }
 
   .card-cannab-table { width:100%; border-collapse:collapse; }
   .card-cannab-table td { color:#1a1a1a; text-align:center; padding:10px 3px; font-family:'Lato',sans-serif; width:50%; }
@@ -176,7 +176,7 @@ function fmtRange(min,max){
 }
 
 var norm = [terp1,terp2,terp3].map(function(t){ return t.toUpperCase().replace(/[_\s]/g,''); });
-var terpsHtml, terpHeight='120px', terpFont='14px';
+var terpsHtml, terpHeight='120px', terpFont='16px';
 if (!terp1) { terpsHtml='Some terpenes may be present'; terpHeight='36px'; terpFont='12px'; }
 else if (norm.indexOf('TERPENESREMOVED')!==-1) { terpsHtml='Terpenes Removed'; terpHeight='36px'; terpFont='12px'; }
 else if (norm.indexOf('TERPENEVARIES')!==-1 || norm.indexOf('TERPENESVARY')!==-1) { terpsHtml='Terpenes Vary'; terpHeight='36px'; terpFont='12px'; }
