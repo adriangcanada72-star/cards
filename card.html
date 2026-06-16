@@ -72,14 +72,13 @@
   .brand-line { text-align:center; margin-top:4px; font-weight:700; text-transform:uppercase; }
 
   @media print {
-    html, body { background:#fff; margin:0; padding:0; width:8.5in; height:11in; overflow:hidden; }
+    html, body { background:#fff; margin:0; padding:0; }
     body {
-      display:flex; flex-direction:column;
-      align-items:center; justify-content:center;
+      display:block; padding-top:1.75in;
       -webkit-print-color-adjust:exact; print-color-adjust:exact;
     }
     .toolbar { display:none; }
-    .card-shell { box-shadow:none; }
+    .card-shell { box-shadow:none; margin:0 auto; }
   }
 </style>
 </head>
