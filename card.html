@@ -37,14 +37,16 @@
   .crop.br-h { bottom:24px; right:0; width:17px; height:.5px; }
   .crop.br-v { bottom:0; right:24px; width:.5px; height:17px; }
 
-  .card-page { position:absolute; top:24px; left:24px; right:24px; bottom:24px; display:flex; flex-direction:column; }
+  .card-page { position:absolute; top:24px; left:24px; right:24px; bottom:24px; display:flex; flex-direction:column; z-index:2; }
+  .card-watermark { position:absolute; top:24px; left:24px; right:24px; bottom:24px; opacity:0.08; z-index:1; pointer-events:none; }
+  .card-watermark img { position:absolute; top:50%; left:50%; width:75%; height:auto; transform:translate(-50%,-50%); display:none; }
 
-  .card-logo-area { height:220px; flex-shrink:0; display:flex; align-items:center; justify-content:center; background:#fff; }
+  .card-logo-area { height:220px; flex-shrink:0; display:flex; align-items:center; justify-content:center; background:transparent; }
   .card-logo-area img { height:218px; width:auto; max-width:480px; object-fit:contain; }
   .card-logo-placeholder { width:100%; height:173px; display:flex; align-items:center; justify-content:center; }
   .card-logo-placeholder span { color:#1a1a1a; font-family:'Raleway',sans-serif; font-weight:700; font-size:30px; text-align:center; line-height:1.2; text-transform:uppercase; letter-spacing:.04em; padding:0 20px; }
 
-  .card-banner { padding:17px 24px; margin:0 -48px; text-align:center; flex-shrink:0; display:flex; align-items:center; justify-content:center; min-height:72px; }
+  .card-banner { padding:17px 24px; margin:0 -48px; text-align:center; flex-shrink:0; display:flex; align-items:center; justify-content:center; height:87px; }
   .card-banner h1 { font-family:'Raleway',sans-serif; font-weight:600; font-size:21px; color:#fff; letter-spacing:.04em; text-transform:uppercase; line-height:1.25; margin:0; max-width:432px; }
 
   .card-body { display:flex; flex-direction:row; gap:17px; padding:14px 14px 10px; flex:1; min-height:0; }
@@ -54,8 +56,8 @@
   .card-col-right { flex:0.75; display:flex; flex-direction:column; gap:14px; }
   .card-section-label { font-family:'Lato',sans-serif; font-weight:700; font-size:11.5px; color:#2a2a2a; text-align:center; display:flex; align-items:center; justify-content:center; padding:6px 0; }
 
-  .card-terpene-box { padding:10px 9px; min-height:120px; display:flex; align-items:flex-start; justify-content:center; }
-  .card-terpene-list { font-family:'Lato',sans-serif; font-weight:400; font-size:19px; color:#2a2a2a; text-align:center; line-height:1.6; display:flex; flex-direction:column; align-items:center; gap:4px; }
+  .card-terpene-box { padding:0 9px; min-height:120px; display:flex; align-items:stretch; justify-content:center; }
+  .card-terpene-list { font-family:'Lato',sans-serif; font-weight:400; font-size:14px; color:#2a2a2a; text-align:center; line-height:1.2; display:flex; flex-direction:column; align-items:center; justify-content:space-evenly; width:100%; }
 
   .card-cannab-table { width:100%; border-collapse:collapse; }
   .card-cannab-table td { color:#1a1a1a; text-align:center; padding:10px 3px; font-family:'Lato',sans-serif; width:50%; }
@@ -94,6 +96,7 @@
   <div class="crop tr-h"></div><div class="crop tr-v"></div>
   <div class="crop bl-h"></div><div class="crop bl-v"></div>
   <div class="crop br-h"></div><div class="crop br-v"></div>
+  <div class="card-watermark" id="card-watermark"><img id="card-watermark-img" alt=""></div>
   <div class="card-page">
     <div class="card-logo-area" id="logo"></div>
     <div class="card-banner" id="banner"><h1 id="name"></h1></div>
@@ -142,6 +145,12 @@ var terp3       = (parts[10] || '').trim();
 var region      = parts[11] || '';
 var logoUrl     = parts[12] || '';
 var description = parts[13] || '';
+// Store watermark (per-store, set in Glide)
+var wmUrl     = parts[14] || '';
+var wmX       = parts[15] || '0';
+var wmY       = parts[16] || '0';
+var wmSize    = parts[17] || '75';
+var wmOpacity = parts[18] || '8';
 
 var sp = species.toUpperCase();
 var cBanner='#74C6EA', cThc='#97D6EF', cCbd='#ACDFF2', cTerp='#DBF0FA';
@@ -167,11 +176,11 @@ function fmtRange(min,max){
 }
 
 var norm = [terp1,terp2,terp3].map(function(t){ return t.toUpperCase().replace(/[_\s]/g,''); });
-var terpsHtml, terpHeight='120px', terpFont='19px';
+var terpsHtml, terpHeight='120px', terpFont='14px';
 if (!terp1) { terpsHtml='Some terpenes may be present'; terpHeight='36px'; terpFont='12px'; }
 else if (norm.indexOf('TERPENESREMOVED')!==-1) { terpsHtml='Terpenes Removed'; terpHeight='36px'; terpFont='12px'; }
 else if (norm.indexOf('TERPENEVARIES')!==-1 || norm.indexOf('TERPENESVARY')!==-1) { terpsHtml='Terpenes Vary'; terpHeight='36px'; terpFont='12px'; }
-else { terpsHtml=[terp1,terp2,terp3].filter(function(t){return t;}).map(function(t){return '<span>'+esc(t)+'</span>';}).join(''); }
+else { terpsHtml=[terp1,terp2,terp3].filter(function(t){return t;}).map(function(t){return '<span>'+esc(t.replace(/_/g,'-'))+'</span>';}).join(''); }
 
 var logoHtml = logoUrl
   ? '<img src="'+esc(logoUrl)+'" alt="">'
@@ -194,6 +203,16 @@ document.getElementById('species').textContent = species || '—';
 document.getElementById('region').textContent = region || '—';
 document.getElementById('brand').textContent = (subcategory || '').toUpperCase();
 document.title = productName || 'Product Card';
+
+// Apply store watermark
+if (wmUrl) {
+  var wmImg = document.getElementById('card-watermark-img');
+  wmImg.src = decodeURIComponent(wmUrl);
+  wmImg.style.display = 'block';
+  wmImg.style.width = (parseFloat(wmSize) || 75) + '%';
+  wmImg.style.transform = 'translate(-50%,-50%) translate(' + (parseFloat(wmX) || 0) + 'px,' + (parseFloat(wmY) || 0) + 'px)';
+  document.getElementById('card-watermark').style.opacity = (parseFloat(wmOpacity) || 8) / 100;
+}
 </script>
 </body>
 </html>
