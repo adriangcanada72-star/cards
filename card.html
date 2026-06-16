@@ -74,11 +74,11 @@
   @media print {
     html, body { background:#fff; margin:0; padding:0; }
     body {
-      display:block; padding-top:1.75in;
+      display:block; padding-top:1.25in;
       -webkit-print-color-adjust:exact; print-color-adjust:exact;
     }
     .toolbar { display:none; }
-    .card-shell { box-shadow:none; margin:0 auto; }
+    .card-shell { box-shadow:none; margin:0 auto; page-break-inside:avoid; page-break-after:avoid; break-inside:avoid; break-after:avoid; }
   }
 </style>
 </head>
@@ -86,7 +86,7 @@
 
 <div class="toolbar">
   <button onclick="window.print()">🖨 Print / Save PDF</button>
-  <span class="hint">Paper: Custom 5.5×7.5in · Margins: None · Background graphics: ON</span>
+  <span class="hint">Paper: Letter (8.5×11) · Margins: None · Background graphics: ON</span>
 </div>
 
 <div class="card-shell">
