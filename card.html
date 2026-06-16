@@ -186,7 +186,7 @@ var logoHtml = logoUrl
 
 document.getElementById('logo').innerHTML = logoHtml;
 document.getElementById('banner').style.background = cBanner;
-document.getElementById('name').textContent = productName;
+document.getElementById('name').textContent = (productName || '').replace(/-/g, '\u2011');
 document.getElementById('desc').textContent = description;
 document.getElementById('terpBox').style.background = cTerp;
 document.getElementById('terpBox').style.minHeight = terpHeight;
