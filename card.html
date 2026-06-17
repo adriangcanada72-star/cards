@@ -124,7 +124,7 @@
 
 <script>
 function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function round1(n){ return Math.round(n*10)/10; }
+function round1(n){ return Math.round(n); }
 
 var params = new URLSearchParams(window.location.search);
 var parts = (params.get('data') || '').split('~|~|~');
