@@ -158,21 +158,16 @@ else if (sp.indexOf('HYBRID')!==-1 || sp.indexOf('BLEND')!==-1) { cBanner='#58C3
 var combined = (subcategory + ' ').toUpperCase();
 var pctCats = ['FLOWER','PRE-ROLL','PRE-ROLLS','PREROLL','INHALABLE'];
 var mgCats = ['BEVERAGE','BEVERAGES','EDIBLE','EDIBLES','TOPICAL','TOPICALS'];
-var capsuleCats = ['SOFTGEL','SOFT GEL','CAPSULE','GELCAP','GEL CAP','CAPS'];
-var nameU = (productName || '').toUpperCase();
-var isCapsule = capsuleCats.some(function(c){ return nameU.indexOf(c)!==-1; });
+var capsuleCats = ['SOFTGEL','SOFT GEL','CAPSULE','GELCAP','GEL CAP'];
+var hay = ((productName || '') + ' ' + (description || '')).toUpperCase();
+var isCapsule = capsuleCats.some(function(c){ return hay.indexOf(c)!==-1; });
 var usePct = pctCats.some(function(c){ return combined.indexOf(c)!==-1; });
-var useMg = mgCats.some(function(c){ return combined.indexOf(c)!==-1; }) || isCapsule;
+var useMgOnly = mgCats.some(function(c){ return combined.indexOf(c)!==-1; });
+var divideBy10 = usePct || isCapsule;
+var unit = usePct ? '%' : ((useMgOnly || isCapsule) ? ' mg' : ' mg/g');
 function fmtRange(min,max){
   var lo=parseFloat(min), hi=parseFloat(max);
-  if (usePct){
-    lo=lo/10; hi=hi/10;
-    if (isNaN(lo)&&isNaN(hi)) return '—';
-    if (lo===0||isNaN(lo)) return '< '+round1(hi)+'%';
-    if (isNaN(hi)||lo===hi) return round1(lo)+'%';
-    return round1(lo)+'–'+round1(hi)+'%';
-  }
-  var unit = useMg ? ' mg' : ' mg/g';
+  if (divideBy10){ lo=lo/10; hi=hi/10; }
   if (isNaN(lo)&&isNaN(hi)) return '—';
   if (lo===0||isNaN(lo)) return '< '+round1(hi)+unit;
   if (isNaN(hi)||lo===hi) return round1(lo)+unit;
