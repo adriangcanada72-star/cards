@@ -51,7 +51,7 @@
 
   .card-body { display:flex; flex-direction:row; gap:17px; padding:14px 14px 10px; flex:1; min-height:0; }
   .card-col-left { flex:1.1; overflow:hidden; }
-  .card-desc { font-family:'Lato',sans-serif; font-weight:300; font-size:14px; color:#2a2a2a; line-height:1.5; display:-webkit-box; -webkit-line-clamp:15; -webkit-box-orient:vertical; overflow:hidden; }
+  .card-desc { font-family:'Lato',sans-serif; font-weight:400; font-size:14px; color:#1a1a1a; line-height:1.5; display:-webkit-box; -webkit-line-clamp:15; -webkit-box-orient:vertical; overflow:hidden; }
 
   .card-col-right { flex:0.75; display:flex; flex-direction:column; gap:14px; }
   .card-section-label { font-family:'Lato',sans-serif; font-weight:700; font-size:11.5px; color:#2a2a2a; text-align:center; display:flex; align-items:center; justify-content:center; padding:6px 0; }
@@ -149,6 +149,11 @@ var wmX       = parts[15] || '0';
 var wmY       = parts[16] || '0';
 var wmSize    = parts[17] || '75';
 var wmOpacity = parts[18] || '8';
+// Per-piece THC/CBD (for capsules, softgels, edibles)
+var thcMinPiece = parts[19] || '';
+var thcMaxPiece = parts[20] || '';
+var cbdMinPiece = parts[21] || '';
+var cbdMaxPiece = parts[22] || '';
 
 var sp = species.toUpperCase();
 var cBanner='#74C6EA', cThc='#97D6EF', cCbd='#ACDFF2', cTerp='#DBF0FA';
@@ -157,14 +162,34 @@ else if (sp.indexOf('HYBRID')!==-1 || sp.indexOf('BLEND')!==-1) { cBanner='#58C3
 
 var combined = (subcategory + ' ').toUpperCase();
 var pctCats = ['FLOWER','PRE-ROLL','PRE-ROLLS','PREROLL','INHALABLE'];
-var mgCats = ['BEVERAGE','BEVERAGES','EDIBLE','EDIBLES','TOPICAL','TOPICALS'];
+var mgCats = ['BEVERAGE','BEVERAGES','TOPICAL','TOPICALS'];
 var capsuleCats = ['SOFTGEL','SOFT GEL','CAPSULE','GELCAP','GEL CAP'];
 var hay = ((productName || '') + ' ' + (description || '')).toUpperCase();
 var isCapsule = capsuleCats.some(function(c){ return hay.indexOf(c)!==-1; });
+var isEdible = combined.indexOf('EDIBLE')!==-1;
+var usePiece = isCapsule || isEdible;
 var usePct = pctCats.some(function(c){ return combined.indexOf(c)!==-1; });
 var useMgOnly = mgCats.some(function(c){ return combined.indexOf(c)!==-1; });
-var divideBy10 = usePct || isCapsule;
-var unit = usePct ? '%' : ((useMgOnly || isCapsule) ? ' mg' : ' mg/g');
+
+// Decide which values + unit to use
+var thcLo, thcHi, cbdLo, cbdHi, divideBy10, unit;
+if (usePiece) {
+  // prefer per-piece; fall back to per-package total if piece is blank (still mg)
+  var hasPieceThc = (thcMinPiece!=='' && !isNaN(parseFloat(thcMinPiece))) ||
+                    (thcMaxPiece!=='' && !isNaN(parseFloat(thcMaxPiece)));
+  var hasPieceCbd = (cbdMinPiece!=='' && !isNaN(parseFloat(cbdMinPiece))) ||
+                    (cbdMaxPiece!=='' && !isNaN(parseFloat(cbdMaxPiece)));
+  thcLo = hasPieceThc ? thcMinPiece : thcMin;
+  thcHi = hasPieceThc ? thcMaxPiece : thcMax;
+  cbdLo = hasPieceCbd ? cbdMinPiece : cbdMin;
+  cbdHi = hasPieceCbd ? cbdMaxPiece : cbdMax;
+  divideBy10=false; unit=' mg';
+} else {
+  thcLo=thcMin; thcHi=thcMax; cbdLo=cbdMin; cbdHi=cbdMax;
+  if (usePct) { divideBy10=true; unit='%'; }
+  else if (useMgOnly) { divideBy10=false; unit=' mg'; }
+  else { divideBy10=false; unit=' mg/g'; }
+}
 function fmtRange(min,max){
   var lo=parseFloat(min), hi=parseFloat(max);
   if (divideBy10){ lo=lo/10; hi=hi/10; }
@@ -196,8 +221,8 @@ terpsEl.innerHTML = terpsHtml;
 terpsEl.style.fontSize = terpFont;
 document.getElementById('thcCell').style.background = cThc;
 document.getElementById('cbdCell').style.background = cCbd;
-document.getElementById('thc').textContent = fmtRange(thcMin,thcMax);
-document.getElementById('cbd').textContent = fmtRange(cbdMin,cbdMax);
+document.getElementById('thc').textContent = fmtRange(thcLo,thcHi);
+document.getElementById('cbd').textContent = fmtRange(cbdLo,cbdHi);
 document.getElementById('species').textContent = species || '—';
 document.getElementById('region').textContent = region || '—';
 document.getElementById('brand').textContent = (subcategory || '').toUpperCase();
