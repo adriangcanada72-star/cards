@@ -154,6 +154,9 @@ var thcMinPiece = parts[19] || '';
 var thcMaxPiece = parts[20] || '';
 var cbdMinPiece = parts[21] || '';
 var cbdMaxPiece = parts[22] || '';
+// Print overrides (temporary, set per-product in Glide; blank = compute normally)
+var thcOverride = (parts[23] || '').trim();
+var cbdOverride = (parts[24] || '').trim();
 
 var sp = species.toUpperCase();
 var cBanner='#74C6EA', cThc='#97D6EF', cCbd='#ACDFF2', cTerp='#DBF0FA';
@@ -162,12 +165,11 @@ else if (sp.indexOf('HYBRID')!==-1 || sp.indexOf('BLEND')!==-1) { cBanner='#58C3
 
 var combined = (subcategory + ' ').toUpperCase();
 var pctCats = ['FLOWER','PRE-ROLL','PRE-ROLLS','PREROLL','INHALABLE'];
-var mgCats = ['BEVERAGE','BEVERAGES','TOPICAL','TOPICALS'];
-var capsuleCats = ['SOFTGEL','SOFT GEL','CAPSULE','GELCAP','GEL CAP'];
-var hay = ((productName || '') + ' ' + (description || '')).toUpperCase();
-var isCapsule = capsuleCats.some(function(c){ return hay.indexOf(c)!==-1; });
-var isEdible = combined.indexOf('EDIBLE')!==-1;
-var usePiece = isCapsule || isEdible;
+var mgCats = ['BEVERAGE','BEVERAGES','EDIBLE','EDIBLES','TOPICAL','TOPICALS'];
+// Pill-form keywords (whole-word match) -> use PER_DISCRETE_UNIT (per-piece) values
+var pieceRe = /\b(caps|capsule|capsules|tablet|tablets|softgel|softgels)\b/i;
+var hay = ((productName || '') + ' ' + (description || ''));
+var usePiece = pieceRe.test(hay);
 var usePct = pctCats.some(function(c){ return combined.indexOf(c)!==-1; });
 var useMgOnly = mgCats.some(function(c){ return combined.indexOf(c)!==-1; });
 
@@ -221,8 +223,8 @@ terpsEl.innerHTML = terpsHtml;
 terpsEl.style.fontSize = terpFont;
 document.getElementById('thcCell').style.background = cThc;
 document.getElementById('cbdCell').style.background = cCbd;
-document.getElementById('thc').textContent = fmtRange(thcLo,thcHi);
-document.getElementById('cbd').textContent = fmtRange(cbdLo,cbdHi);
+document.getElementById('thc').textContent = thcOverride !== '' ? thcOverride : fmtRange(thcLo,thcHi);
+document.getElementById('cbd').textContent = cbdOverride !== '' ? cbdOverride : fmtRange(cbdLo,cbdHi);
 document.getElementById('species').textContent = species || '—';
 document.getElementById('region').textContent = region || '—';
 document.getElementById('brand').textContent = (subcategory || '').toUpperCase();
