@@ -157,7 +157,9 @@ else if (sp.indexOf('HYBRID')!==-1 || sp.indexOf('BLEND')!==-1) { cBanner='#58C3
 
 var combined = (subcategory + ' ').toUpperCase();
 var pctCats = ['FLOWER','PRE-ROLL','PRE-ROLLS','PREROLL','INHALABLE'];
+var mgCats = ['BEVERAGE','BEVERAGES','EDIBLE','EDIBLES','TOPICAL','TOPICALS'];
 var usePct = pctCats.some(function(c){ return combined.indexOf(c)!==-1; });
+var useMg = mgCats.some(function(c){ return combined.indexOf(c)!==-1; });
 function fmtRange(min,max){
   var lo=parseFloat(min), hi=parseFloat(max);
   if (usePct){
@@ -167,10 +169,11 @@ function fmtRange(min,max){
     if (isNaN(hi)||lo===hi) return round1(lo)+'%';
     return round1(lo)+'–'+round1(hi)+'%';
   }
+  var unit = useMg ? ' mg' : ' mg/g';
   if (isNaN(lo)&&isNaN(hi)) return '—';
-  if (lo===0||isNaN(lo)) return '< '+round1(hi)+' mg/g';
-  if (isNaN(hi)||lo===hi) return round1(lo)+' mg/g';
-  return round1(lo)+'–'+round1(hi)+' mg/g';
+  if (lo===0||isNaN(lo)) return '< '+round1(hi)+unit;
+  if (isNaN(hi)||lo===hi) return round1(lo)+unit;
+  return round1(lo)+'–'+round1(hi)+unit;
 }
 
 var norm = [terp1,terp2,terp3].map(function(t){ return t.toUpperCase().replace(/[_\s]/g,''); });
