@@ -206,9 +206,9 @@ var STORAGE_KEY = 'tagSheet_v1';
 var queue = [];      // array of card data objects, max 10
 var pendingCard = null;
 
-// ── LOAD FROM SESSIONSTORAGE ──
+// ── LOAD FROM LOCALSTORAGE ──
 try {
-  var saved = sessionStorage.getItem(STORAGE_KEY);
+  var saved = localStorage.getItem(STORAGE_KEY);
   if (saved) queue = JSON.parse(saved);
 } catch(e) {}
 
@@ -354,7 +354,7 @@ function clearAll() {
 
 // ── SAVE ──
 function save() {
-  try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify(queue)); } catch(e) {}
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(queue)); } catch(e) {}
 }
 
 // ── MODAL ──
