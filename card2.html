@@ -103,6 +103,16 @@
     border:0.5px solid #d0d0d0;
     position:relative;
   }
+  .tag-watermark {
+    position:absolute; top:0; left:0; right:0; bottom:0;
+    pointer-events:none; z-index:0; overflow:hidden;
+  }
+  .tag-watermark img {
+    position:absolute; top:50%; left:50%;
+    transform:translate(-50%,-50%);
+    height:auto; display:none;
+  }
+  .tag-content { position:relative; z-index:1; display:flex; flex-direction:column; height:100%; }
   .tag.empty {
     border:0.5px dashed #e0e0e0;
     background:#fafafa;
@@ -267,6 +277,11 @@ function parseParams() {
     terpenes    : terpList,
     region      : g(11),
     description : g(13),
+    wmUrl       : g(14),
+    wmX         : g(15) || '0',
+    wmY         : g(16) || '0',
+    wmSize      : g(17) || '75',
+    wmOpacity   : g(18) || '8',
     price       : ''   // filled by modal
   };
 }
@@ -280,7 +295,23 @@ function buildTag(card) {
     return '<span class="terp-pill" style="background:' + c.terp + '">' + esc(t) + '</span>';
   }).join('');
 
+  // Watermark
+  var wmHtml = '';
+  if (card.wmUrl) {
+    var wmOpac = (parseFloat(card.wmOpacity) || 8) / 100;
+    var wmSrc = card.wmUrl;
+    try { wmSrc = decodeURIComponent(card.wmUrl); } catch(e) { wmSrc = card.wmUrl; }
+    wmHtml = '<div class="tag-watermark" style="opacity:' + wmOpac + '">'
+      + '<img src="' + wmSrc + '" '
+      + 'style="width:' + (parseFloat(card.wmSize)||75) + '%;'
+      + 'transform:translate(-50%,-50%) translate(' + (parseFloat(card.wmX)||0) + 'px,' + (parseFloat(card.wmY)||0) + 'px);'
+      + 'display:block;">'
+      + '</div>';
+  }
+
   return '<div class="tag">'
+    + wmHtml
+    + '<div class="tag-content">'
     + '<div class="brand-row"><span class="brand-name">' + esc(card.brandName) + '</span></div>'
     + '<div class="color-bar" style="background:' + c.banner + '"><span class="product-name">' + esc(card.productName) + '</span></div>'
     + '<div class="middle"><p class="desc">' + esc(card.description) + '</p></div>'
@@ -298,6 +329,7 @@ function buildTag(card) {
     + '<div class="card-footer">'
     +   '<span class="strain-meta">' + esc(meta) + '</span>'
     +   '<span class="price">' + esc(card.price) + '</span>'
+    + '</div>'
     + '</div>'
     + '</div>';
 }
