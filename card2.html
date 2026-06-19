@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shelf Tag Sheet</title>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Raleway:wght@300;400;600;700&family=Oswald:wght@700&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  @page { size:8.5in 11in; margin:0; }
+
+  html, body { background:#e8e8e8; font-family:'Lato',sans-serif; }
+
+  /* ── TOOLBAR ── */
+  .toolbar {
+    display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+    padding:14px 20px; background:#fff; border-bottom:1px solid #ddd;
+    position:sticky; top:0; z-index:100;
+  }
+  .toolbar button {
+    background:#4AABBF; color:#fff; border:none; padding:9px 18px;
+    border-radius:6px; font-size:13px; font-weight:700; cursor:pointer;
+    font-family:'Lato',sans-serif;
+  }
+  .toolbar button:hover { background:#3a96a8; }
+  .toolbar button.danger { background:#e05050; }
+  .toolbar button.danger:hover { background:#c03030; }
+  .toolbar .hint { font-size:11px; color:#888; }
+  .toolbar .sep { width:1px; height:24px; background:#ddd; }
+  .badge-count {
+    background:#31AA64; color:#fff; font-size:11px; font-weight:700;
+    border-radius:10px; padding:2px 8px; font-family:'Lato',sans-serif;
+  }
+
+  /* ── PRICE MODAL ── */
+  .modal-overlay {
+    display:none; position:fixed; inset:0; background:rgba(0,0,0,.45);
+    z-index:200; align-items:center; justify-content:center;
+  }
+  .modal-overlay.open { display:flex; }
+  .modal {
+    background:#fff; border-radius:10px; padding:28px 28px 22px;
+    width:340px; box-shadow:0 8px 32px rgba(0,0,0,.2);
+  }
+  .modal h2 { font-family:'Raleway',sans-serif; font-size:16px; font-weight:700; color:#1a1a1a; margin-bottom:4px; }
+  .modal .modal-product { font-size:11px; color:#888; margin-bottom:16px; text-transform:uppercase; letter-spacing:.05em; }
+  .modal label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:#555; display:block; margin-bottom:5px; }
+  .modal input[type=text] {
+    width:100%; border:1.5px solid #ddd; border-radius:6px; padding:10px 12px;
+    font-size:20px; font-family:'Oswald',sans-serif; font-weight:700; color:#1a1a1a;
+    outline:none;
+  }
+  .modal input[type=text]:focus { border-color:#4AABBF; }
+  .modal .modal-actions { display:flex; gap:8px; margin-top:16px; }
+  .modal .modal-actions button { flex:1; padding:10px; border:none; border-radius:6px; font-size:13px; font-weight:700; cursor:pointer; font-family:'Lato',sans-serif; }
+  .modal .modal-actions .btn-add { background:#4AABBF; color:#fff; }
+  .modal .modal-actions .btn-add:hover { background:#3a96a8; }
+  .modal .modal-actions .btn-cancel { background:#f0f0f0; color:#555; }
+  .modal .modal-actions .btn-cancel:hover { background:#e0e0e0; }
+
+  /* ── QUEUE LIST ── */
+  .queue-panel {
+    max-width:816px; margin:16px auto 0; padding:0 20px;
+  }
+  .queue-panel h3 { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:#888; margin-bottom:8px; }
+  .queue-list { display:flex; flex-direction:column; gap:6px; }
+  .queue-item {
+    background:#fff; border:1px solid #e0e0e0; border-radius:6px;
+    padding:8px 12px; display:flex; align-items:center; gap:10px;
+    font-size:12px;
+  }
+  .queue-item .qi-swatch { width:10px; height:10px; border-radius:2px; flex-shrink:0; }
+  .queue-item .qi-name { flex:1; font-weight:700; color:#1a1a1a; font-family:'Raleway',sans-serif; font-size:12px; text-transform:uppercase; }
+  .queue-item .qi-brand { color:#888; font-size:11px; }
+  .queue-item .qi-price { font-family:'Oswald',sans-serif; font-weight:700; color:#1a1a1a; font-size:15px; min-width:48px; text-align:right; }
+  .queue-item .qi-remove { background:none; border:none; color:#ccc; cursor:pointer; font-size:16px; line-height:1; padding:0 2px; }
+  .queue-item .qi-remove:hover { color:#e05050; }
+  .queue-empty { font-size:12px; color:#aaa; padding:8px 0; }
+
+  /* ── SHEET ── */
+  .sheet-wrap { max-width:816px; margin:20px auto 40px; padding:0 20px; }
+
+  /* Letter page at 96dpi = 816×1056px */
+  .sheet-page {
+    width:816px; background:#fff;
+    box-shadow:0 4px 24px rgba(0,0,0,.15);
+    /* Avery 5371: top margin 0.5in, left 0.75in, col gap 0.125in, row gap 0 */
+    padding:48px 72px;
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: repeat(5, 192px);
+    column-gap:12px;
+    row-gap:0px;
+  }
+
+  /* ── CARD ── */
+  .tag {
+    width:100%; height:192px;
+    background:#fff;
+    overflow:hidden;
+    display:flex; flex-direction:column;
+    font-family:'Lato',sans-serif;
+    border:0.5px solid #d0d0d0;
+    position:relative;
+  }
+  .tag.empty {
+    border:0.5px dashed #e0e0e0;
+    background:#fafafa;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .tag.empty span { font-size:11px; color:#ccc; font-family:'Lato',sans-serif; }
+
+  .tag .brand-row { padding:5px 10px 3px; flex-shrink:0; }
+  .tag .brand-name { font-family:'Raleway',sans-serif; font-size:7.5px; font-weight:700; letter-spacing:.09em; text-transform:uppercase; color:#1a1a1a; }
+
+  .tag .color-bar { width:100%; padding:6px 10px 7px; flex-shrink:0; }
+  .tag .product-name { font-family:'Raleway',sans-serif; font-size:12px; font-weight:600; color:#fff; line-height:1.2; letter-spacing:.04em; text-transform:uppercase; }
+
+  .tag .middle { flex:1; display:flex; align-items:center; padding:0 10px; }
+  .tag .desc { font-family:'Lato',sans-serif; font-size:8.5px; font-weight:400; color:#1a1a1a; line-height:1.45; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+
+  .tag .sections-row { display:flex; padding:0 10px 5px; gap:8px; align-items:flex-start; flex-shrink:0; }
+  .tag .section { display:flex; flex-direction:column; gap:2px; }
+  .tag .section-terp { flex:1; min-width:0; }
+  .tag .section-cann { min-width:74px; }
+  .tag .section-label { font-family:'Lato',sans-serif; font-size:6.5px; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:#bbb; margin-bottom:2px; white-space:nowrap; }
+
+  .tag .terp-pills { display:flex; flex-direction:column; gap:2px; }
+  .tag .terp-pill { font-family:'Lato',sans-serif; font-size:8px; font-weight:400; padding:2px 7px; border-radius:2px; display:inline-block; width:fit-content; color:#2a2a2a; }
+
+  .tag .cann-pills { display:flex; flex-direction:column; gap:2px; }
+  .tag .cann-pill { padding:2px 6px; border-radius:2px; display:flex; align-items:baseline; justify-content:space-between; gap:4px; }
+  .tag .cann-pill-label { font-family:'Lato',sans-serif; font-size:6.5px; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:#2a2a2a; }
+  .tag .cann-pill-value { font-family:'Lato',sans-serif; font-size:9px; font-weight:700; color:#1a1a1a; }
+
+  .tag .card-footer { height:30px; border-top:0.5px solid #eee; display:flex; align-items:center; justify-content:space-between; padding:0 10px; flex-shrink:0; }
+  .tag .strain-meta { font-family:'Lato',sans-serif; font-size:7px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:#333; }
+  .tag .price { font-family:'Oswald',sans-serif; font-size:20px; font-weight:700; color:#1a1a1a; }
+
+  /* ── PRINT ── */
+  @media print {
+    html, body { background:#fff; margin:0; padding:0; }
+    .toolbar, .queue-panel { display:none; }
+    .sheet-wrap { margin:0; padding:0; max-width:none; }
+    .sheet-page {
+      width:8.5in; box-shadow:none;
+      padding:.5in .75in;
+      column-gap:.125in;
+      row-gap:0;
+      -webkit-print-color-adjust:exact;
+      print-color-adjust:exact;
+    }
+    .tag { height:2in; border-color:#ccc; }
+    .tag.empty { border-color:#eee; }
+    .tag .price { font-size:18pt; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <button onclick="window.print()">🖨 Print / Save PDF</button>
+  <span class="hint">Paper: Letter (8.5×11) · Margins: None · Background graphics: ON</span>
+  <div class="sep"></div>
+  <span id="badge" class="badge-count">0 / 10</span>
+  <button class="danger" onclick="clearAll()">✕ Clear Sheet</button>
+</div>
+
+<!-- PRICE MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h2>Set Price</h2>
+    <div class="modal-product" id="modal-product-name"></div>
+    <label for="price-input">Price</label>
+    <input type="text" id="price-input" placeholder="$0.00" autocomplete="off">
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-add" onclick="confirmAdd()">Add to Sheet</button>
+    </div>
+  </div>
+</div>
+
+<!-- QUEUE -->
+<div class="queue-panel">
+  <h3>Cards on Sheet</h3>
+  <div class="queue-list" id="queue-list">
+    <div class="queue-empty">No cards added yet. Open a product in Glide and tap "Add to Sheet Tag".</div>
+  </div>
+</div>
+
+<!-- SHEET -->
+<div class="sheet-wrap">
+  <div class="sheet-page" id="sheet">
+    <!-- filled by JS -->
+  </div>
+</div>
+
+<script>
+// ── STORAGE KEY ──
+var STORAGE_KEY = 'tagSheet_v1';
+
+// ── STATE ──
+var queue = [];      // array of card data objects, max 10
+var pendingCard = null;
+
+// ── LOAD FROM SESSIONSTORAGE ──
+try {
+  var saved = sessionStorage.getItem(STORAGE_KEY);
+  if (saved) queue = JSON.parse(saved);
+} catch(e) {}
+
+// ── COLOR SCHEME ──
+function colors(species) {
+  var s = (species||'').toUpperCase();
+  if (s.indexOf('SATIVA') !== -1) return { banner:'#F58A34', thc:'#F7A45D', cbd:'#F8B670', terp:'#FCDFBC' };
+  if (s.indexOf('HYBRID') !== -1 || s.indexOf('BLEND') !== -1) return { banner:'#58C369', thc:'#79CF85', cbd:'#9CDEA7', terp:'#D1F2D8' };
+  return { banner:'#74C6EA', thc:'#97D6EF', cbd:'#ACDFF2', terp:'#DBF0FA' };
+}
+
+// ── URL PARAM PARSING (matches card.html token layout) ──
+function parseParams() {
+  var params = new URLSearchParams(window.location.search);
+  var raw = params.get('data') || '';
+  var p = raw.split('~|~|~');
+  function g(i) { return (p[i] || '').trim(); }
+
+  var species   = g(2);
+  var subcat    = g(3);
+  var thcMin    = g(4), thcMax = g(5);
+  var cbdMin    = g(6), cbdMax = g(7);
+  var terp1     = g(8), terp2 = g(9), terp3 = g(10);
+
+  // Unit logic (mirrors card.html)
+  var combined  = (subcat + ' ').toUpperCase();
+  var pctCats   = ['FLOWER','PRE-ROLL','PRE-ROLLS','PREROLL','INHALABLE','SEEDS','SEED'];
+  var usePct    = pctCats.some(function(c){ return combined.indexOf(c) !== -1; });
+  var unit      = usePct ? '%' : ' mg/g';
+  var div10     = usePct;
+
+  function fmtRange(lo, hi) {
+    var l = parseFloat(lo), h = parseFloat(hi);
+    if (div10) { l = l/10; h = h/10; }
+    if (isNaN(l) && isNaN(h)) return '—';
+    if (l === 0 || isNaN(l)) return '< ' + Math.round(h) + unit;
+    if (isNaN(h) || l === h)  return Math.round(l) + unit;
+    return Math.round(l) + '–' + Math.round(h) + unit;
+  }
+
+  // Terpene display
+  var terpNorm = [terp1,terp2,terp3].map(function(t){ return t.toUpperCase().replace(/[_\s]/g,''); });
+  var terpList;
+  if (!terp1) terpList = ['Some terpenes may be present'];
+  else if (terpNorm.indexOf('TERPENESREMOVED') !== -1) terpList = ['Terpenes Removed'];
+  else if (terpNorm.indexOf('TERPENEVARIES') !== -1 || terpNorm.indexOf('TERPENESVARY') !== -1) terpList = ['Terpenes Vary'];
+  else terpList = [terp1,terp2,terp3].filter(Boolean).map(function(t){ return t.replace(/_/g,'-'); });
+
+  return {
+    productName : g(0),
+    brandName   : g(1),
+    species     : species,
+    subcat      : subcat,
+    thc         : g(23) !== '' ? g(23) : fmtRange(thcMin, thcMax),
+    cbd         : g(24) !== '' ? g(24) : fmtRange(cbdMin, cbdMax),
+    terpenes    : terpList,
+    region      : g(11),
+    description : g(13),
+    price       : ''   // filled by modal
+  };
+}
+
+// ── BUILD ONE TAG HTML ──
+function buildTag(card) {
+  var c = colors(card.species);
+  var meta = [card.species, card.subcat, card.region].filter(Boolean).join(' · ').toUpperCase();
+
+  var terpsHtml = card.terpenes.map(function(t){
+    return '<span class="terp-pill" style="background:' + c.terp + '">' + esc(t) + '</span>';
+  }).join('');
+
+  return '<div class="tag">'
+    + '<div class="brand-row"><span class="brand-name">' + esc(card.brandName) + '</span></div>'
+    + '<div class="color-bar" style="background:' + c.banner + '"><span class="product-name">' + esc(card.productName) + '</span></div>'
+    + '<div class="middle"><p class="desc">' + esc(card.description) + '</p></div>'
+    + '<div class="sections-row">'
+    +   '<div class="section section-terp">'
+    +     '<div class="section-label">Prominent Terpenes</div>'
+    +     '<div class="terp-pills">' + terpsHtml + '</div>'
+    +   '</div>'
+    +   '<div class="section section-cann">'
+    +     '<div class="section-label">Primary Cannabinoids</div>'
+    +     '<div class="cann-pills">'
+    +       '<div class="cann-pill" style="background:' + c.thc + '"><span class="cann-pill-label">THC</span><span class="cann-pill-value">' + esc(card.thc) + '</span></div>'
+    +       '<div class="cann-pill" style="background:' + c.cbd + '"><span class="cann-pill-label">CBD</span><span class="cann-pill-value">' + esc(card.cbd) + '</span></div>'
+    +     '</div>'
+    +   '</div>'
+    + '</div>'
+    + '<div class="card-footer">'
+    +   '<span class="strain-meta">' + esc(meta) + '</span>'
+    +   '<span class="price">' + esc(card.price) + '</span>'
+    + '</div>'
+    + '</div>';
+}
+
+function emptyTag() {
+  return '<div class="tag empty"><span>empty</span></div>';
+}
+
+// ── RENDER SHEET ──
+function renderSheet() {
+  var sheet = document.getElementById('sheet');
+  var html = '';
+  for (var i = 0; i < 10; i++) {
+    html += i < queue.length ? buildTag(queue[i]) : emptyTag();
+  }
+  sheet.innerHTML = html;
+
+  // queue list
+  var ql = document.getElementById('queue-list');
+  if (queue.length === 0) {
+    ql.innerHTML = '<div class="queue-empty">No cards added yet. Open a product in Glide and tap "Add to Sheet Tag".</div>';
+  } else {
+    ql.innerHTML = queue.map(function(card, i) {
+      var c = colors(card.species);
+      return '<div class="queue-item">'
+        + '<div class="qi-swatch" style="background:' + c.banner + '"></div>'
+        + '<div class="qi-name">' + esc(card.productName) + '</div>'
+        + '<div class="qi-brand">' + esc(card.brandName) + '</div>'
+        + '<div class="qi-price">' + esc(card.price) + '</div>'
+        + '<button class="qi-remove" onclick="removeCard(' + i + ')" title="Remove">✕</button>'
+        + '</div>';
+    }).join('');
+  }
+
+  // badge
+  document.getElementById('badge').textContent = queue.length + ' / 10';
+}
+
+// ── REMOVE CARD ──
+function removeCard(i) {
+  queue.splice(i, 1);
+  save();
+  renderSheet();
+}
+
+// ── CLEAR ALL ──
+function clearAll() {
+  if (!queue.length || confirm('Clear all ' + queue.length + ' card(s) from the sheet?')) {
+    queue = [];
+    save();
+    renderSheet();
+  }
+}
+
+// ── SAVE ──
+function save() {
+  try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify(queue)); } catch(e) {}
+}
+
+// ── MODAL ──
+function openModal(card) {
+  pendingCard = card;
+  document.getElementById('modal-product-name').textContent = card.productName + (card.brandName ? ' — ' + card.brandName : '');
+  var input = document.getElementById('price-input');
+  input.value = '';
+  document.getElementById('modal').classList.add('open');
+  setTimeout(function(){ input.focus(); }, 50);
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  pendingCard = null;
+}
+
+function confirmAdd() {
+  if (!pendingCard) return;
+  var raw = document.getElementById('price-input').value.trim();
+  // Normalise: add $ if missing, keep as-is otherwise
+  if (raw && raw[0] !== '$') raw = '$' + raw;
+  pendingCard.price = raw || '—';
+  if (queue.length < 10) {
+    queue.push(pendingCard);
+  } else {
+    alert('Sheet is full (10 tags). Remove one first.');
+    closeModal();
+    return;
+  }
+  save();
+  renderSheet();
+  closeModal();
+}
+
+// Enter key submits modal
+document.getElementById('price-input').addEventListener('keydown', function(e){
+  if (e.key === 'Enter') confirmAdd();
+  if (e.key === 'Escape') closeModal();
+});
+
+// Click outside modal closes it
+document.getElementById('modal').addEventListener('click', function(e){
+  if (e.target === this) closeModal();
+});
+
+// ── ESCAPE ──
+function esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+
+// ── INIT ──
+// If ?data= param is present, parse it and open modal immediately
+var params = new URLSearchParams(window.location.search);
+if (params.get('data')) {
+  var card = parseParams();
+  if (card.productName) {
+    // defer so DOM is ready
+    window.addEventListener('DOMContentLoaded', function(){
+      renderSheet();
+      openModal(card);
+    });
+  }
+} else {
+  document.addEventListener('DOMContentLoaded', function(){ renderSheet(); });
+}
+</script>
+</body>
+</html>
