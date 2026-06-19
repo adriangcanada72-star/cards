@@ -82,20 +82,20 @@
 
   /* Letter page at 96dpi = 816×1056px */
   .sheet-page {
-    width:816px; background:#fff;
+    width:816px; height:1056px; background:#fff;
     box-shadow:0 4px 24px rgba(0,0,0,.15);
-    /* Avery 5371: top margin 0.5in, left 0.75in, col gap 0.125in, row gap 0 */
-    padding:36px 72px;
+    /* Avery 5371: left/right 0.75in=72px, top/bottom 0.5in=48px, col-gap 0.125in=12px, row-gap 0 */
+    padding:48px 72px;
     display:grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: repeat(5, 1fr);
+    grid-template-columns: 288px 288px;
+    grid-template-rows: repeat(5, 192px);
     column-gap:12px;
     row-gap:0px;
   }
 
   /* ── CARD ── */
   .tag {
-    width:100%; height:100%;
+    width:288px; height:192px;
     background:#fff;
     overflow:hidden;
     display:flex; flex-direction:column;
@@ -143,14 +143,16 @@
     .toolbar, .queue-panel { display:none; }
     .sheet-wrap { margin:0; padding:0; max-width:none; }
     .sheet-page {
-      width:8.5in; box-shadow:none;
+      width:8.5in; height:11in; box-shadow:none;
       padding:.5in .75in;
+      grid-template-columns: 3in 3in;
+      grid-template-rows: repeat(5, 2in);
       column-gap:.125in;
       row-gap:0;
       -webkit-print-color-adjust:exact;
       print-color-adjust:exact;
     }
-    .tag { height:100%; border-color:#ccc; }
+    .tag { width:3in; height:2in; border-color:#ccc; }
     .tag.empty { border-color:#eee; }
     .tag .price { font-size:18pt; }
   }
