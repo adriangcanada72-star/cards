@@ -1,0 +1,38 @@
+name: Sync In-Stock SKUs
+
+on:
+  schedule:
+    # Runs at 8am, 12pm, 4pm, 8pm Pacific (15,19,23,03 UTC)
+    # Adjust or trim to once-daily if you prefer.
+    - cron: '0 15,19,23,3 * * *'
+  workflow_dispatch:        # lets you run it manually from the Actions tab
+
+permissions:
+  contents: write           # allows the action to commit the CSV
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run scraper
+        run: python scrape_instock.py
+
+      - name: Commit updated CSV
+        run: |
+          git config user.name "instock-bot"
+          git config user.email "instock-bot@users.noreply.github.com"
+          git add instock.csv
+          if git diff --staged --quiet; then
+            echo "No changes to in-stock list."
+          else
+            git commit -m "Update in-stock SKUs $(date -u +'%Y-%m-%d %H:%M UTC')"
+            git push
+          fi
