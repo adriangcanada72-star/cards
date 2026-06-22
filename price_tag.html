@@ -94,6 +94,7 @@
   var q = new URLSearchParams(location.search);
   var ox = parseFloat(q.get('ox')||'0'); if (isNaN(ox)) ox=0;
   var oy = parseFloat(q.get('oy')||'0'); if (isNaN(oy)) oy=0;
+  var scale = parseFloat(q.get('scale')); if (isNaN(scale)) scale=100;
 
   function $(id){ return document.getElementById(id); }
   function fmtPrice(p){ p=(p||'').trim(); if(!p) return ''; p=p.replace(/^\$/,''); return '$'+p; }
@@ -107,7 +108,8 @@
     var guides = $('guides').checked;
     var sheet = $('sheet');
     sheet.innerHTML = '';
-    sheet.style.transform = (ox||oy) ? 'translate('+ox+'mm,'+oy+'mm)' : '';
+    sheet.style.transformOrigin = '0 0';
+    sheet.style.transform = 'translate('+ox+'mm,'+oy+'mm) scale('+(scale/100)+')';
     for (var i=0;i<TOTAL;i++){
       var r=Math.floor(i/COLS), c=i%COLS;
       var left=(FIRST_X+c*PITCH_X)-DIA/2;
