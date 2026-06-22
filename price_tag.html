@@ -95,6 +95,8 @@
   var ox = parseFloat(q.get('ox')||'0'); if (isNaN(ox)) ox=0;
   var oy = parseFloat(q.get('oy')||'0'); if (isNaN(oy)) oy=0;
   var scale = parseFloat(q.get('scale')); if (isNaN(scale)) scale=100;
+  var pxOv = parseFloat(q.get('px')); if (!isNaN(pxOv)) PITCH_X=pxOv;
+  var pyOv = parseFloat(q.get('py')); if (!isNaN(pyOv)) PITCH_Y=pyOv;
 
   function $(id){ return document.getElementById(id); }
   function fmtPrice(p){ p=(p||'').trim(); if(!p) return ''; p=p.replace(/^\$/,''); return '$'+p; }
