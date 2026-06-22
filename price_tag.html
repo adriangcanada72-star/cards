@@ -3,68 +3,66 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Price Tag — Avery 6450</title>
-<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@600;700;800&display=swap" rel="stylesheet">
+<title>Price Tags — Avery 6450</title>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
-  html, body { background:#e8e8e8; font-family:'Raleway',sans-serif; }
+  html, body { background:#e8e8e8; font-family:Arial, Helvetica, sans-serif; }
 
   /* ---- Screen toolbar (never prints) ---- */
   .toolbar {
-    position:fixed; top:0; left:0; right:0; z-index:1000;
+    position:fixed; top:0; left:0; right:0; z-index:900;
     background:#1f2a24; color:#fff; padding:10px 16px;
-    display:flex; align-items:center; gap:14px; font-size:13px;
+    display:flex; align-items:center; gap:12px; font-size:13px;
   }
   .toolbar b { font-weight:700; }
-  .toolbar .hint { color:#b9c7bf; font-size:12px; }
-  .print-btn {
+  .toolbar .hint { color:#b9c7bf; font-size:12px; margin-left:auto; }
+  .tb-btn {
     background:#4caf72; color:#fff; border:none; border-radius:6px;
-    padding:8px 18px; font-family:'Raleway',sans-serif; font-weight:700;
-    font-size:13px; cursor:pointer;
+    padding:8px 16px; font-family:inherit; font-weight:700; font-size:13px; cursor:pointer;
   }
-  .print-btn:hover { background:#43985f; }
+  .tb-btn.ghost { background:#3a4a42; }
+  .tb-btn:hover { filter:brightness(1.07); }
+
   .sheet-wrap { padding:64px 0 40px; display:flex; justify-content:center; }
+  .sheet { position:relative; width:8.5in; height:11in; background:#fff; box-shadow:0 2px 18px rgba(0,0,0,.18); }
 
-  /* ---- The physical sheet: US Letter ---- */
-  .sheet {
-    position:relative;
-    width:8.5in; height:11in;
-    background:#fff;
-    box-shadow:0 2px 18px rgba(0,0,0,.18);
-  }
-
-  /* ---- One 1" circular label ---- */
   .label {
-    position:absolute;
-    width:1in; height:1in;
-    display:flex; flex-direction:column;
-    align-items:center; justify-content:center;
-    gap:11px;
-    text-align:center;
-    overflow:hidden;
-    line-height:1;
+    position:absolute; width:1in; height:1in;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:11px; text-align:center; overflow:hidden; line-height:1;
   }
   .label.guide { border:0.5px dashed #c8c8c8; border-radius:50%; }
+  .size  { font-weight:400; font-size:13px; color:#111; }
+  .price { font-weight:400; font-size:21px; letter-spacing:-0.01em; color:#000; }
 
-  .size {
-    font-family:Arial, Helvetica, sans-serif;
-    font-weight:400;
-    font-size:13px;
-    color:#111;
+  /* ---- Entry modal ---- */
+  .overlay {
+    position:fixed; inset:0; z-index:1000; background:rgba(20,28,24,.55);
+    display:flex; align-items:center; justify-content:center;
   }
-  .price {
-    font-family:Arial, Helvetica, sans-serif;
-    font-weight:400;
-    font-size:21px;
-    letter-spacing:-0.01em;
-    color:#000;
+  .overlay.hidden { display:none; }
+  .modal {
+    background:#fff; width:330px; max-width:92vw; border-radius:12px;
+    padding:22px; box-shadow:0 14px 50px rgba(0,0,0,.35);
   }
+  .modal h2 { font-size:17px; font-weight:800; color:#1f2a24; margin-bottom:3px; }
+  .modal p.sub { font-size:12px; color:#6c7a72; margin-bottom:16px; }
+  .modal label { display:block; font-size:12px; font-weight:700; margin-bottom:5px; color:#243; }
+  .modal input[type=text] {
+    width:100%; padding:10px 11px; border:1px solid #cdd6d0; border-radius:7px;
+    font-family:inherit; font-size:15px; margin-bottom:14px;
+  }
+  .modal .chk { display:flex; align-items:center; gap:8px; font-size:12px; font-weight:600; margin-bottom:16px; color:#243; }
+  .modal .go {
+    width:100%; background:#4caf72; color:#fff; border:none; border-radius:7px;
+    padding:12px; font-family:inherit; font-weight:700; font-size:15px; cursor:pointer;
+  }
+  .modal .go:hover { background:#43985f; }
 
   @media print {
     html, body { background:#fff; }
-    .toolbar, .sheet-wrap { all:unset; }
-    .toolbar { display:none !important; }
-    .sheet-wrap { display:block; padding:0; }
+    .toolbar, .overlay { display:none !important; }
+    .sheet-wrap { padding:0; display:block; }
     .sheet { box-shadow:none; margin:0; }
     @page { size:8.5in 11in; margin:0; }
   }
@@ -72,65 +70,94 @@
 </head>
 <body>
   <div class="toolbar">
-    <b>Avery 6450 — 1" Price Tags</b>
-    <button class="print-btn" onclick="window.print()">Print / Save PDF</button>
-    <span class="hint">Print settings: Paper <b>Letter</b> · Margins <b>None</b> · Scale <b>100%</b></span>
+    <b>1" Price Tags &middot; Avery 6450</b>
+    <button class="tb-btn" onclick="window.print()">Print / Save PDF</button>
+    <button class="tb-btn ghost" onclick="openModal()">Edit</button>
+    <span class="hint">Paper <b>Letter</b> &middot; Margins <b>None</b> &middot; Scale <b>100%</b></span>
   </div>
 
-  <div class="sheet-wrap">
-    <div class="sheet" id="sheet"></div>
+  <div class="sheet-wrap"><div class="sheet" id="sheet"></div></div>
+
+  <!-- Entry modal -->
+  <div class="overlay" id="overlay">
+    <div class="modal">
+      <h2>Price Tag</h2>
+      <p class="sub">Enter the details, then create the sheet.</p>
+      <label>Price</label>
+      <input type="text" id="m-price" placeholder="27.99" inputmode="decimal">
+      <label>Info line (below price)</label>
+      <input type="text" id="m-size" placeholder="3 x 0.5g">
+      <div class="chk"><input type="checkbox" id="m-guides"><span>Show cut guides (for a test print)</span></div>
+      <button class="go" onclick="makeSheet()">Create Sheet</button>
+    </div>
   </div>
 
 <script>
   // ---- Avery 6450 geometry (inches) ----
-  var COLS = 7, ROWS = 9, TOTAL = COLS * ROWS;      // 63
-  var FIRST_X = 0.88, PITCH_X = 1.123333;           // horizontal: center of col 0, then pitch
-  var FIRST_Y = 1.00, PITCH_Y = 1.125;              // vertical: center of row 0, then pitch
-  var DIA = 1.0;
+  var COLS=7, ROWS=9, TOTAL=COLS*ROWS;
+  var FIRST_X=0.88, PITCH_X=1.123333;
+  var FIRST_Y=1.00, PITCH_Y=1.125;
+  var DIA=1.0;
 
-  // ---- URL params ----
   var q = new URLSearchParams(location.search);
-  var price = (q.get('price') || '').trim();
-  var size  = (q.get('size')  || '').trim();
-  var skip  = parseInt(q.get('skip')  || '0', 10);  if (isNaN(skip)  || skip < 0)  skip = 0;
-  var count = q.get('count') !== null ? parseInt(q.get('count'), 10) : (TOTAL - skip);
-  if (isNaN(count) || count < 0) count = TOTAL - skip;
-  var ox = parseFloat(q.get('ox') || '0'); if (isNaN(ox)) ox = 0;   // alignment nudge, mm
-  var oy = parseFloat(q.get('oy') || '0'); if (isNaN(oy)) oy = 0;   // alignment nudge, mm
-  var guides = q.get('guides') === '1';
+  var ox = parseFloat(q.get('ox')||'0'); if (isNaN(ox)) ox=0;   // printer nudge, mm
+  var oy = parseFloat(q.get('oy')||'0'); if (isNaN(oy)) oy=0;
 
-  function fmtPrice(p) {
-    if (!p) return '';
-    p = p.replace(/^\$/, '');
-    return '$' + p;
-  }
+  function $(id){ return document.getElementById(id); }
+  function fmtPrice(p){ p=(p||'').trim(); if(!p) return ''; p=p.replace(/^\$/,''); return '$'+p; }
+  function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-  var priceTxt = fmtPrice(price);
-  var sizeTxt  = size;
-
-  var sheet = document.getElementById('sheet');
-  // apply printer-alignment nudge to whole sheet
-  if (ox || oy) sheet.style.transform = 'translate(' + ox + 'mm,' + oy + 'mm)';
-
-  for (var i = 0; i < TOTAL; i++) {
-    var r = Math.floor(i / COLS);
-    var c = i % COLS;
-    var left = (FIRST_X + c * PITCH_X) - DIA / 2;
-    var top  = (FIRST_Y + r * PITCH_Y) - DIA / 2;
-
-    var lab = document.createElement('div');
-    lab.className = 'label' + (guides ? ' guide' : '');
-    lab.style.left = left + 'in';
-    lab.style.top  = top  + 'in';
-
-    var filled = (i >= skip) && (i < skip + count);
-    if (filled && (priceTxt || sizeTxt)) {
-      lab.innerHTML =
-        (sizeTxt  ? '<div class="size">'  + sizeTxt  + '</div>' : '') +
-        (priceTxt ? '<div class="price">' + priceTxt + '</div>' : '');
+  function renderSheet(price, size, guides){
+    var priceTxt = fmtPrice(price);
+    var sizeTxt  = (size||'').trim();
+    var sheet = $('sheet');
+    sheet.innerHTML = '';
+    sheet.style.transform = (ox||oy) ? 'translate('+ox+'mm,'+oy+'mm)' : '';
+    for (var i=0;i<TOTAL;i++){
+      var r=Math.floor(i/COLS), c=i%COLS;
+      var left=(FIRST_X+c*PITCH_X)-DIA/2;
+      var top =(FIRST_Y+r*PITCH_Y)-DIA/2;
+      var lab=document.createElement('div');
+      lab.className='label'+(guides?' guide':'');
+      lab.style.left=left+'in';
+      lab.style.top =top +'in';
+      if (priceTxt || sizeTxt){
+        lab.innerHTML =
+          (sizeTxt ?'<div class="size">' +esc(sizeTxt) +'</div>':'') +
+          (priceTxt?'<div class="price">'+esc(priceTxt)+'</div>':'');
+      }
+      sheet.appendChild(lab);
     }
-    sheet.appendChild(lab);
   }
+
+  function openModal(){ $('overlay').classList.remove('hidden'); $('m-price').focus(); }
+  function closeModal(){ $('overlay').classList.add('hidden'); }
+
+  function makeSheet(){
+    var price=$('m-price').value, size=$('m-size').value, guides=$('m-guides').checked;
+    if (!price.trim() && !size.trim()){ $('m-price').focus(); return; }
+    renderSheet(price, size, guides);
+    closeModal();
+  }
+
+  // Enter submits the modal
+  ['m-price','m-size'].forEach(function(id){
+    $(id).addEventListener('keydown', function(e){ if(e.key==='Enter') makeSheet(); });
+  });
+
+  // If price/size passed in the URL, render immediately and skip the modal;
+  // otherwise pop the modal so the user enters the data after the button click.
+  window.addEventListener('DOMContentLoaded', function(){
+    var p=q.get('price'), s=q.get('size'), g=q.get('guides')==='1';
+    if ((p&&p.trim())||(s&&s.trim())){
+      $('m-price').value=(p||'').replace(/^\$/,'');
+      $('m-size').value=s||'';
+      $('m-guides').checked=g;
+      renderSheet(p, s, g);
+    } else {
+      openModal();
+    }
+  });
 </script>
 </body>
 </html>
