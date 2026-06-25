@@ -3,391 +3,137 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Staff Compliance Audit Report — Greenery Cannabis Boutique</title>
+<title>Staff Compliance Report — Greenery Cannabis Boutique</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'DM Sans',sans-serif;background:#f5f5f5;color:#2D3139;line-height:1.5}
-.upload-screen{max-width:680px;margin:60px auto;padding:40px;background:#fff;border-radius:12px;box-shadow:0 2px 20px rgba(0,0,0,.08)}
-.upload-screen h1{font-family:'Playfair Display',serif;font-size:24px;color:#2D3139;margin-bottom:6px}
-.upload-screen p.sub{color:#666;font-size:14px;margin-bottom:32px}
-.upload-group{margin-bottom:24px}
-.upload-group label{display:block;font-weight:600;font-size:14px;margin-bottom:8px;color:#2D3139}
-.upload-group .hint{font-size:12px;color:#888;margin-bottom:8px}
-.upload-group input[type="file"]{display:block;width:100%;padding:12px;border:2px dashed #ccc;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:14px;background:#fafafa;transition:border-color .2s}
-.upload-group input[type="file"]:hover{border-color:#31AA64}
-.filter-row{display:flex;gap:16px;margin-bottom:24px;flex-wrap:wrap}
-.filter-row label{font-weight:600;font-size:14px;margin-bottom:4px;display:block}
-.filter-row select,.filter-row input[type="month"]{padding:8px 12px;border:1px solid #ccc;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;min-width:180px}
-.btn{display:inline-block;padding:12px 32px;background:#31AA64;color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:15px;cursor:pointer;transition:background .2s}
+body{font-family:'DM Sans',sans-serif;background:#f5f5f5;color:#2D3139;line-height:1.6}
+.report{max-width:680px;margin:40px auto;background:#fff;border-radius:12px;box-shadow:0 2px 20px rgba(0,0,0,.08);overflow:hidden}
+.header{text-align:center;padding:36px 40px 28px;border-bottom:3px solid #31AA64}
+.header img{height:56px;margin-bottom:12px}
+.header h1{font-family:'Playfair Display',serif;font-size:22px;color:#2D3139;margin-bottom:2px}
+.header .subtitle{font-size:13px;color:#888}
+.staff-banner{padding:28px 40px;background:#f9faf9;border-bottom:1px solid #eee;display:flex;align-items:center;gap:20px}
+.staff-avatar{width:56px;height:56px;border-radius:50%;background:#31AA64;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:22px;flex-shrink:0}
+.staff-info h2{font-size:20px;font-weight:600}
+.staff-info .meta{font-size:13px;color:#888;margin-top:2px}
+.body{padding:32px 40px}
+.section-title{font-family:'Playfair Display',serif;font-size:16px;color:#2D3139;padding-bottom:8px;border-bottom:2px solid #31AA64;margin-bottom:16px;margin-top:28px}
+.section-title:first-child{margin-top:0}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.stat-box{padding:20px;background:#f9faf9;border-radius:8px;border-left:4px solid #31AA64}
+.stat-box.warn{border-left-color:#d9534f}
+.stat-box .value{font-size:26px;font-weight:700;color:#31AA64}
+.stat-box.warn .value{color:#d9534f}
+.stat-box .label{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-top:4px}
+.cert-status{margin-top:24px;padding:20px;border-radius:8px;text-align:center;font-weight:600;font-size:15px}
+.cert-yes{background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7}
+.cert-no{background:#fbe9e7;color:#c62828;border:1px solid #ef9a9a}
+.footer{padding:24px 40px;border-top:1px solid #eee;text-align:center;font-size:11px;color:#999}
+.actions{display:flex;gap:12px;justify-content:center;margin:24px 0}
+.btn{display:inline-block;padding:12px 28px;background:#31AA64;color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:14px;cursor:pointer;text-decoration:none}
 .btn:hover{background:#289956}
-.btn:disabled{background:#ccc;cursor:not-allowed}
 .btn-outline{background:transparent;color:#2D3139;border:2px solid #2D3139}
 .btn-outline:hover{background:#2D3139;color:#fff}
-
-/* Report Styles */
-.report{display:none;max-width:850px;margin:0 auto;padding:20px}
-.report-header{text-align:center;padding:40px 40px 30px;background:#fff;border-radius:12px 12px 0 0;border-bottom:3px solid #31AA64}
-.report-header .logo-area{margin-bottom:16px}
-.report-header .logo-area img{height:60px}
-.report-header h1{font-family:'Playfair Display',serif;font-size:26px;color:#2D3139}
-.report-header .report-meta{margin-top:12px;font-size:13px;color:#666}
-.report-header .report-meta span{margin:0 10px}
-
-.report-body{background:#fff;padding:40px;border-radius:0 0 12px 12px}
-.section{margin-bottom:36px}
-.section-title{font-family:'Playfair Display',serif;font-size:18px;color:#2D3139;padding-bottom:8px;border-bottom:2px solid #31AA64;margin-bottom:16px}
-.summary-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px}
-.summary-card{padding:20px;background:#f9faf9;border-radius:8px;border-left:4px solid #31AA64;text-align:center}
-.summary-card .value{font-size:28px;font-weight:700;color:#31AA64}
-.summary-card .label{font-size:12px;color:#888;margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
-
-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
-thead th{background:#2D3139;color:#fff;padding:10px 12px;text-align:left;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
-tbody td{padding:9px 12px;border-bottom:1px solid #eee}
-tbody tr:nth-child(even){background:#fafafa}
-.pass{color:#31AA64;font-weight:600}
-.fail{color:#d9534f;font-weight:600}
-
-.staff-block{margin-bottom:28px;page-break-inside:avoid}
-.staff-block h3{font-weight:600;font-size:15px;color:#2D3139;margin-bottom:8px;padding:8px 12px;background:#f0f7f3;border-radius:6px}
-
-.no-data{padding:20px;text-align:center;color:#999;font-style:italic}
-
-.actions-bar{display:flex;gap:12px;justify-content:center;margin:24px 0}
+.error{max-width:500px;margin:80px auto;text-align:center;padding:40px;font-size:16px;color:#888}
 
 @media print{
   body{background:#fff}
-  .upload-screen,.actions-bar,.no-print{display:none!important}
-  .report{display:block!important;margin:0;padding:0}
-  .report-header{border-radius:0}
-  .report-body{border-radius:0;padding:30px}
-  .summary-card{border:1px solid #ddd}
-  thead th{background:#2D3139!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  tbody tr:nth-child(even){background:#f5f5f5!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .staff-block{page-break-inside:avoid}
-  .pass{color:#31AA64!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .fail{color:#d9534f!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .report{margin:0;box-shadow:none;border-radius:0}
+  .actions{display:none!important}
+  .header{border-radius:0}
+  .stat-box{border:1px solid #ddd;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .stat-box .value{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .cert-status{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .staff-avatar{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 </style>
 </head>
 <body>
 
-<div class="upload-screen" id="uploadScreen">
-  <h1>Staff Compliance Audit Report</h1>
-  <p class="sub">Upload exported CSV files from Glide to generate a printable audit report.</p>
-
-  <div class="upload-group">
-    <label>SIR Quiz Attempts</label>
-    <div class="hint">Export from Glide: Data → SIR_Quiz_Attempts → Export</div>
-    <input type="file" id="sirFile" accept=".csv">
-  </div>
-
-  <div class="upload-group">
-    <label>Module Quiz Attempts</label>
-    <div class="hint">Export from Glide: Data → Quiz_Attempts → Export</div>
-    <input type="file" id="quizFile" accept=".csv">
-  </div>
-
-  <div class="upload-group">
-    <label>Staff List</label>
-    <div class="hint">Export from Glide: Data → Staff → Export</div>
-    <input type="file" id="staffFile" accept=".csv">
-  </div>
-
-  <div class="filter-row">
-    <div>
-      <label>Filter by Staff</label>
-      <select id="filterStaff"><option value="all">All Staff</option></select>
-    </div>
-    <div>
-      <label>Filter by Month</label>
-      <input type="month" id="filterMonth">
-    </div>
-  </div>
-
-  <button class="btn" id="generateBtn" disabled onclick="generateReport()">Generate Report</button>
-</div>
-
-<div class="report" id="report">
-  <div class="report-header">
-    <div class="logo-area">
-      <img src="https://adriangcanada72-star.github.io/cards/GreeneryLogoLeafOnly.png" alt="Greenery" onerror="this.style.display='none'">
-    </div>
-    <h1>Staff Compliance Audit Report</h1>
-    <div class="report-meta">
-      <span>Greenery Cannabis Boutique</span>
-      <span>•</span>
-      <span>Store 14 — License 450121</span>
-      <span>•</span>
-      <span id="reportDate"></span>
-    </div>
-  </div>
-  <div class="report-body" id="reportBody"></div>
-  <div class="actions-bar no-print">
-    <button class="btn" onclick="window.print()">Print / Save as PDF</button>
-    <button class="btn btn-outline" onclick="downloadCSV()">Export Summary CSV</button>
-    <button class="btn btn-outline" onclick="location.reload()">New Report</button>
-  </div>
-</div>
+<div class="report" id="report"></div>
 
 <script>
-let sirData=[], quizData=[], staffData=[];
-let filesLoaded = {sir:false, quiz:false, staff:false};
+const params = new URLSearchParams(window.location.search);
+const name = params.get('name');
 
-function parseCSV(text){
-  const lines=[];
-  let current='', inQuotes=false;
-  const rows=[];
-  // Split into lines respecting quoted fields
-  for(let i=0;i<text.length;i++){
-    const ch=text[i];
-    if(ch==='"'){inQuotes=!inQuotes}
-    else if((ch==='\n'||ch==='\r')&&!inQuotes){
-      if(current.trim())rows.push(current);
-      current='';
-      if(ch==='\r'&&text[i+1]==='\n')i++;
-    }else{current+=ch}
-  }
-  if(current.trim())rows.push(current);
+if(!name){
+  document.getElementById('report').innerHTML = '<div class="error">No staff member specified.</div>';
+}else{
+  const sir_passes = params.get('sirp') || '0';
+  const sir_attempts = params.get('sira') || '0';
+  const sir_mpasses = params.get('sirmp') || '0';
+  const sir_mattempts = params.get('sirma') || '0';
+  const modules = params.get('mod') || '0';
+  const final_exam = params.get('final') || '0';
+  const certified = params.get('cert') || 'false';
+  const role = params.get('role') || '';
+  const store = params.get('store') || '450121';
 
-  if(rows.length<2)return[];
-  const headers=splitRow(rows[0]);
-  const data=[];
-  for(let i=1;i<rows.length;i++){
-    const vals=splitRow(rows[i]);
-    const obj={};
-    headers.forEach((h,idx)=>{obj[h.trim()]=vals[idx]?vals[idx].trim():''});
-    data.push(obj);
-  }
-  return data;
-}
+  const initials = name.split(' ').map(w=>w[0]).join('').toUpperCase();
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-CA',{year:'numeric',month:'long',day:'numeric'});
 
-function splitRow(row){
-  const result=[];
-  let current='',inQuotes=false;
-  for(let i=0;i<row.length;i++){
-    const ch=row[i];
-    if(ch==='"'){inQuotes=!inQuotes}
-    else if(ch===','&&!inQuotes){result.push(current);current=''}
-    else{current+=ch}
-  }
-  result.push(current);
-  return result;
-}
+  const isCert = certified === 'true';
+  const finalVal = parseInt(final_exam) || 0;
 
-document.getElementById('sirFile').addEventListener('change',e=>{
-  const f=e.target.files[0];if(!f)return;
-  f.text().then(t=>{sirData=parseCSV(t);filesLoaded.sir=true;updateUI()});
-});
-document.getElementById('quizFile').addEventListener('change',e=>{
-  const f=e.target.files[0];if(!f)return;
-  f.text().then(t=>{quizData=parseCSV(t);filesLoaded.quiz=true;updateUI()});
-});
-document.getElementById('staffFile').addEventListener('change',e=>{
-  const f=e.target.files[0];if(!f)return;
-  f.text().then(t=>{staffData=parseCSV(t);filesLoaded.staff=true;updateUI()});
-});
+  document.title = `Compliance Report — ${name}`;
 
-function updateUI(){
-  const btn=document.getElementById('generateBtn');
-  btn.disabled=!(filesLoaded.sir||filesLoaded.quiz);
-
-  // Populate staff filter
-  const names=new Set();
-  sirData.forEach(r=>{if(r.Staff_Name)names.add(r.Staff_Name)});
-  quizData.forEach(r=>{if(r.Staff_Name)names.add(r.Staff_Name)});
-  staffData.forEach(r=>{if(r.Staff_Name)names.add(r.Staff_Name)});
-
-  const sel=document.getElementById('filterStaff');
-  sel.innerHTML='<option value="all">All Staff</option>';
-  [...names].sort().forEach(n=>{
-    sel.innerHTML+=`<option value="${n}">${n}</option>`;
-  });
-}
-
-function generateReport(){
-  const staffFilter=document.getElementById('filterStaff').value;
-  const monthFilter=document.getElementById('filterMonth').value;
-
-  let sir=sirData.filter(r=>r.Staff_Name);
-  let quiz=quizData.filter(r=>r.Staff_Name);
-
-  if(staffFilter!=='all'){
-    sir=sir.filter(r=>r.Staff_Name===staffFilter);
-    quiz=quiz.filter(r=>r.Staff_Name===staffFilter);
-  }
-
-  if(monthFilter){
-    const [fy,fm]=monthFilter.split('-').map(Number);
-    sir=sir.filter(r=>{
-      const d=parseDate(r.Attempt_Date||r.DateTaken);
-      return d&&d.getFullYear()===fy&&(d.getMonth()+1)===fm;
-    });
-    quiz=quiz.filter(r=>{
-      const d=parseDate(r.Attempt_Date);
-      return d&&d.getFullYear()===fy&&(d.getMonth()+1)===fm;
-    });
-  }
-
-  const now=new Date();
-  document.getElementById('reportDate').textContent='Generated: '+now.toLocaleDateString('en-CA',{year:'numeric',month:'long',day:'numeric'});
-
-  let html='';
-
-  // Summary section
-  const staffNames=new Set();
-  sir.forEach(r=>staffNames.add(r.Staff_Name));
-  quiz.forEach(r=>staffNames.add(r.Staff_Name));
-  const totalSIR=sir.length;
-  const passedSIR=sir.filter(r=>r.Passed==='Pass'||r.Passed==='true').length;
-  const totalQuiz=quiz.filter(r=>r.Module_Number&&r.Module_Number!=='11').length;
-  const passedQuiz=quiz.filter(r=>r.Module_Number&&r.Module_Number!=='11'&&(r.Passed==='true'||r.Passed==='Pass')).length;
-  const finalAttempts=quiz.filter(r=>r.Module_Number==='11').length;
-  const finalPassed=quiz.filter(r=>r.Module_Number==='11'&&(r.Passed==='true'||r.Passed==='Pass')).length;
-
-  html+=`<div class="section">
-    <h2 class="section-title">Summary</h2>
-    <div class="summary-cards">
-      <div class="summary-card"><div class="value">${staffNames.size}</div><div class="label">Staff Members</div></div>
-      <div class="summary-card"><div class="value">${passedSIR}/${totalSIR}</div><div class="label">SIR Passes / Attempts</div></div>
-      <div class="summary-card"><div class="value">${passedQuiz}/${totalQuiz}</div><div class="label">Module Passes / Attempts</div></div>
-      <div class="summary-card"><div class="value">${finalPassed}/${finalAttempts}</div><div class="label">Final Exam Passes / Attempts</div></div>
+  document.getElementById('report').innerHTML = `
+    <div class="header">
+      <img src="https://adriangcanada72-star.github.io/cards/GreeneryLogoLeafOnly.png" alt="Greenery" onerror="this.style.display='none'">
+      <h1>Staff Compliance Report</h1>
+      <div class="subtitle">Greenery Cannabis Boutique — Store 14, License ${store} — Penticton, BC</div>
     </div>
-  </div>`;
 
-  // SIR section by staff
-  if(sir.length>0){
-    html+=`<div class="section"><h2 class="section-title">Selling It Right — Monthly Quiz History</h2>`;
-    const grouped=groupBy(sir,'Staff_Name');
-    for(const[name,rows]of Object.entries(grouped).sort()){
-      const sorted=rows.sort((a,b)=>compareDates(a,b));
-      html+=`<div class="staff-block"><h3>${name}</h3><table>
-        <thead><tr><th>Date</th><th>Score</th><th>Result</th></tr></thead><tbody>`;
-      sorted.forEach(r=>{
-        const cls=(r.Passed==='Pass'||r.Passed==='true')?'pass':'fail';
-        const label=(r.Passed==='Pass'||r.Passed==='true')?'Pass':'Fail';
-        html+=`<tr><td>${formatDate(r.Attempt_Date||r.DateTaken)}</td><td>${r.Score}/10</td><td class="${cls}">${label}</td></tr>`;
-      });
-      html+=`</tbody></table></div>`;
-    }
-    html+=`</div>`;
-  }
+    <div class="staff-banner">
+      <div class="staff-avatar">${initials}</div>
+      <div class="staff-info">
+        <h2>${name}</h2>
+        <div class="meta">${role} • Report generated ${dateStr}</div>
+      </div>
+    </div>
 
-  // Module quiz section by staff
-  const moduleQuiz=quiz.filter(r=>r.Module_Number&&r.Module_Number!=='11');
-  if(moduleQuiz.length>0){
-    html+=`<div class="section"><h2 class="section-title">Terpene Sommelier — Module Quiz History</h2>`;
-    const grouped=groupBy(moduleQuiz,'Staff_Name');
-    for(const[name,rows]of Object.entries(grouped).sort()){
-      const sorted=rows.sort((a,b)=>compareDates(a,b));
-      html+=`<div class="staff-block"><h3>${name}</h3><table>
-        <thead><tr><th>Date</th><th>Module</th><th>Score</th><th>Result</th></tr></thead><tbody>`;
-      sorted.forEach(r=>{
-        const cls=(r.Passed==='true'||r.Passed==='Pass')?'pass':'fail';
-        const label=(r.Passed==='true'||r.Passed==='Pass')?'Pass':'Fail';
-        html+=`<tr><td>${formatDate(r.Attempt_Date)}</td><td>Module ${r.Module_Number}</td><td>${r.Score}</td><td class="${cls}">${label}</td></tr>`;
-      });
-      html+=`</tbody></table></div>`;
-    }
-    html+=`</div>`;
-  }
+    <div class="body">
+      <h3 class="section-title">Selling It Right — Monthly Compliance</h3>
+      <div class="stat-grid">
+        <div class="stat-box${parseInt(sir_mpasses)<1&&parseInt(sir_mattempts)>0?' warn':''}">
+          <div class="value">${sir_mpasses} / ${sir_mattempts}</div>
+          <div class="label">This Month — Passes / Attempts</div>
+        </div>
+        <div class="stat-box">
+          <div class="value">${sir_passes} / ${sir_attempts}</div>
+          <div class="label">All Time — Passes / Attempts</div>
+        </div>
+      </div>
 
-  // Final Exam section
-  const finalExam=quiz.filter(r=>r.Module_Number==='11');
-  if(finalExam.length>0){
-    html+=`<div class="section"><h2 class="section-title">Final Exam History</h2>`;
-    const grouped=groupBy(finalExam,'Staff_Name');
-    for(const[name,rows]of Object.entries(grouped).sort()){
-      const sorted=rows.sort((a,b)=>compareDates(a,b));
-      html+=`<div class="staff-block"><h3>${name}</h3><table>
-        <thead><tr><th>Date</th><th>Score</th><th>Result</th></tr></thead><tbody>`;
-      sorted.forEach(r=>{
-        const cls=(r.Passed==='true'||r.Passed==='Pass')?'pass':'fail';
-        const label=(r.Passed==='true'||r.Passed==='Pass')?'Pass':'Fail';
-        html+=`<tr><td>${formatDate(r.Attempt_Date)}</td><td>${r.Score}</td><td class="${cls}">${label}</td></tr>`;
-      });
-      html+=`</tbody></table></div>`;
-    }
-    html+=`</div>`;
-  }
+      <h3 class="section-title">Terpene Sommelier Certification</h3>
+      <div class="stat-grid">
+        <div class="stat-box">
+          <div class="value">${modules} / 10</div>
+          <div class="label">Modules Passed</div>
+        </div>
+        <div class="stat-box${finalVal>0?'':' warn'}">
+          <div class="value">${finalVal > 0 ? 'Pass' : 'Not Passed'}</div>
+          <div class="label">Final Exam</div>
+        </div>
+      </div>
 
-  // Staff certification status
-  if(staffData.length>0){
-    let sData=staffData;
-    if(staffFilter!=='all')sData=sData.filter(r=>r.Staff_Name===staffFilter);
+      <div class="cert-status ${isCert?'cert-yes':'cert-no'}">
+        ${isCert ? '✓ Certified Terpene Sommelier' : '✗ Not Yet Certified'}
+      </div>
+    </div>
 
-    html+=`<div class="section"><h2 class="section-title">Certification Status</h2>
-      <table><thead><tr><th>Staff Member</th><th>Modules Passed</th><th>Final Exam</th><th>Certified</th></tr></thead><tbody>`;
-    sData.forEach(r=>{
-      const modPassed=r.Total_Modules_Passed||'0';
-      const finalP=(r.Final_Exam_Passed==='1'||r.Final_Exam_Passed==='true')?'<span class="pass">Pass</span>':'<span class="fail">—</span>';
-      const cert=(r.Is_Certified==='true')?'<span class="pass">Yes</span>':'<span class="fail">No</span>';
-      html+=`<tr><td>${r.Staff_Name}</td><td>${modPassed}/10</td><td>${finalP}</td><td>${cert}</td></tr>`;
-    });
-    html+=`</tbody></table></div>`;
-  }
+    <div class="actions">
+      <button class="btn" onclick="window.print()">Print / Save as PDF</button>
+      <a class="btn btn-outline" href="javascript:window.close()">Close</a>
+    </div>
 
-  if(!sir.length&&!quiz.length){
-    html+=`<div class="no-data">No records found for the selected filters.</div>`;
-  }
-
-  // Footer
-  html+=`<div style="margin-top:40px;padding-top:20px;border-top:1px solid #ddd;text-align:center;font-size:11px;color:#999">
-    This report was generated from The Terpene Sommelier app data for compliance and audit purposes.<br>
-    Greenery Cannabis Boutique — Store 14, License 450121 — Penticton, BC
-  </div>`;
-
-  document.getElementById('reportBody').innerHTML=html;
-  document.getElementById('uploadScreen').style.display='none';
-  document.getElementById('report').style.display='block';
-}
-
-function groupBy(arr,key){
-  return arr.reduce((g,r)=>{(g[r[key]]=g[r[key]]||[]).push(r);return g},{});
-}
-
-function parseDate(str){
-  if(!str)return null;
-  try{return new Date(str)}catch(e){return null}
-}
-
-function formatDate(str){
-  const d=parseDate(str);
-  if(!d||isNaN(d))return str||'—';
-  return d.toLocaleDateString('en-CA',{year:'numeric',month:'short',day:'numeric'});
-}
-
-function compareDates(a,b){
-  const da=parseDate(a.Attempt_Date||a.DateTaken);
-  const db=parseDate(b.Attempt_Date||b.DateTaken);
-  if(!da&&!db)return 0;
-  if(!da)return 1;
-  if(!db)return -1;
-  return da-db;
-}
-
-function downloadCSV(){
-  const staffNames=new Set();
-  sirData.forEach(r=>staffNames.add(r.Staff_Name));
-  quizData.forEach(r=>staffNames.add(r.Staff_Name));
-
-  let csv='Staff Name,SIR Attempts,SIR Passes,Modules Passed,Final Exam Passed,Certified\n';
-  [...staffNames].sort().forEach(name=>{
-    const sirAttempts=sirData.filter(r=>r.Staff_Name===name).length;
-    const sirPasses=sirData.filter(r=>r.Staff_Name===name&&(r.Passed==='Pass'||r.Passed==='true')).length;
-    const staff=staffData.find(r=>r.Staff_Name===name);
-    const modPassed=staff?staff.Total_Modules_Passed||'0':'—';
-    const finalP=staff?(staff.Final_Exam_Passed==='1'?'Yes':'No'):'—';
-    const cert=staff?(staff.Is_Certified==='true'?'Yes':'No'):'—';
-    csv+=`"${name}",${sirAttempts},${sirPasses},${modPassed},${finalP},${cert}\n`;
-  });
-
-  const blob=new Blob([csv],{type:'text/csv'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download='audit_summary_'+new Date().toISOString().slice(0,10)+'.csv';
-  a.click();
+    <div class="footer">
+      This report was generated from The Terpene Sommelier app for compliance and audit purposes.<br>
+      Greenery Cannabis Boutique — Store 14, License ${store} — Penticton, BC
+    </div>
+  `;
 }
 </script>
 </body>
