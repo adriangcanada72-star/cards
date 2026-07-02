@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- audit_report v3 - modules fix -->
+<!-- audit_report v4 - final -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -333,7 +333,6 @@
 </head>
 <body>
   <div class="container">
-    <div style="background:#fffae6;border:2px solid #f0c000;border-radius:8px;padding:10px;margin-bottom:12px;font-family:monospace;font-size:12px;word-break:break-all;" id="debugBanner">DEBUG: loading...</div>
     <div class="report-card">
 
       <div class="header">
@@ -398,15 +397,6 @@
 <script>
   // Parse URL parameters
   const params = new URLSearchParams(window.location.search);
-
-  // DEBUG banner - remove after confirming values
-  document.getElementById('debugBanner').textContent =
-    'DEBUG v4 | mp=' + params.get('mp') +
-    ' | name=' + params.get('name') +
-    ' | sirp=' + params.get('sirp') +
-    ' | sira=' + params.get('sira') +
-    ' | fep=' + params.get('fep') +
-    ' | cert=' + params.get('cert');
 
   // MODULES - render first so nothing can block it
   const mpEarly = parseInt(params.get('mp')) || 0;
