@@ -401,12 +401,18 @@
 
   // DEBUG banner - remove after confirming values
   document.getElementById('debugBanner').textContent =
-    'DEBUG v3 | mp=' + params.get('mp') +
+    'DEBUG v4 | mp=' + params.get('mp') +
     ' | name=' + params.get('name') +
     ' | sirp=' + params.get('sirp') +
     ' | sira=' + params.get('sira') +
     ' | fep=' + params.get('fep') +
     ' | cert=' + params.get('cert');
+
+  // MODULES - render first so nothing can block it
+  const mpEarly = parseInt(params.get('mp')) || 0;
+  document.getElementById('modulesPassed').textContent = mpEarly + ' / 10';
+  if (mpEarly === 10) document.getElementById('modulesCard').classList.add('green');
+  else if (mpEarly === 0) document.getElementById('modulesCard').classList.add('red');
 
   const name = params.get('name') || 'Staff Member';
   const role = params.get('role') || 'Staff';
@@ -477,12 +483,7 @@
     sirRateEl.textContent = 'N/A';
   }
 
-  // Modules passed
-  const modulesEl = document.getElementById('modulesPassed');
-  const modulesCard = document.getElementById('modulesCard');
-  modulesEl.textContent = `${mp} / 10`;
-  if (mp === 10) modulesCard.classList.add('green');
-  else if (mp === 0) modulesCard.classList.add('red');
+  // Modules passed - handled early above
 
   // Final exam
   const examEl = document.getElementById('examStatus');
