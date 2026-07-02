@@ -338,7 +338,7 @@
       <div class="header">
         <div class="logo-wrap" id="logoWrap"></div>
         <h1>Staff Compliance Report</h1>
-        <div class="store-info" id="storeInfo">Greenery Cannabis Boutique — License 450121 — Penticton, BC</div>
+        <div class="store-info" id="storeInfo">Greenery Cannabis Boutique — License 450121</div>
       </div>
 
       <div class="staff-banner">
@@ -415,7 +415,6 @@
   const logo = params.get('logo');                        // logo URL
   const store = params.get('store') || 'Greenery Cannabis Boutique';
   const license = params.get('license') || '450121';
-  const city = params.get('city') || 'Penticton, BC';
 
   // Logo handling
   const logoWrap = document.getElementById('logoWrap');
@@ -440,7 +439,7 @@
   }
 
   // Store info
-  document.getElementById('storeInfo').textContent = `${store} — License ${license} — ${city}`;
+  document.getElementById('storeInfo').textContent = `${store} — License ${license}`;
 
   // Staff info
   document.getElementById('staffName').textContent = name;
