@@ -1,140 +1,497 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Staff Compliance Report — Greenery Cannabis Boutique</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Staff Compliance Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'DM Sans',sans-serif;background:#f5f5f5;color:#2D3139;line-height:1.6}
-.report{max-width:680px;margin:40px auto;background:#fff;border-radius:12px;box-shadow:0 2px 20px rgba(0,0,0,.08);overflow:hidden}
-.header{text-align:center;padding:36px 40px 28px;border-bottom:3px solid #31AA64}
-.header img{height:56px;margin-bottom:12px}
-.header h1{font-family:'Playfair Display',serif;font-size:22px;color:#2D3139;margin-bottom:2px}
-.header .subtitle{font-size:13px;color:#888}
-.staff-banner{padding:28px 40px;background:#f9faf9;border-bottom:1px solid #eee;display:flex;align-items:center;gap:20px}
-.staff-avatar{width:56px;height:56px;border-radius:50%;background:#31AA64;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:22px;flex-shrink:0}
-.staff-info h2{font-size:20px;font-weight:600}
-.staff-info .meta{font-size:13px;color:#888;margin-top:2px}
-.body{padding:32px 40px}
-.section-title{font-family:'Playfair Display',serif;font-size:16px;color:#2D3139;padding-bottom:8px;border-bottom:2px solid #31AA64;margin-bottom:16px;margin-top:28px}
-.section-title:first-child{margin-top:0}
-.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.stat-box{padding:20px;background:#f9faf9;border-radius:8px;border-left:4px solid #31AA64}
-.stat-box.warn{border-left-color:#d9534f}
-.stat-box .value{font-size:26px;font-weight:700;color:#31AA64}
-.stat-box.warn .value{color:#d9534f}
-.stat-box .label{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-top:4px}
-.cert-status{margin-top:24px;padding:20px;border-radius:8px;text-align:center;font-weight:600;font-size:15px}
-.cert-yes{background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7}
-.cert-no{background:#fbe9e7;color:#c62828;border:1px solid #ef9a9a}
-.footer{padding:24px 40px;border-top:1px solid #eee;text-align:center;font-size:11px;color:#999}
-.actions{display:flex;gap:12px;justify-content:center;margin:24px 0}
-.btn{display:inline-block;padding:12px 28px;background:#31AA64;color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:14px;cursor:pointer;text-decoration:none}
-.btn:hover{background:#289956}
-.btn-outline{background:transparent;color:#2D3139;border:2px solid #2D3139}
-.btn-outline:hover{background:#2D3139;color:#fff}
-.error{max-width:500px;margin:80px auto;text-align:center;padding:40px;font-size:16px;color:#888}
+  :root {
+    --bg-gradient-start: #f6f8fa;
+    --bg-gradient-end: #eef2f5;
+    --card-bg: #ffffff;
+    --card-border: rgba(0, 0, 0, 0.04);
+    --text-primary: #1a1f2b;
+    --text-secondary: #5b6472;
+    --text-tertiary: #8a94a3;
+    --green: #2e9c5f;
+    --green-soft: #e8f6ee;
+    --green-border: #c4e8d1;
+    --red: #d94d4d;
+    --red-soft: #fdecec;
+    --red-border: #f5c8c8;
+    --amber: #d99a2b;
+    --amber-soft: #fdf4e2;
+    --divider: #e8ecf0;
+    --shadow-sm: 0 1px 2px rgba(20, 30, 45, 0.04);
+    --shadow-md: 0 4px 20px rgba(20, 30, 45, 0.06);
+    --shadow-lg: 0 12px 40px rgba(20, 30, 45, 0.08);
+  }
 
-@media print{
-  body{background:#fff}
-  .report{margin:0;box-shadow:none;border-radius:0}
-  .actions{display:none!important}
-  .header{border-radius:0}
-  .stat-box{border:1px solid #ddd;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .stat-box .value{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .cert-status{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .staff-avatar{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-}
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: linear-gradient(180deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+    color: var(--text-primary);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.5;
+  }
+
+  .container {
+    max-width: 780px;
+    margin: 32px auto;
+    padding: 0 20px;
+  }
+
+  .report-card {
+    background: var(--card-bg);
+    border-radius: 20px;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    border: 1px solid var(--card-border);
+  }
+
+  /* Header */
+  .header {
+    padding: 40px 40px 32px;
+    text-align: center;
+    background: linear-gradient(180deg, #fbfcfd 0%, #ffffff 100%);
+    border-bottom: 1px solid var(--divider);
+  }
+
+  .logo-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .logo {
+    max-height: 80px;
+    max-width: 240px;
+    object-fit: contain;
+  }
+
+  .logo-fallback {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, var(--green) 0%, #1f7a47 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 24px;
+    letter-spacing: -0.02em;
+  }
+
+  h1 {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+  }
+
+  .store-info {
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+
+  /* Staff banner */
+  .staff-banner {
+    padding: 24px 40px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border-bottom: 1px solid var(--divider);
+    background: #fbfcfd;
+  }
+
+  .avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--green) 0%, #1f7a47 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 18px;
+    letter-spacing: -0.01em;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .staff-info {
+    flex: 1;
+  }
+
+  .staff-name {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
+    margin-bottom: 2px;
+  }
+
+  .staff-meta {
+    font-size: 13px;
+    color: var(--text-tertiary);
+  }
+
+  /* Sections */
+  .section {
+    padding: 32px 40px;
+    border-bottom: 1px solid var(--divider);
+  }
+
+  .section:last-of-type {
+    border-bottom: none;
+  }
+
+  .section-title {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin-bottom: 18px;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .stat-card {
+    padding: 20px 22px;
+    border-radius: 14px;
+    border: 1px solid transparent;
+    background: linear-gradient(180deg, #fbfcfd 0%, #f6f8fa 100%);
+    border-color: var(--divider);
+    transition: transform 0.15s ease;
+  }
+
+  .stat-card.green {
+    background: linear-gradient(180deg, #f4fbf7 0%, var(--green-soft) 100%);
+    border-color: var(--green-border);
+  }
+
+  .stat-card.red {
+    background: linear-gradient(180deg, #fdf5f5 0%, var(--red-soft) 100%);
+    border-color: var(--red-border);
+  }
+
+  .stat-value {
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
+    line-height: 1.1;
+    margin-bottom: 6px;
+  }
+
+  .stat-card.green .stat-value { color: var(--green); }
+  .stat-card.red .stat-value { color: var(--red); }
+
+  .stat-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+  }
+
+  /* Certification status badge */
+  .cert-status {
+    margin: 0 40px 32px;
+    padding: 18px 22px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 600;
+    font-size: 15px;
+  }
+
+  .cert-status.certified {
+    background: linear-gradient(180deg, #f4fbf7 0%, var(--green-soft) 100%);
+    border: 1px solid var(--green-border);
+    color: var(--green);
+  }
+
+  .cert-status.not-certified {
+    background: linear-gradient(180deg, #fdf5f5 0%, var(--red-soft) 100%);
+    border: 1px solid var(--red-border);
+    color: var(--red);
+  }
+
+  .cert-icon {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  /* Actions */
+  .actions {
+    padding: 20px 40px 32px;
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+  }
+
+  button {
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 12px 24px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    letter-spacing: -0.01em;
+  }
+
+  .btn-primary {
+    background: linear-gradient(180deg, var(--green) 0%, #26804d 100%);
+    color: white;
+    box-shadow: 0 2px 6px rgba(46, 156, 95, 0.25);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(46, 156, 95, 0.35);
+  }
+
+  .btn-secondary {
+    background: white;
+    color: var(--text-primary);
+    border: 1px solid var(--divider);
+  }
+
+  .btn-secondary:hover {
+    background: #f6f8fa;
+  }
+
+  .footer-note {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-tertiary);
+    padding: 0 40px 24px;
+  }
+
+  /* Print styles */
+  @media print {
+    body {
+      background: white;
+    }
+    .container {
+      margin: 0;
+      max-width: 100%;
+      padding: 0;
+    }
+    .report-card {
+      box-shadow: none;
+      border-radius: 0;
+      border: none;
+    }
+    .actions {
+      display: none;
+    }
+    .stat-card, .cert-status {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+  }
+
+  /* Mobile */
+  @media (max-width: 600px) {
+    .container { margin: 12px auto; padding: 0 12px; }
+    .header, .staff-banner, .section, .actions, .footer-note { padding-left: 22px; padding-right: 22px; }
+    .cert-status { margin-left: 22px; margin-right: 22px; }
+    h1 { font-size: 22px; }
+    .stats-grid { grid-template-columns: 1fr; }
+    .stat-value { font-size: 26px; }
+  }
 </style>
 </head>
 <body>
+  <div class="container">
+    <div class="report-card">
 
-<div class="report" id="report"></div>
+      <div class="header">
+        <div class="logo-wrap" id="logoWrap"></div>
+        <h1>Staff Compliance Report</h1>
+        <div class="store-info" id="storeInfo">Greenery Cannabis Boutique — License 450121 — Penticton, BC</div>
+      </div>
+
+      <div class="staff-banner">
+        <div class="avatar" id="avatar">SB</div>
+        <div class="staff-info">
+          <div class="staff-name" id="staffName">Staff Member</div>
+          <div class="staff-meta" id="staffMeta">Role • Report generated —</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Selling It Right — Monthly Compliance</div>
+        <div class="stats-grid">
+          <div class="stat-card" id="sirLatestCard">
+            <div class="stat-value" id="sirLatest">—</div>
+            <div class="stat-label">Latest Score</div>
+          </div>
+          <div class="stat-card" id="sirRateCard">
+            <div class="stat-value" id="sirRate">—</div>
+            <div class="stat-label">All-Time Pass Rate</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Terpene Sommelier Certification</div>
+        <div class="stats-grid">
+          <div class="stat-card" id="modulesCard">
+            <div class="stat-value" id="modulesPassed">0 / 10</div>
+            <div class="stat-label">Modules Passed</div>
+          </div>
+          <div class="stat-card" id="examCard">
+            <div class="stat-value" id="examStatus">—</div>
+            <div class="stat-label">Final Exam</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cert-status not-certified" id="certStatus">
+        <div class="cert-icon">✗</div>
+        <div>Not Yet Certified</div>
+      </div>
+
+      <div class="actions">
+        <button class="btn-primary" onclick="window.print()">Print / Save as PDF</button>
+        <button class="btn-secondary" onclick="window.close()">Close</button>
+      </div>
+
+      <div class="footer-note">
+        This report reflects certification and compliance status at the time of generation.
+      </div>
+
+    </div>
+  </div>
 
 <script>
-const params = new URLSearchParams(window.location.search);
-const name = params.get('name');
+  // Parse URL parameters
+  const params = new URLSearchParams(window.location.search);
 
-if(!name){
-  document.getElementById('report').innerHTML = '<div class="error">No staff member specified.</div>';
-}else{
-  const sir_passes = params.get('sirp') || '0';
-  const sir_attempts = params.get('sira') || '0';
-  const sir_mpasses = params.get('sirmp') || '0';
-  const sir_mattempts = params.get('sirma') || '0';
-  const modules = params.get('mod') || '0';
-  const final_exam = params.get('final') || '0';
-  const certified = params.get('cert') || 'false';
-  const role = params.get('role') || '';
-  const store = params.get('store') || '450121';
+  const name = params.get('name') || 'Staff Member';
+  const role = params.get('role') || 'Staff';
+  const sirp = parseFloat(params.get('sirp')) || 0;      // sir latest score %
+  const sira = parseInt(params.get('sira')) || 0;         // sir all-time attempts
+  const sirpasses = parseInt(params.get('sirpasses')) || 0; // sir all-time passes
+  const mp = parseInt(params.get('mp')) || 0;             // modules passed (0-10)
+  const fep = params.get('fep');                          // final exam passed (true/false or blank)
+  const cert = params.get('cert');                        // certified true/false
+  const logo = params.get('logo');                        // logo URL
+  const store = params.get('store') || 'Greenery Cannabis Boutique';
+  const license = params.get('license') || '450121';
+  const city = params.get('city') || 'Penticton, BC';
 
-  const initials = name.split(' ').map(w=>w[0]).join('').toUpperCase();
-  const now = new Date();
-  const dateStr = now.toLocaleDateString('en-CA',{year:'numeric',month:'long',day:'numeric'});
+  // Logo handling
+  const logoWrap = document.getElementById('logoWrap');
+  if (logo && logo.trim() !== '') {
+    const img = document.createElement('img');
+    img.src = logo;
+    img.alt = 'Store logo';
+    img.className = 'logo';
+    img.onerror = () => {
+      logoWrap.innerHTML = '';
+      const fb = document.createElement('div');
+      fb.className = 'logo-fallback';
+      fb.textContent = store.charAt(0).toUpperCase();
+      logoWrap.appendChild(fb);
+    };
+    logoWrap.appendChild(img);
+  } else {
+    const fb = document.createElement('div');
+    fb.className = 'logo-fallback';
+    fb.textContent = store.charAt(0).toUpperCase();
+    logoWrap.appendChild(fb);
+  }
 
-  const isCert = certified === 'true';
-  const finalVal = parseInt(final_exam) || 0;
+  // Store info
+  document.getElementById('storeInfo').textContent = `${store} — License ${license} — ${city}`;
 
-  document.title = `Compliance Report — ${name}`;
+  // Staff info
+  document.getElementById('staffName').textContent = name;
+  const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  document.getElementById('staffMeta').textContent = `${role} • Report generated ${today}`;
 
-  document.getElementById('report').innerHTML = `
-    <div class="header">
-      <img src="https://adriangcanada72-star.github.io/cards/GreeneryLogoLeafOnly.png" alt="Greenery" onerror="this.style.display='none'">
-      <h1>Staff Compliance Report</h1>
-      <div class="subtitle">Greenery Cannabis Boutique — Store 14, License ${store} — Penticton, BC</div>
-    </div>
+  // Avatar initials
+  const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  document.getElementById('avatar').textContent = initials;
 
-    <div class="staff-banner">
-      <div class="staff-avatar">${initials}</div>
-      <div class="staff-info">
-        <h2>${name}</h2>
-        <div class="meta">${role} • Report generated ${dateStr}</div>
-      </div>
-    </div>
+  // Selling It Right — Latest Score
+  const sirLatestEl = document.getElementById('sirLatest');
+  const sirLatestCard = document.getElementById('sirLatestCard');
+  if (sira > 0) {
+    sirLatestEl.textContent = `${Math.round(sirp)}%`;
+    sirLatestCard.classList.add(sirp >= 80 ? 'green' : 'red');
+  } else {
+    sirLatestEl.textContent = 'N/A';
+  }
 
-    <div class="body">
-      <h3 class="section-title">Selling It Right — Monthly Compliance</h3>
-      <div class="stat-grid">
-        <div class="stat-box${parseInt(sir_mpasses)<1&&parseInt(sir_mattempts)>0?' warn':''}">
-          <div class="value">${sir_mpasses} / ${sir_mattempts}</div>
-          <div class="label">This Month — Passes / Attempts</div>
-        </div>
-        <div class="stat-box">
-          <div class="value">${sir_passes} / ${sir_attempts}</div>
-          <div class="label">All Time — Passes / Attempts</div>
-        </div>
-      </div>
+  // Selling It Right — All-time pass rate
+  const sirRateEl = document.getElementById('sirRate');
+  const sirRateCard = document.getElementById('sirRateCard');
+  if (sira > 0) {
+    const rate = Math.round((sirpasses / sira) * 100);
+    sirRateEl.textContent = `${rate}%`;
+    sirRateEl.insertAdjacentHTML('afterend', `<div style="font-size:11px;color:var(--text-tertiary);margin-top:2px;font-weight:500;">${sirpasses} / ${sira} attempts</div>`);
+    sirRateCard.classList.add(rate >= 80 ? 'green' : (rate >= 50 ? '' : 'red'));
+  } else {
+    sirRateEl.textContent = 'N/A';
+  }
 
-      <h3 class="section-title">Terpene Sommelier Certification</h3>
-      <div class="stat-grid">
-        <div class="stat-box">
-          <div class="value">${modules} / 10</div>
-          <div class="label">Modules Passed</div>
-        </div>
-        <div class="stat-box${finalVal>0?'':' warn'}">
-          <div class="value">${finalVal > 0 ? 'Pass' : 'Not Passed'}</div>
-          <div class="label">Final Exam</div>
-        </div>
-      </div>
+  // Modules passed
+  const modulesEl = document.getElementById('modulesPassed');
+  const modulesCard = document.getElementById('modulesCard');
+  modulesEl.textContent = `${mp} / 10`;
+  if (mp === 10) modulesCard.classList.add('green');
+  else if (mp === 0) modulesCard.classList.add('red');
 
-      <div class="cert-status ${isCert?'cert-yes':'cert-no'}">
-        ${isCert ? '✓ Certified Terpene Sommelier' : '✗ Not Yet Certified'}
-      </div>
-    </div>
+  // Final exam
+  const examEl = document.getElementById('examStatus');
+  const examCard = document.getElementById('examCard');
+  if (fep === 'true' || fep === '1' || fep === 'Pass') {
+    examEl.textContent = 'Passed';
+    examCard.classList.add('green');
+  } else if (fep === 'false' || fep === '0' || fep === 'Fail') {
+    examEl.textContent = 'Not Passed';
+    examCard.classList.add('red');
+  } else {
+    examEl.textContent = 'Not Taken';
+  }
 
-    <div class="actions">
-      <button class="btn" onclick="window.print()">Print / Save as PDF</button>
-      <a class="btn btn-outline" href="javascript:window.close()">Close</a>
-    </div>
-
-    <div class="footer">
-      This report was generated from The Terpene Sommelier app for compliance and audit purposes.<br>
-      Greenery Cannabis Boutique — Store 14, License ${store} — Penticton, BC
-    </div>
-  `;
-}
+  // Certification status
+  const certStatusEl = document.getElementById('certStatus');
+  if (cert === 'true' || cert === '1' || cert === 'Yes') {
+    certStatusEl.className = 'cert-status certified';
+    certStatusEl.innerHTML = '<div class="cert-icon">✓</div><div>Terpene Sommelier Certified</div>';
+  } else {
+    certStatusEl.className = 'cert-status not-certified';
+    certStatusEl.innerHTML = '<div class="cert-icon">✗</div><div>Not Yet Certified</div>';
+  }
 </script>
 </body>
 </html>
