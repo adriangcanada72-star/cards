@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
 <title>Shelf Tag Sheet</title>
 <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Raleway:wght@300;400;600;700&family=Oswald:wght@700&display=swap" rel="stylesheet">
 <style>
@@ -375,13 +376,11 @@ function removeCard(i) {
   renderSheet();
 }
 
-// ── CLEAR ALL ──
+// ── CLEAR ALL (no confirmation) ──
 function clearAll() {
-  if (!queue.length || confirm('Clear all ' + queue.length + ' card(s) from the sheet?')) {
-    queue = [];
-    save();
-    renderSheet();
-  }
+  queue = [];
+  save();
+  renderSheet();
 }
 
 // ── SAVE ──
