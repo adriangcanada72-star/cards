@@ -56,9 +56,9 @@
   .card-col-right { flex:0.75; display:flex; flex-direction:column; gap:14px; }
   .card-section-label { font-family:'Lato',sans-serif; font-weight:700; font-size:11.5px; color:#2a2a2a; text-align:center; display:flex; align-items:center; justify-content:center; padding:6px 0; }
 
-  .card-terpene-box { padding:0 9px; min-height:120px; display:flex; align-items:stretch; justify-content:center; }
-  .card-terpene-list { font-family:'Lato',sans-serif; font-weight:400; font-size:16px; color:#2a2a2a; text-align:center; line-height:1.2; display:flex; flex-direction:column; align-items:center; justify-content:space-evenly; width:100%; }
-  .terp-disclaimer { font-family:'Lato',sans-serif; font-size:7px; color:#777; text-align:center; line-height:1.3; padding:2px 4px 0; }
+  .card-terpene-box { padding:0 9px; min-height:120px; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .card-terpene-list { font-family:'Lato',sans-serif; font-weight:400; font-size:16px; color:#2a2a2a; text-align:center; line-height:1.2; display:flex; flex-direction:column; align-items:center; justify-content:space-evenly; width:100%; flex:1; }
+  .terp-disclaimer { font-family:'Lato',sans-serif; font-size:6.5px; color:#555; text-align:center; line-height:1.25; padding:0 2px 3px; width:100%; }
 
   .card-cannab-table { width:100%; border-collapse:collapse; }
   .card-cannab-table td { color:#1a1a1a; text-align:center; padding:10px 3px; font-family:'Lato',sans-serif; width:50%; }
@@ -104,8 +104,7 @@
       <div class="card-col-right">
         <div>
           <div class="card-section-label">Prominent Terpenes</div>
-          <div class="card-terpene-box" id="terpBox"><div class="card-terpene-list" id="terps"></div></div>
-          <div class="terp-disclaimer">Ask your budtender for current terpene information as dominant terpenes can change.</div>
+          <div class="card-terpene-box" id="terpBox"><div class="card-terpene-list" id="terps"></div><div class="terp-disclaimer">Ask your budtender for current terpene information as dominant terpenes can change.</div></div>
         </div>
         <div>
           <div class="card-section-label">Primary Cannabinoids</div>
@@ -205,9 +204,9 @@ function fmtRange(min,max){
 
 var norm = [terp1,terp2,terp3].map(function(t){ return t.toUpperCase().replace(/[_\s]/g,''); });
 var terpsHtml, terpHeight='120px', terpFont='16px';
-if (!terp1) { terpsHtml='Some terpenes may be present'; terpHeight='36px'; terpFont='12px'; }
-else if (norm.indexOf('TERPENESREMOVED')!==-1) { terpsHtml='Terpenes Removed'; terpHeight='36px'; terpFont='12px'; }
-else if (norm.indexOf('TERPENEVARIES')!==-1 || norm.indexOf('TERPENESVARY')!==-1) { terpsHtml='Terpenes Vary'; terpHeight='36px'; terpFont='12px'; }
+if (!terp1) { terpsHtml='Some terpenes may be present'; terpHeight='56px'; terpFont='12px'; }
+else if (norm.indexOf('TERPENESREMOVED')!==-1) { terpsHtml='Terpenes Removed'; terpHeight='56px'; terpFont='12px'; }
+else if (norm.indexOf('TERPENEVARIES')!==-1 || norm.indexOf('TERPENESVARY')!==-1) { terpsHtml='Terpenes Vary'; terpHeight='56px'; terpFont='12px'; }
 else { terpsHtml=[terp1,terp2,terp3].filter(function(t){return t;}).map(function(t){return '<span>'+esc(t.replace(/_/g,'-'))+'</span>';}).join(''); }
 
 var logoHtml = logoUrl
