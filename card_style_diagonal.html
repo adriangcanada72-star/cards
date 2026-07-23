@@ -21,7 +21,7 @@
   .crop.bl-h{bottom:24px;left:0;width:17px;height:.5px}.crop.bl-v{bottom:0;left:24px;width:.5px;height:17px}
   .crop.br-h{bottom:24px;right:0;width:17px;height:.5px}.crop.br-v{bottom:0;right:24px;width:.5px;height:17px}
   .card-page { position:absolute; top:24px; left:24px; right:24px; bottom:24px; z-index:2; display:flex; flex-direction:column; overflow:hidden; border-radius:22px; }
-  .card-watermark { position:absolute; top:24px; left:24px; right:24px; bottom:24px; opacity:.08; z-index:3; pointer-events:none; }
+  .card-watermark { position:absolute; top:24px; left:24px; right:24px; bottom:24px; opacity:.08; z-index:1; pointer-events:none; }
   .card-watermark img { position:absolute; top:50%; left:50%; width:75%; height:auto; transform:translate(-50%,-50%); display:none; }
 
   /* ── DIAGONAL: inset angled colour header, circular logo medallion, badge, footer bar ── */
@@ -40,7 +40,7 @@
   .g-medal img { height:150px; width:auto; max-width:160px; object-fit:contain; }
   .g-medal .ph { font-family:'Raleway',sans-serif; font-weight:800; font-size:19px; text-transform:uppercase; text-align:center; color:#22282e; padding:0 16px; line-height:1.2; }
 
-  .g-body { flex:1; min-height:0; background:transparent; padding:110px 26px 0; display:flex; flex-direction:column; }
+  .g-body { flex:1; min-height:0; background:transparent; padding:110px 26px 0; display:flex; flex-direction:column; position:relative; z-index:2; }
   .g-desc { font-size:12.5px; font-weight:400; line-height:1.55; color:#33383d; text-align:center; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
 
   .g-lbl { font-family:'Lato',sans-serif; font-weight:700; font-size:9px; letter-spacing:.2em; text-transform:uppercase; color:#98a0a7; text-align:center; margin-top:15px; }
@@ -77,6 +77,7 @@
   <div class="crop tr-h"></div><div class="crop tr-v"></div>
   <div class="crop bl-h"></div><div class="crop bl-v"></div>
   <div class="crop br-h"></div><div class="crop br-v"></div>
+  <div class="card-watermark" id="card-watermark"><img id="card-watermark-img" alt=""></div>
   <div class="card-page">
     <div class="g-top">
       <div class="g-cutwrap"><div class="g-cut" id="banner"></div></div>
@@ -103,7 +104,6 @@
       </div>
     </div>
   </div>
-  <div class="card-watermark" id="card-watermark"><img id="card-watermark-img" alt=""></div>
 </div>
 
 <script>
