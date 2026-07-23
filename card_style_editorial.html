@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product Card — Editorial</title>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Raleway:wght@300;400;600;700;800&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  @page { size: 8.5in 11in; margin: 0; }
+  html, body { background:#e8e8e8; }
+  body { font-family:'Lato',sans-serif; font-weight:300; display:flex; flex-direction:column; align-items:center; padding:20px 0; }
+  .toolbar { margin-bottom:16px; display:flex; gap:10px; align-items:center; }
+  .toolbar button { background:#4AABBF; color:#fff; border:none; padding:10px 20px; border-radius:6px; font-size:14px; font-weight:700; cursor:pointer; font-family:'Lato',sans-serif; }
+  .toolbar .hint { font-size:12px; color:#777; }
+
+  .card-shell { width:528px; height:720px; position:relative; overflow:hidden; background:#fff; box-shadow:0 4px 24px rgba(0,0,0,.2); }
+  .crop { position:absolute; background:#000; z-index:20; }
+  .crop.tl-h{top:24px;left:0;width:17px;height:.5px}.crop.tl-v{top:0;left:24px;width:.5px;height:17px}
+  .crop.tr-h{top:24px;right:0;width:17px;height:.5px}.crop.tr-v{top:0;right:24px;width:.5px;height:17px}
+  .crop.bl-h{bottom:24px;left:0;width:17px;height:.5px}.crop.bl-v{bottom:0;left:24px;width:.5px;height:17px}
+  .crop.br-h{bottom:24px;right:0;width:17px;height:.5px}.crop.br-v{bottom:0;right:24px;width:.5px;height:17px}
+  .card-page { position:absolute; top:24px; left:24px; right:24px; bottom:24px; z-index:2; display:flex; flex-direction:column; padding:0 4px; }
+  .card-watermark { position:absolute; top:24px; left:24px; right:24px; bottom:24px; opacity:.08; z-index:1; pointer-events:none; }
+  .card-watermark img { position:absolute; top:50%; left:50%; width:75%; height:auto; transform:translate(-50%,-50%); display:none; }
+
+  /* ── EDITORIAL: typography-led, generous white space, rule system, QR corner ── */
+  .e-masthead { display:flex; justify-content:space-between; align-items:flex-end; margin:0 -28px; padding:14px 42px 9px; border-bottom:2.5px solid #14181c; flex-shrink:0; }
+  .e-masthead .brand { font-family:'Raleway',sans-serif; font-weight:800; font-size:13px; letter-spacing:.16em; text-transform:uppercase; color:#14181c; }
+  .e-masthead .sp { font-family:'Lato',sans-serif; font-weight:700; font-size:9px; letter-spacing:.2em; text-transform:uppercase; padding:4px 11px; border-radius:3px; color:#fff; }
+
+  .e-logo { height:158px; flex-shrink:0; display:flex; align-items:center; justify-content:center; padding:14px 14px 0; }
+  .e-logo img { height:150px; width:auto; max-width:340px; object-fit:contain; }
+  .e-logo .ph { font-family:'Raleway',sans-serif; font-weight:800; font-size:26px; text-transform:uppercase; color:#14181c; text-align:center; }
+
+  .e-title { padding:16px 14px 0; flex-shrink:0; }
+  .e-title .no { font-family:'Lato',sans-serif; font-size:8.5px; font-weight:700; letter-spacing:.26em; text-transform:uppercase; color:#9aa1a7; }
+  .e-title h1 { font-family:'Raleway',sans-serif; font-weight:800; font-size:30px; line-height:1.05; color:#14181c; text-transform:uppercase; letter-spacing:-.012em; margin-top:8px; }
+  .e-title .rule { height:3px; margin:13px -42px 0; }
+
+  .e-lede { padding:13px 14px 0; flex-shrink:0; }
+  .e-lede p { font-size:13px; font-weight:400; line-height:1.6; color:#33383d; display:-webkit-box; -webkit-line-clamp:5; -webkit-box-orient:vertical; overflow:hidden; }
+
+  .e-cols { display:flex; gap:16px; padding:15px 30px 0; flex:1; min-height:0; }
+  .e-col { flex:1; min-width:0; }
+  .e-h { font-family:'Lato',sans-serif; font-size:8px; font-weight:700; letter-spacing:.24em; text-transform:uppercase; color:#9aa1a7; padding-bottom:6px; border-bottom:1px solid #dfe3e6; text-align:center; }
+  .e-terps { margin-top:9px; border-radius:9px; padding:9px 11px; }
+  .e-terps span { display:block; font-family:'Raleway',sans-serif; font-size:14px; font-weight:700; color:#14181c; padding:5px 0; border-bottom:1px dotted #e4e8eb; text-align:center; }
+  .e-terps span:last-child { border-bottom:none; }
+  .e-disc { font-size:6.5px; color:#a5abb1; line-height:1.35; margin-top:7px; text-align:center; }
+
+  .e-nums { margin-top:9px; display:flex; flex-direction:column; gap:7px; }
+  .e-num { border-radius:9px; padding:10px 11px; text-align:center; }
+  .e-num .n { font-size:8.5px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:#2a3036; opacity:.75; }
+  .e-num .v { font-family:'Oswald',sans-serif; font-weight:700; font-size:22px; line-height:1; color:#0f1316; margin-top:3px; }
+
+  .e-foot { margin:auto -28px 20px; position:relative; display:flex; align-items:flex-end; justify-content:center; padding:34px 42px 8px; border-top:2.5px solid #14181c; flex-shrink:0; }
+  .e-meta { display:flex; gap:22px; justify-content:center; text-align:center; }
+  .e-meta .n { font-size:7.5px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:#9aa1a7; }
+  .e-meta .v { font-family:'Raleway',sans-serif; font-size:11px; font-weight:700; color:#14181c; margin-top:2px; text-transform:uppercase; }
+  .e-qr { position:absolute; right:44px; bottom:8px; width:48px; height:48px; display:flex; align-items:center; justify-content:center; }
+  .e-qr img { width:48px; height:48px; object-fit:contain; }
+
+  @media print {
+    html, body { background:#fff; margin:0; padding:0; }
+    body { display:block; padding-top:1.25in; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .toolbar { display:none; }
+    .card-shell { box-shadow:none; margin:0 auto; page-break-inside:avoid; break-inside:avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <button onclick="window.print()">🖨 Print / Save PDF</button>
+  <span class="hint">Editorial style · Letter · Margins: None · Background graphics: ON</span>
+</div>
+
+<div class="card-shell">
+  <div class="crop tl-h"></div><div class="crop tl-v"></div>
+  <div class="crop tr-h"></div><div class="crop tr-v"></div>
+  <div class="crop bl-h"></div><div class="crop bl-v"></div>
+  <div class="crop br-h"></div><div class="crop br-v"></div>
+  <div class="card-watermark" id="card-watermark"><img id="card-watermark-img" alt=""></div>
+  <div class="card-page">
+    <div class="e-masthead">
+      <div class="brand" id="brandTop"></div>
+      <div class="sp" id="banner"></div>
+    </div>
+    <div class="e-logo" id="logo"></div>
+    <div class="e-title">
+      <div class="no" id="kicker"></div>
+      <h1 id="name"></h1>
+      <div class="rule" id="rule"></div>
+    </div>
+    <div class="e-lede"><p id="desc"></p></div>
+    <div class="e-cols">
+      <div class="e-col">
+        <div class="e-h">Prominent Terpenes</div>
+        <div class="e-terps" id="terps"></div>
+        <div class="e-disc">Ask your budtender for current terpene information as dominant terpenes can change.</div>
+      </div>
+      <div class="e-col">
+        <div class="e-h">Cannabinoids</div>
+        <div class="e-nums">
+          <div class="e-num" id="thcCell"><div class="n">THC</div><div class="v" id="thc"></div></div>
+          <div class="e-num" id="cbdCell"><div class="n">CBD</div><div class="v" id="cbd"></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="e-foot">
+      <div class="e-meta">
+        <div><div class="n">Strain</div><div class="v" id="species"></div></div>
+        <div><div class="n">Region</div><div class="v" id="region"></div></div>
+        <div><div class="n">Category</div><div class="v" id="brand"></div></div>
+      </div>
+      <div class="e-qr" id="qrBox"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function round1(n){ return Math.round(n); }
+var params = new URLSearchParams(window.location.search);
+var DEMO = ['Blue Dream','Pure Sunfarms','HYBRID','Flower','180','240','0','10',
+  'Beta-Myrcene','Limonene','Alpha-Pinene','British Columbia',
+  'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/krp7y7KN4Tq6Nw8a3ILQ.png',
+  'A balanced hybrid with a bright, citrus-forward nose and a soft herbal finish. Myrcene leads for a relaxed body feel, limonene lifts the mood, and pinene keeps the head clear.'
+].join('~|~|~');
+var parts = (params.get('data') || DEMO).split('~|~|~');
+var productName=parts[0]||'', brandName=parts[1]||'', species=parts[2]||'', subcategory=parts[3]||'';
+var thcMin=parts[4]||'', thcMax=parts[5]||'', cbdMin=parts[6]||'', cbdMax=parts[7]||'';
+var terp1=(parts[8]||'').trim(), terp2=(parts[9]||'').trim(), terp3=(parts[10]||'').trim();
+var region=parts[11]||'', logoUrl=parts[12]||'', description=parts[13]||'';
+var wmUrl=parts[14]||'', wmX=parts[15]||'0', wmY=parts[16]||'0', wmSize=parts[17]||'75', wmOpacity=parts[18]||'8';
+var thcMinPiece=parts[19]||'', thcMaxPiece=parts[20]||'', cbdMinPiece=parts[21]||'', cbdMaxPiece=parts[22]||'';
+var thcOverride=(parts[23]||'').trim(), cbdOverride=(parts[24]||'').trim();
+
+/* ORIGINAL PALETTE */
+var sp = species.toUpperCase();
+var cBanner='#74C6EA', cThc='#97D6EF', cCbd='#ACDFF2', cTerp='#DBF0FA';
+if (sp.indexOf('SATIVA')!==-1){ cBanner='#F58A34'; cThc='#F7A45D'; cCbd='#F8B670'; cTerp='#FCDFBC'; }
+else if (sp.indexOf('HYBRID')!==-1||sp.indexOf('BLEND')!==-1){ cBanner='#5AA06E'; cThc='#7CB88F'; cCbd='#9DCBAA'; cTerp='#D1EBDA'; }
+
+var combined=(subcategory+' ').toUpperCase();
+var pctCats=['FLOWER','PRE-ROLL','PRE-ROLLS','PREROLL','INHALABLE','SEEDS','SEED'];
+var mgCats=['BEVERAGE','BEVERAGES','EDIBLE','EDIBLES','TOPICAL','TOPICALS'];
+var pieceRe=/\b(caps|capsule|capsules|tablet|tablets|softgel|softgels)\b/i;
+var usePiece=pieceRe.test((productName||'')+' '+(description||''));
+var usePct=pctCats.some(function(c){return combined.indexOf(c)!==-1;});
+var useMgOnly=mgCats.some(function(c){return combined.indexOf(c)!==-1;});
+var thcLo,thcHi,cbdLo,cbdHi,divideBy10,unit;
+if (usePiece){
+  var hasP=(thcMinPiece!==''&&!isNaN(parseFloat(thcMinPiece)))||(thcMaxPiece!==''&&!isNaN(parseFloat(thcMaxPiece)));
+  var hasC=(cbdMinPiece!==''&&!isNaN(parseFloat(cbdMinPiece)))||(cbdMaxPiece!==''&&!isNaN(parseFloat(cbdMaxPiece)));
+  thcLo=hasP?thcMinPiece:thcMin; thcHi=hasP?thcMaxPiece:thcMax;
+  cbdLo=hasC?cbdMinPiece:cbdMin; cbdHi=hasC?cbdMaxPiece:cbdMax;
+  divideBy10=false; unit=' mg';
+} else {
+  thcLo=thcMin; thcHi=thcMax; cbdLo=cbdMin; cbdHi=cbdMax;
+  if (usePct){ divideBy10=true; unit='%'; }
+  else if (useMgOnly){ divideBy10=false; unit=' mg'; }
+  else { divideBy10=false; unit=' mg/g'; }
+}
+function fmtRange(min,max){
+  var lo=parseFloat(min), hi=parseFloat(max);
+  if (divideBy10){ lo=lo/10; hi=hi/10; }
+  if (isNaN(lo)&&isNaN(hi)) return '—';
+  if (lo===0||isNaN(lo)) return '< '+round1(hi)+unit;
+  if (isNaN(hi)||lo===hi) return round1(lo)+unit;
+  return round1(lo)+'–'+round1(hi)+unit;
+}
+var norm=[terp1,terp2,terp3].map(function(t){return t.toUpperCase().replace(/[_\s]/g,'');});
+var terpsHtml;
+if (!terp1) terpsHtml='<span>Some terpenes may be present</span>';
+else if (norm.indexOf('TERPENESREMOVED')!==-1) terpsHtml='<span>Terpenes Removed</span>';
+else if (norm.indexOf('TERPENEVARIES')!==-1||norm.indexOf('TERPENESVARY')!==-1) terpsHtml='<span>Terpenes Vary</span>';
+else terpsHtml=[terp1,terp2,terp3].filter(Boolean).map(function(t){return '<span>'+esc(t.replace(/_/g,'-'))+'</span>';}).join('');
+
+document.getElementById('brandTop').textContent = (brandName||'BRAND').toUpperCase();
+var spBadge=document.getElementById('banner');
+spBadge.textContent = (species||'').toUpperCase();
+spBadge.style.background = cBanner;
+document.getElementById('logo').innerHTML = logoUrl
+  ? '<img src="'+esc(logoUrl)+'" alt="">'
+  : '<div class="ph">'+esc(brandName||'BRAND')+'</div>';
+document.getElementById('kicker').textContent = (subcategory||'').toUpperCase();
+document.getElementById('name').textContent = (productName||'').replace(/-/g,'‑');
+document.getElementById('rule').style.background = cBanner;
+document.getElementById('desc').textContent = description;
+var terpsWrap=document.getElementById('terps'); terpsWrap.innerHTML = terpsHtml; terpsWrap.style.background = cTerp;
+document.getElementById('thcCell').style.background = cThc;
+document.getElementById('cbdCell').style.background = cCbd;
+document.getElementById('thc').textContent = thcOverride!==''?thcOverride:fmtRange(thcLo,thcHi);
+document.getElementById('cbd').textContent = cbdOverride!==''?cbdOverride:fmtRange(cbdLo,cbdHi);
+document.getElementById('species').textContent = species||'—';
+document.getElementById('region').textContent = region||'—';
+document.getElementById('brand').textContent = (subcategory||'').toUpperCase();
+document.title = productName || 'Product Card';
+
+/* long names step down so the headline never overflows */
+(function(){
+  var el=document.getElementById('name'); var len=(productName||'').length;
+  if (len>34) el.style.fontSize='21px';
+  else if (len>24) el.style.fontSize='25px';
+})();
+
+/* Optional QR — encodes the product name; hides itself if offline/unavailable */
+(function(){
+  var box=document.getElementById('qrBox');
+  if (!productName) return;
+  var img=new Image();
+  img.onerror=function(){ box.style.display='none'; };
+  img.alt='';
+  img.src='https://api.qrserver.com/v1/create-qr-code/?size=120x120&margin=0&data='+encodeURIComponent(productName+' '+brandName);
+  box.appendChild(img);
+})();
+
+if (wmUrl){
+  var wmImg=document.getElementById('card-watermark-img');
+  wmImg.src=decodeURIComponent(wmUrl); wmImg.style.display='block';
+  wmImg.style.width=(parseFloat(wmSize)||75)+'%';
+  wmImg.style.transform='translate(-50%,-50%) translate('+(parseFloat(wmX)||0)+'px,'+(parseFloat(wmY)||0)+'px)';
+  document.getElementById('card-watermark').style.opacity=(parseFloat(wmOpacity)||8)/100;
+}
+</script>
+</body>
+</html>
