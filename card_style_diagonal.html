@@ -24,13 +24,15 @@
   .card-watermark { position:absolute; top:24px; left:24px; right:24px; bottom:24px; opacity:.08; z-index:1; pointer-events:none; }
   .card-watermark img { position:absolute; top:50%; left:50%; width:75%; height:auto; transform:translate(-50%,-50%); display:none; }
 
-  /* ── DIAGONAL: angled colour header, circular logo medallion, badge, footer bar ── */
-  .g-top { position:relative; height:250px; flex-shrink:0; padding:26px 26px 0; }
+  /* ── DIAGONAL: inset angled colour header, circular logo medallion, badge, footer bar ── */
+  .g-top { position:relative; height:250px; flex-shrink:0; }
+  /* colour block floats 16px in from the top/sides with a rounded top */
+  .g-cutwrap { position:absolute; top:16px; left:16px; right:16px; bottom:0; border-radius:18px 18px 0 0; overflow:hidden; z-index:0; }
   .g-cut { position:absolute; inset:0; clip-path:polygon(0 0, 100% 0, 100% 68%, 0 100%); }
-  .g-txt { position:relative; z-index:2; max-width:290px; }
+  .g-txt { position:relative; z-index:2; max-width:270px; padding:42px 0 0 42px; }
   .g-name { font-family:'Raleway',sans-serif; font-weight:800; font-size:24px; line-height:1.14; color:#fff; text-transform:uppercase; letter-spacing:.02em; }
   .g-sub { font-family:'Lato',sans-serif; font-size:9px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:rgba(255,255,255,.88); margin-top:11px; }
-  .g-badge { position:absolute; z-index:3; top:32px; right:34px; width:72px; height:72px; border-radius:50%; background:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; box-shadow:0 3px 10px rgba(0,0,0,.14); }
+  .g-badge { position:absolute; z-index:3; top:36px; right:50px; width:72px; height:72px; border-radius:50%; background:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; box-shadow:0 3px 10px rgba(0,0,0,.14); }
   .g-badge .n { font-size:7.5px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:#98a0a7; }
   .g-badge .v { font-family:'Oswald',sans-serif; font-weight:700; font-size:16px; color:#171c21; line-height:1; margin-top:3px; }
 
@@ -78,7 +80,7 @@
   <div class="card-watermark" id="card-watermark"><img id="card-watermark-img" alt=""></div>
   <div class="card-page">
     <div class="g-top">
-      <div class="g-cut" id="banner"></div>
+      <div class="g-cutwrap"><div class="g-cut" id="banner"></div></div>
       <div class="g-txt">
         <div class="g-name" id="name"></div>
         <div class="g-sub" id="kicker"></div>
