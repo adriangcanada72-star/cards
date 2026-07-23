@@ -20,38 +20,38 @@
   .crop.tr-h{top:24px;right:0;width:17px;height:.5px}.crop.tr-v{top:0;right:24px;width:.5px;height:17px}
   .crop.bl-h{bottom:24px;left:0;width:17px;height:.5px}.crop.bl-v{bottom:0;left:24px;width:.5px;height:17px}
   .crop.br-h{bottom:24px;right:0;width:17px;height:.5px}.crop.br-v{bottom:0;right:24px;width:.5px;height:17px}
-  .card-page { position:absolute; top:24px; left:24px; right:24px; bottom:24px; z-index:2; display:flex; flex-direction:column; overflow:hidden; border-radius:20px; }
+  .card-page { position:absolute; top:24px; left:24px; right:24px; bottom:24px; z-index:2; display:flex; flex-direction:column; overflow:hidden; border-radius:22px; }
   .card-watermark { position:absolute; top:24px; left:24px; right:24px; bottom:24px; opacity:.08; z-index:1; pointer-events:none; }
   .card-watermark img { position:absolute; top:50%; left:50%; width:75%; height:auto; transform:translate(-50%,-50%); display:none; }
 
   /* ── DIAGONAL: angled colour header, circular logo medallion, badge, footer bar ── */
   .g-top { position:relative; height:250px; flex-shrink:0; padding:26px 26px 0; }
   .g-cut { position:absolute; inset:0; clip-path:polygon(0 0, 100% 0, 100% 68%, 0 100%); }
-  .g-txt { position:relative; z-index:2; max-width:300px; }
+  .g-txt { position:relative; z-index:2; max-width:290px; }
   .g-name { font-family:'Raleway',sans-serif; font-weight:800; font-size:24px; line-height:1.14; color:#fff; text-transform:uppercase; letter-spacing:.02em; }
   .g-sub { font-family:'Lato',sans-serif; font-size:9px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:rgba(255,255,255,.88); margin-top:11px; }
-  .g-badge { position:absolute; z-index:3; top:24px; right:26px; width:88px; height:88px; border-radius:50%; background:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; box-shadow:0 3px 10px rgba(0,0,0,.14); }
-  .g-badge .n { font-size:8px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:#98a0a7; }
-  .g-badge .v { font-family:'Oswald',sans-serif; font-weight:700; font-size:19px; color:#171c21; line-height:1; margin-top:3px; }
+  .g-badge { position:absolute; z-index:3; top:32px; right:34px; width:72px; height:72px; border-radius:50%; background:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; box-shadow:0 3px 10px rgba(0,0,0,.14); }
+  .g-badge .n { font-size:7.5px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:#98a0a7; }
+  .g-badge .v { font-family:'Oswald',sans-serif; font-weight:700; font-size:16px; color:#171c21; line-height:1; margin-top:3px; }
 
   .g-medal { position:absolute; z-index:4; left:50%; transform:translateX(-50%); bottom:-74px; width:196px; height:196px; border-radius:50%; background:#fff; box-shadow:0 5px 18px rgba(0,0,0,.13); display:flex; align-items:center; justify-content:center; }
   .g-medal img { height:150px; width:auto; max-width:160px; object-fit:contain; }
   .g-medal .ph { font-family:'Raleway',sans-serif; font-weight:800; font-size:19px; text-transform:uppercase; text-align:center; color:#22282e; padding:0 16px; line-height:1.2; }
 
   .g-body { flex:1; min-height:0; background:#fff; padding:88px 26px 0; display:flex; flex-direction:column; }
-  .g-desc { font-size:12.5px; font-weight:400; line-height:1.55; color:#33383d; text-align:center; display:-webkit-box; -webkit-line-clamp:5; -webkit-box-orient:vertical; overflow:hidden; }
+  .g-desc { font-size:12.5px; font-weight:400; line-height:1.55; color:#33383d; text-align:center; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
 
   .g-lbl { font-family:'Lato',sans-serif; font-weight:700; font-size:9px; letter-spacing:.2em; text-transform:uppercase; color:#98a0a7; text-align:center; margin-top:15px; }
   .g-terps { display:flex; justify-content:center; gap:8px; flex-wrap:wrap; margin-top:9px; }
   .g-terps span { font-size:12.5px; font-weight:700; color:#22282e; padding:7px 14px; border-radius:999px; }
-  .g-disc { font-size:6.5px; color:#a5abb1; line-height:1.35; text-align:center; margin-top:7px; }
+  .g-disc { font-size:6.5px; color:#14181c; line-height:1.35; text-align:center; margin-top:7px; }
 
-  .g-cann { display:flex; gap:10px; margin-top:14px; }
-  .g-cann div { flex:1; border-radius:12px; padding:11px 6px; text-align:center; }
+  .g-cann { display:flex; justify-content:center; gap:12px; margin-top:16px; }
+  .g-cann div { flex:0 0 auto; min-width:104px; border-radius:16px; padding:9px 18px; text-align:center; }
   .g-cann .n { font-size:9px; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:#2a3036; opacity:.75; }
-  .g-cann .v { font-family:'Oswald',sans-serif; font-weight:700; font-size:19px; color:#171c21; line-height:1; margin-top:3px; }
+  .g-cann .v { font-family:'Oswald',sans-serif; font-weight:700; font-size:16px; color:#171c21; line-height:1; margin-top:3px; }
 
-  .g-foot { margin-top:auto; margin-left:-26px; margin-right:-26px; padding:13px 26px; display:flex; }
+  .g-foot { margin:auto 0 20px; border-radius:16px; padding:13px 22px; display:flex; }
   .g-foot div { flex:1; text-align:center; }
   .g-foot .n { font-size:7.5px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:rgba(255,255,255,.8); }
   .g-foot .v { font-size:10.5px; font-weight:700; color:#fff; margin-top:2px; }
@@ -110,7 +110,7 @@ function round1(n){ return Math.round(n); }
 var params = new URLSearchParams(window.location.search);
 var DEMO = ['Blue Dream','Pure Sunfarms','HYBRID','Flower','180','240','0','10',
   'Beta-Myrcene','Limonene','Alpha-Pinene','British Columbia','',
-  'A balanced hybrid with a bright, citrus-forward nose and a soft herbal finish. Myrcene leads for a relaxed body feel while limonene lifts the mood.'
+  'A bright, citrus-forward hybrid with a soft herbal finish. Relaxed body, lifted mood, clear head.'
 ].join('~|~|~');
 var parts = (params.get('data') || DEMO).split('~|~|~');
 var productName=parts[0]||'', brandName=parts[1]||'', species=parts[2]||'', subcategory=parts[3]||'';
