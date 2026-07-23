@@ -82,7 +82,7 @@
   <div class="crop br-h"></div><div class="crop br-v"></div>
   <div class="card-watermark" id="card-watermark"><img id="card-watermark-img" alt=""></div>
   <div class="card-page">
-    <div class="e-masthead">
+    <div class="e-masthead" id="masthead">
       <div class="brand" id="brandTop"></div>
       <div class="sp" id="banner"></div>
     </div>
@@ -107,7 +107,7 @@
         </div>
       </div>
     </div>
-    <div class="e-foot">
+    <div class="e-foot" id="foot">
       <div class="e-meta">
         <div><div class="n">Strain</div><div class="v" id="species"></div></div>
         <div><div class="n">Region</div><div class="v" id="region"></div></div>
@@ -187,6 +187,9 @@ document.getElementById('logo').innerHTML = logoUrl
 document.getElementById('kicker').textContent = (subcategory||'').toUpperCase();
 document.getElementById('name').textContent = (productName||'').replace(/-/g,'‑');
 document.getElementById('rule').style.background = cBanner;
+/* top + bottom rules match the middle accent rule (species colour) */
+document.getElementById('masthead').style.borderBottomColor = cBanner;
+document.getElementById('foot').style.borderTopColor = cBanner;
 document.getElementById('desc').textContent = description;
 var terpsWrap=document.getElementById('terps'); terpsWrap.innerHTML = terpsHtml; terpsWrap.style.background = cTerp;
 document.getElementById('thcCell').style.background = cThc;
