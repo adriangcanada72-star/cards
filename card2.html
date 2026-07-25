@@ -132,6 +132,8 @@
   .tag .cann-pill-value { font-family:'Lato',sans-serif; font-size:10px; font-weight:700; color:#1a1a1a; }
   .tag .card-footer { height:38px; border-top:0.5px solid #eee; display:flex; align-items:center; justify-content:space-between; padding:0 10px 8px; flex-shrink:0; }
   .tag .strain-meta { font-family:'Lato',sans-serif; font-size:6.5px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:#333; }
+  .tag .footer-right { display:flex; align-items:baseline; gap:7px; }
+  .tag .size-info { font-family:'Lato',sans-serif; font-size:8px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:#333; white-space:nowrap; }
   .tag .price { font-family:'Oswald',sans-serif; font-size:18px; font-weight:700; color:#1a1a1a; }
   /* ── PRINT ── */
   @media print {
@@ -151,6 +153,7 @@
     .tag { width:3.5in; height:2in; border-color:#ccc; }
     .tag.empty { border-color:#eee; }
     .tag .price { font-size:18pt; }
+    .tag .size-info { font-size:8pt; }
   }
 </style>
 </head>
@@ -239,6 +242,12 @@ function parseParams() {
   else if (terpNorm.indexOf('TERPENESREMOVED') !== -1) terpList = ['Terpenes Removed'];
   else if (terpNorm.indexOf('TERPENEVARIES') !== -1 || terpNorm.indexOf('TERPENESVARY') !== -1) terpList = ['Terpenes Vary'];
   else terpList = [terp1,terp2,terp3].filter(Boolean).map(function(t){ return t.replace(/_/g,'-'); });
+  // Consumer pack size (new): "10x 0.35 GRAM"; hide the "Nx" part when qty <= 1
+  var numItems  = g(25), itemSize = g(26), itemUom = g(27);
+  var qty       = parseFloat(numItems);
+  var qtyPrefix = (!isNaN(qty) && qty > 1) ? (Math.round(qty) + 'x ') : '';
+  var sizeParts = [itemSize, itemUom].filter(Boolean).join(' ');
+  var sizeInfo  = sizeParts ? (qtyPrefix + sizeParts).trim() : '';
   return {
     productName : g(0),
     brandName   : g(1),
@@ -254,6 +263,7 @@ function parseParams() {
     wmY         : g(16) || '0',
     wmSize      : g(17) || '75',
     wmOpacity   : g(18) || '8',
+    sizeInfo    : sizeInfo,
     price       : ''   // filled by modal
   };
 }
@@ -296,7 +306,10 @@ function buildTag(card) {
     + '</div>'
     + '<div class="card-footer">'
     +   '<span class="strain-meta">' + esc(meta) + '</span>'
-    +   '<span class="price">' + esc(card.price) + '</span>'
+    +   '<span class="footer-right">'
+    +     (card.sizeInfo ? '<span class="size-info">' + esc(card.sizeInfo) + '</span>' : '')
+    +     '<span class="price">' + esc(card.price) + '</span>'
+    +   '</span>'
     + '</div>'
     + '</div>'
     + '</div>';
