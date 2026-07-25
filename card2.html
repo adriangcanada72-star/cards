@@ -242,10 +242,10 @@ function parseParams() {
   else if (terpNorm.indexOf('TERPENESREMOVED') !== -1) terpList = ['Terpenes Removed'];
   else if (terpNorm.indexOf('TERPENEVARIES') !== -1 || terpNorm.indexOf('TERPENESVARY') !== -1) terpList = ['Terpenes Vary'];
   else terpList = [terp1,terp2,terp3].filter(Boolean).map(function(t){ return t.replace(/_/g,'-'); });
-  // Consumer pack size (new): "10x 0.35 GRAM"; hide the "Nx" part when qty <= 1
+  // Consumer pack size (new): "10 x 0.35 GRAM"; hide the "N x" part when qty <= 1
   var numItems  = g(25), itemSize = g(26), itemUom = g(27);
   var qty       = parseFloat(numItems);
-  var qtyPrefix = (!isNaN(qty) && qty > 1) ? (Math.round(qty) + 'x ') : '';
+  var qtyPrefix = (!isNaN(qty) && qty > 1) ? (Math.round(qty) + ' x ') : '';
   var sizeParts = [itemSize, itemUom].filter(Boolean).join(' ');
   var sizeInfo  = sizeParts ? (qtyPrefix + sizeParts).trim() : '';
   return {
