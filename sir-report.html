@@ -16,11 +16,9 @@
     font-family:'DM Sans',system-ui,-apple-system,Segoe UI,Roboto,sans-serif; color:var(--dark);}
   .sheet{max-width:820px; margin:24px auto; background:#fff; min-height:1000px;
     box-shadow:0 2px 18px rgba(0,0,0,.12);}
-  /* header */
   .head{background:var(--dark); color:#fff; padding:22px 34px;}
   .head h1{margin:0; font-size:22px; font-weight:700; letter-spacing:.2px;}
   .head p{margin:3px 0 0; font-size:12px; color:#c7d0d4; font-weight:500;}
-  /* summary card */
   .body{padding:26px 34px 40px;}
   .summary{display:flex; justify-content:space-between; align-items:flex-start;
     background:var(--card); border:1px solid var(--line); border-radius:10px;
@@ -30,8 +28,7 @@
   .score{text-align:right; line-height:1;}
   .score .n{font-size:34px; font-weight:700;}
   .score .r{font-size:13px; font-weight:700; letter-spacing:1px; margin-top:4px;}
-  .pass .n,.pass .r{color:var(--green);} .fail .n,.fail .r{color:var(--red);}
-  /* questions */
+  .pass .n,.pass .r{color:var(--dark);} .fail .n,.fail .r{color:var(--red);}
   .q{margin-bottom:16px; padding-bottom:14px; border-bottom:1px solid var(--line);}
   .q:last-child{border-bottom:none;}
   .q .text{font-size:14px; font-weight:700; line-height:1.35;}
@@ -57,7 +54,7 @@
 <div class="sheet">
   <div class="head">
     <h1>Selling It Right — Monthly Compliance Report</h1>
-    <p>The Terpene Sommelier · Staff Certification</p>
+    <p>The Terpene Sommelier</p>
   </div>
   <div class="body">
     <div class="summary" id="summary"></div>
@@ -70,7 +67,6 @@
 </div>
 
 <script>
-// ---- fixed SIR question bank (update here if the quiz changes) ----
 const QUESTIONS = [
  {t:"According to Canada's Lower-Risk Cannabis Use Guidelines, why is it recommended to delay cannabis use until age 25 or later?",
   A:"Cannabis is more addictive for younger users",B:"Users under 25 are more likely to experience allergic reactions",
@@ -100,7 +96,15 @@ const PASS_THRESHOLD = 8;
 function param(k){ return new URLSearchParams(location.search).get(k) || ""; }
 function esc(s){ return (s||"").replace(/[&<>]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
 
-// answers: accept "D,A,D,..." or "DADBCDACDB"
+const MONTHS=["January","February","March","April","May","June","July",
+  "August","September","October","November","December"];
+function fmtMonth(m){
+  if(!m) return new Date().toLocaleString('en-CA',{month:'long',year:'numeric'});
+  const mk = m.match(/^(\d{4})-(\d{1,2})/);
+  if(mk){ const mo=parseInt(mk[2],10); if(mo>=1&&mo<=12) return MONTHS[mo-1]+" "+mk[1]; }
+  return m;
+}
+
 function parseAnswers(raw){
   raw=(raw||"").toUpperCase().trim();
   let arr = raw.includes(",") ? raw.split(",") : raw.split("");
@@ -109,15 +113,6 @@ function parseAnswers(raw){
   return arr.slice(0,QUESTIONS.length);
 }
 
-const MONTHS=["January","February","March","April","May","June","July",
-  "August","September","October","November","December"];
-// accepts "August 2026" as-is, or "2026-7" / "2026-07" -> "July 2026"
-function fmtMonth(m){
-  if(!m) return new Date().toLocaleString('en-CA',{month:'long',year:'numeric'});
-  const mk = m.match(/^(\d{4})-(\d{1,2})/);
-  if(mk){ const mo=parseInt(mk[2],10); if(mo>=1&&mo<=12) return MONTHS[mo-1]+" "+mk[1]; }
-  return m;
-}
 const staff = param("n") || "Unknown Staff";
 const storeName = param("sn");
 const storeNum = param("s");
@@ -126,18 +121,19 @@ const answers = parseAnswers(param("a"));
 
 let correct=0;
 answers.forEach((a,i)=>{ if(a===QUESTIONS[i].correct) correct++; });
-const passLabel = (param("p") || (correct>=PASS_THRESHOLD?"Pass":"Fail"));
-const isPass = passLabel.toLowerCase()==="pass";
 
-// summary
+const passRaw = (param("p")||"").trim();
+// pass / true / yes count as a pass; blank falls back to the score threshold
+const isPass = passRaw ? /^(pass|true|yes|p)$/i.test(passRaw) : (correct>=PASS_THRESHOLD);
+const passWord = isPass ? "Pass" : "Fail";
+
 const storeLine = (storeName? esc(storeName):"Store") + (storeNum? "  (#"+esc(storeNum)+")":"");
 document.getElementById("summary").innerHTML =
   `<div class="who"><div class="name">${esc(staff)}</div>
      <div class="meta">${storeLine} &nbsp;|&nbsp; ${esc(monthLabel)}</div></div>
    <div class="score ${isPass?'pass':'fail'}"><div class="n">${correct}/10</div>
-     <div class="r">${esc(passLabel.toUpperCase())}</div></div>`;
+     <div class="r">${passWord}</div></div>`;
 
-// questions
 const opt = (q,l)=>q[l];
 document.getElementById("questions").innerHTML = QUESTIONS.map((q,i)=>{
   const given=answers[i], ok=given===q.correct;
