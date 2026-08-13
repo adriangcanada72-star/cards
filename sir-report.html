@@ -84,7 +84,7 @@
 </div>
 
 <script>
-// ---- three quiz banks; pick with ?q=1 | 2 | 3 (update here if quiz content changes) ----
+// ---- three quiz banks; pick with ?q=1 | 2 | 3. Mirrors the SIR_Quiz table exactly. ----
 const BANKS = {
  "1":[
   {t:"According to Canada's Lower-Risk Cannabis Use Guidelines, why is it recommended to delay cannabis use until age 25 or later?",A:"Cannabis is more addictive for younger users",B:"Users under 25 are more likely to experience allergic reactions",C:"Federal law prohibits cannabis sales to anyone under 25",D:"The human brain is not fully developed until around age 25, making younger users more vulnerable to harm",correct:"D"},
@@ -99,27 +99,27 @@ const BANKS = {
   {t:"Cannabis store security camera footage must be stored for a minimum of how many days?",A:"14 days",B:"30 days",C:"90 days",D:"7 days",correct:"B"},
  ],
  "2":[
-  {t:"Which cannabinoid is mainly responsible for the intoxicating 'high'?",A:"CBD",B:"THC",C:"CBN",D:"Terpenes",correct:"B"},
+  {t:"Which cannabinoid is mainly responsible for the intoxicating 'high'?",A:"CBD",B:"Terpenes",C:"CBN",D:"THC",correct:"D"},
   {t:"Compared with inhaling, the effects of edible cannabis usually:",A:"Are felt within seconds",B:"Take longer to be felt and last longer",C:"Never cause impairment",D:"Are exactly the same in timing",correct:"B"},
-  {t:"Which body regulates non-medical cannabis retail licences in BC?",A:"Health Canada",B:"The Liquor and Cannabis Regulation Branch (LCRB)",C:"The RCMP",D:"The store's own management",correct:"B"},
+  {t:"Which body regulates non-medical cannabis retail licences in BC?",A:"Health Canada",B:"The RCMP",C:"The Liquor and Cannabis Regulation Branch (LCRB)",D:"The store's own management",correct:"C"},
   {t:"A single package of edible cannabis may contain a maximum of how much THC?",A:"10 mg",B:"30 mg",C:"100 mg",D:"No limit",correct:"A"},
   {t:"You should request ID from any customer who:",A:"Seems nervous",B:"Appears to be under 25",C:"Pays with cash",D:"Asks about a specific product",correct:"B"},
-  {t:"It is illegal to sell cannabis to an adult if you have reason to believe they will:",A:"Consume it at home",B:"Give or resell it to a minor",C:"Use it on the weekend",D:"Share it with another adult",correct:"B"},
+  {t:"It is illegal to sell cannabis to an adult if you have reason to believe they will:",A:"Consume it at home",B:"Share it with another adult",C:"Use it on the weekend",D:"Give or resell it to a minor",correct:"D"},
   {t:"Which is a sign that a patron may be impaired?",A:"Bloodshot eyes and poor coordination",B:"Paying by debit",C:"Asking product questions",D:"Wearing a hat",correct:"A"},
-  {t:"After you refuse a sale or ask someone to leave, you should:",A:"Forget about it",B:"Record the details in an incident report",C:"Post about it online",D:"Follow up with the customer later",correct:"B"},
+  {t:"After you refuse a sale or ask someone to leave, you should:",A:"Forget about it",B:"Post about it online",C:"Record the details in an incident report",D:"Follow up with the customer later",correct:"C"},
   {t:"If cannabis is sold to a minor, who can be held responsible?",A:"Only the store owner",B:"Only the government",C:"Both the staff member and the licensee",D:"No one",correct:"C"},
   {t:"Every legal cannabis product sold in Canada must carry:",A:"A CRA excise stamp",B:"A 'Product of BC' sticker",C:"A recycling symbol",D:"Only the store's own price tag",correct:"A"},
  ],
  "3":[
   {t:"Which cannabinoid is generally non-intoxicating and does not produce a 'high'?",A:"THC",B:"CBD",C:"Delta-9 THC",D:"None of them",correct:"B"},
-  {t:"Combining cannabis with alcohol generally:",A:"Cancels out impairment",B:"Increases impairment",C:"Has no effect",D:"Is recommended for new users",correct:"B"},
-  {t:"Selling It Right certification is required for:",A:"Only store managers",B:"Everyone who sells non-medical cannabis",C:"Only brand-new employees",D:"No one - it is optional",correct:"B"},
+  {t:"Combining cannabis with alcohol generally:",A:"Cancels out impairment",B:"Has no effect",C:"Increases impairment",D:"Is recommended for new users",correct:"C"},
+  {t:"Selling It Right certification is required for:",A:"Only store managers",B:"No one - it is optional",C:"Only brand-new employees",D:"Everyone who sells non-medical cannabis",correct:"D"},
   {t:"Under provincial rules, a store may sell cannabis only between:",A:"9 a.m. and 11 p.m.",B:"24 hours a day",C:"10 a.m. and 10 p.m.",D:"Noon and midnight",correct:"A"},
   {t:"If a customer cannot produce valid ID, you must:",A:"Sell if they look old enough",B:"Refuse the sale",C:"Accept a photo of their ID on a phone",D:"Ask a coworker to decide",correct:"B"},
   {t:"A parent wants to bring their 16-year-old into the store. This is:",A:"Fine if the child is supervised",B:"Not allowed - no one under 19 may enter",C:"Fine for a few minutes",D:"Up to the staff on duty",correct:"B"},
-  {t:"Selling cannabis to a customer who is visibly intoxicated is:",A:"Allowed if it is only a small amount",B:"Prohibited",C:"Allowed if they are a regular customer",D:"Up to the individual staff member",correct:"B"},
-  {t:"If a patron becomes aggressive and refuses to leave, you should:",A:"Physically remove them yourself",B:"Contact the police or security and avoid confrontation",C:"Lock them inside the store",D:"Keep serving them to calm them down",correct:"B"},
-  {t:"Contravening cannabis laws, such as selling to a minor, can result in:",A:"Nothing",B:"Fines, and suspension or cancellation of the store's licence",C:"Only a verbal warning, always",D:"Free retraining with no penalty",correct:"B"},
+  {t:"Selling cannabis to a customer who is visibly intoxicated is:",A:"Allowed if it is only a small amount",B:"Allowed if they are a regular customer",C:"Prohibited",D:"Up to the individual staff member",correct:"C"},
+  {t:"If a patron becomes aggressive and refuses to leave, you should:",A:"Physically remove them yourself",B:"Keep serving them to calm them down",C:"Lock them inside the store",D:"Contact the police or security and avoid confrontation",correct:"D"},
+  {t:"Contravening cannabis laws, such as selling to a minor, can result in:",A:"Fines, and suspension or cancellation of the store's licence",B:"Nothing",C:"Only a verbal warning, always",D:"Free retraining with no penalty",correct:"A"},
   {t:"Cannabis product packaging in Canada must be:",A:"Brightly branded to boost sales",B:"Plain, with a yellow health-warning box",C:"Any design the producer likes",D:"Transparent so the product shows",correct:"B"},
  ],
 };
