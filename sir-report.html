@@ -46,7 +46,6 @@
     html,body{height:auto;}
     .printbar{display:none;}
     @page{size:letter; margin:10mm;}
-    /* fill exactly one 8.5x11 page: header top, footer bottom, questions spread to fill */
     .sheet{box-shadow:none; margin:0; max-width:none; min-height:0; height:100vh;
       display:flex; flex-direction:column;}
     .head{padding:16px 28px;}
@@ -85,34 +84,52 @@
 </div>
 
 <script>
-const QUESTIONS = [
- {t:"According to Canada's Lower-Risk Cannabis Use Guidelines, why is it recommended to delay cannabis use until age 25 or later?",
-  A:"Cannabis is more addictive for younger users",B:"Users under 25 are more likely to experience allergic reactions",
-  C:"Federal law prohibits cannabis sales to anyone under 25",D:"The human brain is not fully developed until around age 25, making younger users more vulnerable to harm",correct:"D"},
- {t:"How many pieces of ID are required to verify a patron's age in BC?",
-  A:"Two pieces of ID",B:"One piece of government-issued photo ID",C:"One piece of any ID with a birth date",D:"No ID is required if the patron appears over 30",correct:"A"},
- {t:"What is the maximum amount of dried cannabis (or equivalent) that can be sold to a patron in a single transaction?",
-  A:"15 grams",B:"28 grams",C:"50 grams",D:"30 grams",correct:"D"},
- {t:"A patron enters your store showing signs of intoxication. What are you legally required to do?",
-  A:"Allow them to browse but refuse the sale at the counter",B:"Ask them to leave the store",C:"Sell them a low-THC product only",D:"Call the police immediately",correct:"B"},
- {t:"Which of the following is NOT an acceptable form of primary ID in BC?",
-  A:"Canadian passport",B:"Certificate of Indian Status",C:"Credit card",D:"BC driver's licence",correct:"C"},
- {t:"All cannabis products sold in a licensed retail store must be purchased through which organization?",
-  A:"Health Canada",B:"The federal Cannabis Council",C:"The LCRB",D:"The Liquor Distribution Branch (LDB)",correct:"D"},
- {t:"How long must cannabis purchase and sales records be kept?",
-  A:"6 years",B:"3 years",C:"10 years",D:"1 year",correct:"A"},
- {t:"A patron who has been asked to leave a cannabis store must not return for at least how long?",
-  A:"48 hours",B:"12 hours",C:"24 hours",D:"1 hour",correct:"C"},
- {t:"Which of the following is true about cannabis samples in a retail store?",
-  A:"Staff may provide small samples of dried flower to patrons",B:"Samples are permitted for medical cannabis patients only",
-  C:"Patrons may sample from smell jars under staff supervision",D:"Samples are not permitted — cannabis must be sold in original, unopened packaging",correct:"D"},
- {t:"Cannabis store security camera footage must be stored for a minimum of how many days?",
-  A:"14 days",B:"30 days",C:"90 days",D:"7 days",correct:"B"},
-];
-const PASS_THRESHOLD = 8;
+// ---- three quiz banks; pick with ?q=1 | 2 | 3 (update here if quiz content changes) ----
+const BANKS = {
+ "1":[
+  {t:"According to Canada's Lower-Risk Cannabis Use Guidelines, why is it recommended to delay cannabis use until age 25 or later?",A:"Cannabis is more addictive for younger users",B:"Users under 25 are more likely to experience allergic reactions",C:"Federal law prohibits cannabis sales to anyone under 25",D:"The human brain is not fully developed until around age 25, making younger users more vulnerable to harm",correct:"D"},
+  {t:"How many pieces of ID are required to verify a patron's age in BC?",A:"Two pieces of ID",B:"One piece of government-issued photo ID",C:"One piece of any ID with a birth date",D:"No ID is required if the patron appears over 30",correct:"A"},
+  {t:"What is the maximum amount of dried cannabis (or equivalent) that can be sold to a patron in a single transaction?",A:"15 grams",B:"28 grams",C:"50 grams",D:"30 grams",correct:"D"},
+  {t:"A patron enters your store showing signs of intoxication. What are you legally required to do?",A:"Allow them to browse but refuse the sale at the counter",B:"Ask them to leave the store",C:"Sell them a low-THC product only",D:"Call the police immediately",correct:"B"},
+  {t:"Which of the following is NOT an acceptable form of primary ID in BC?",A:"Canadian passport",B:"Certificate of Indian Status",C:"Credit card",D:"BC driver's licence",correct:"C"},
+  {t:"All cannabis products sold in a licensed retail store must be purchased through which organization?",A:"Health Canada",B:"The federal Cannabis Council",C:"The LCRB",D:"The Liquor Distribution Branch (LDB)",correct:"D"},
+  {t:"How long must cannabis purchase and sales records be kept?",A:"6 years",B:"3 years",C:"10 years",D:"1 year",correct:"A"},
+  {t:"A patron who has been asked to leave a cannabis store must not return for at least how long?",A:"48 hours",B:"12 hours",C:"24 hours",D:"1 hour",correct:"C"},
+  {t:"Which of the following is true about cannabis samples in a retail store?",A:"Staff may provide small samples of dried flower to patrons",B:"Samples are permitted for medical cannabis patients only",C:"Patrons may sample from smell jars under staff supervision",D:"Samples are not permitted — cannabis must be sold in original, unopened packaging",correct:"D"},
+  {t:"Cannabis store security camera footage must be stored for a minimum of how many days?",A:"14 days",B:"30 days",C:"90 days",D:"7 days",correct:"B"},
+ ],
+ "2":[
+  {t:"Which cannabinoid is mainly responsible for the intoxicating 'high'?",A:"CBD",B:"THC",C:"CBN",D:"Terpenes",correct:"B"},
+  {t:"Compared with inhaling, the effects of edible cannabis usually:",A:"Are felt within seconds",B:"Take longer to be felt and last longer",C:"Never cause impairment",D:"Are exactly the same in timing",correct:"B"},
+  {t:"Which body regulates non-medical cannabis retail licences in BC?",A:"Health Canada",B:"The Liquor and Cannabis Regulation Branch (LCRB)",C:"The RCMP",D:"The store's own management",correct:"B"},
+  {t:"A single package of edible cannabis may contain a maximum of how much THC?",A:"10 mg",B:"30 mg",C:"100 mg",D:"No limit",correct:"A"},
+  {t:"You should request ID from any customer who:",A:"Seems nervous",B:"Appears to be under 25",C:"Pays with cash",D:"Asks about a specific product",correct:"B"},
+  {t:"It is illegal to sell cannabis to an adult if you have reason to believe they will:",A:"Consume it at home",B:"Give or resell it to a minor",C:"Use it on the weekend",D:"Share it with another adult",correct:"B"},
+  {t:"Which is a sign that a patron may be impaired?",A:"Bloodshot eyes and poor coordination",B:"Paying by debit",C:"Asking product questions",D:"Wearing a hat",correct:"A"},
+  {t:"After you refuse a sale or ask someone to leave, you should:",A:"Forget about it",B:"Record the details in an incident report",C:"Post about it online",D:"Follow up with the customer later",correct:"B"},
+  {t:"If cannabis is sold to a minor, who can be held responsible?",A:"Only the store owner",B:"Only the government",C:"Both the staff member and the licensee",D:"No one",correct:"C"},
+  {t:"Every legal cannabis product sold in Canada must carry:",A:"A CRA excise stamp",B:"A 'Product of BC' sticker",C:"A recycling symbol",D:"Only the store's own price tag",correct:"A"},
+ ],
+ "3":[
+  {t:"Which cannabinoid is generally non-intoxicating and does not produce a 'high'?",A:"THC",B:"CBD",C:"Delta-9 THC",D:"None of them",correct:"B"},
+  {t:"Combining cannabis with alcohol generally:",A:"Cancels out impairment",B:"Increases impairment",C:"Has no effect",D:"Is recommended for new users",correct:"B"},
+  {t:"Selling It Right certification is required for:",A:"Only store managers",B:"Everyone who sells non-medical cannabis",C:"Only brand-new employees",D:"No one - it is optional",correct:"B"},
+  {t:"Under provincial rules, a store may sell cannabis only between:",A:"9 a.m. and 11 p.m.",B:"24 hours a day",C:"10 a.m. and 10 p.m.",D:"Noon and midnight",correct:"A"},
+  {t:"If a customer cannot produce valid ID, you must:",A:"Sell if they look old enough",B:"Refuse the sale",C:"Accept a photo of their ID on a phone",D:"Ask a coworker to decide",correct:"B"},
+  {t:"A parent wants to bring their 16-year-old into the store. This is:",A:"Fine if the child is supervised",B:"Not allowed - no one under 19 may enter",C:"Fine for a few minutes",D:"Up to the staff on duty",correct:"B"},
+  {t:"Selling cannabis to a customer who is visibly intoxicated is:",A:"Allowed if it is only a small amount",B:"Prohibited",C:"Allowed if they are a regular customer",D:"Up to the individual staff member",correct:"B"},
+  {t:"If a patron becomes aggressive and refuses to leave, you should:",A:"Physically remove them yourself",B:"Contact the police or security and avoid confrontation",C:"Lock them inside the store",D:"Keep serving them to calm them down",correct:"B"},
+  {t:"Contravening cannabis laws, such as selling to a minor, can result in:",A:"Nothing",B:"Fines, and suspension or cancellation of the store's licence",C:"Only a verbal warning, always",D:"Free retraining with no penalty",correct:"B"},
+  {t:"Cannabis product packaging in Canada must be:",A:"Brightly branded to boost sales",B:"Plain, with a yellow health-warning box",C:"Any design the producer likes",D:"Transparent so the product shows",correct:"B"},
+ ],
+};
 
 function param(k){ return new URLSearchParams(location.search).get(k) || ""; }
 function esc(s){ return (s||"").replace(/[&<>]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+
+const quizNum = (param("q")||"1").trim();
+const QUESTIONS = BANKS[quizNum] || BANKS["1"];
+const PASS_THRESHOLD = 8;
 
 const MONTHS=["January","February","March","April","May","June","July",
   "August","September","October","November","December"];
