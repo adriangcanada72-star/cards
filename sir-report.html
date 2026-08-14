@@ -7,84 +7,59 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --dark:#212529; --grey:#6e747a; --line:#e1e4e6; --card:#f7f9fa;
-    --green:#167a3c; --red:#c4302b; --teal:#4aabbf;
-  }
-  *{box-sizing:border-box; -webkit-print-color-adjust:exact; print-color-adjust:exact;}
-  html,body{margin:0; padding:0; background:#eceff1;
-    font-family:'DM Sans',system-ui,-apple-system,Segoe UI,Roboto,sans-serif; color:var(--dark);}
-  .sheet{max-width:820px; margin:24px auto; background:#fff; min-height:1000px;
-    box-shadow:0 2px 18px rgba(0,0,0,.12);}
-  .head{background:var(--dark); color:#fff; padding:22px 34px;}
-  .head h1{margin:0; font-size:22px; font-weight:700; letter-spacing:.2px;}
-  .head p{margin:3px 0 0; font-size:12px; color:#c7d0d4; font-weight:500;}
+  :root{--dark:#212529;--grey:#6e747a;--line:#e1e4e6;--card:#f7f9fa;--green:#167a3c;--red:#c4302b;--teal:#4aabbf;}
+  *{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  html,body{margin:0;padding:0;background:#eceff1;font-family:'DM Sans',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--dark);}
+  .sheet{max-width:820px;margin:24px auto;background:#fff;min-height:1000px;box-shadow:0 2px 18px rgba(0,0,0,.12);}
+  .head{background:var(--dark);color:#fff;padding:22px 34px;}
+  .head h1{margin:0;font-size:22px;font-weight:700;letter-spacing:.2px;}
+  .head p{margin:3px 0 0;font-size:12px;color:#c7d0d4;font-weight:500;}
   .body{padding:26px 34px 40px;}
-  .summary{display:flex; justify-content:space-between; align-items:flex-start;
-    background:var(--card); border:1px solid var(--line); border-radius:10px;
-    padding:16px 20px; margin-bottom:22px;}
-  .who .name{font-size:17px; font-weight:700;}
-  .who .meta{font-size:13px; color:var(--grey); margin-top:3px; font-weight:500;}
-  .score{text-align:right; line-height:1;}
-  .score .n{font-size:34px; font-weight:700;}
-  .score .r{font-size:13px; font-weight:700; letter-spacing:1px; margin-top:4px;}
+  .summary{display:flex;justify-content:space-between;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 20px;margin-bottom:22px;}
+  .who .name{font-size:17px;font-weight:700;}
+  .who .meta{font-size:13px;color:var(--grey);margin-top:3px;font-weight:500;}
+  .score{text-align:right;line-height:1;}
+  .score .n{font-size:34px;font-weight:700;}
+  .score .r{font-size:13px;font-weight:700;letter-spacing:1px;margin-top:4px;}
   .pass .n,.pass .r{color:var(--dark);} .fail .n,.fail .r{color:var(--red);}
-  .q{margin-bottom:16px; padding-bottom:14px; border-bottom:1px solid var(--line);}
+  .q{margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--line);}
   .q:last-child{border-bottom:none;}
-  .q .text{font-size:14px; font-weight:700; line-height:1.35;}
-  .ans{font-size:13px; line-height:1.4; margin-top:6px; display:flex; gap:7px;}
-  .tag{font-weight:700; white-space:nowrap;}
+  .q .text{font-size:14px;font-weight:700;line-height:1.35;}
+  .ans{font-size:13px;line-height:1.4;margin-top:6px;display:flex;gap:7px;}
+  .tag{font-weight:700;white-space:nowrap;}
   .ans.ok{color:var(--green);} .ans.no{color:var(--red);}
-  .correct{color:var(--green); font-size:13px; line-height:1.4; margin-top:3px;}
-  .foot{padding:14px 34px 26px; color:var(--grey); font-size:11px;
-    display:flex; justify-content:space-between; border-top:1px solid var(--line);}
-  .printbar{max-width:820px; margin:12px auto 0; text-align:right;}
-  .printbar button{font-family:inherit; font-size:13px; font-weight:600; cursor:pointer;
-    background:var(--teal); color:#fff; border:none; border-radius:8px; padding:9px 16px;}
+  .correct{color:var(--green);font-size:13px;line-height:1.4;margin-top:3px;}
+  .foot{padding:14px 34px 26px;color:var(--grey);font-size:11px;display:flex;justify-content:space-between;border-top:1px solid var(--line);}
+  .printbar{max-width:820px;margin:12px auto 0;text-align:right;}
+  .printbar button{font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;background:var(--teal);color:#fff;border:none;border-radius:8px;padding:9px 16px;}
   @media print{
     body{background:#fff;}
     html,body{height:auto;}
     .printbar{display:none;}
-    @page{size:letter; margin:10mm;}
-    .sheet{box-shadow:none; margin:0; max-width:none; min-height:0; height:100vh;
-      display:flex; flex-direction:column;}
-    .head{padding:16px 28px;}
-    .head h1{font-size:18px;}
-    .head p{font-size:10px; margin-top:2px;}
-    .body{padding:18px 28px 10px; flex:1 1 auto; display:flex; flex-direction:column; min-height:0;}
-    .summary{padding:12px 18px; margin-bottom:14px; border-radius:8px;}
-    .who .name{font-size:15px;}
-    .who .meta{font-size:11px; margin-top:1px;}
-    .score .n{font-size:28px;}
-    .score .r{font-size:11px; margin-top:2px;}
-    #questions{flex:1 1 auto; display:flex; flex-direction:column; justify-content:space-between;}
-    .q{margin-bottom:0; padding-top:2px; padding-bottom:9px;}
-    .q .text{font-size:12px; line-height:1.3;}
-    .ans{font-size:11px; line-height:1.3; margin-top:3px; gap:5px;}
-    .correct{font-size:11px; line-height:1.3; margin-top:2px;}
-    .foot{padding:8px 28px 0; font-size:9px; margin-top:6px;}
+    @page{size:letter;margin:10mm;}
+    .sheet{box-shadow:none;margin:0;max-width:none;min-height:0;height:100vh;display:flex;flex-direction:column;}
+    .head{padding:16px 28px;} .head h1{font-size:18px;} .head p{font-size:10px;margin-top:2px;}
+    .body{padding:18px 28px 10px;flex:1 1 auto;display:flex;flex-direction:column;min-height:0;}
+    .summary{padding:12px 18px;margin-bottom:14px;border-radius:8px;}
+    .who .name{font-size:15px;} .who .meta{font-size:11px;margin-top:1px;}
+    .score .n{font-size:28px;} .score .r{font-size:11px;margin-top:2px;}
+    #questions{flex:1 1 auto;display:flex;flex-direction:column;justify-content:space-between;}
+    .q{margin-bottom:0;padding-top:2px;padding-bottom:9px;}
+    .q .text{font-size:12px;line-height:1.3;}
+    .ans{font-size:11px;line-height:1.3;margin-top:3px;gap:5px;}
+    .correct{font-size:11px;line-height:1.3;margin-top:2px;}
+    .foot{padding:8px 28px 0;font-size:9px;margin-top:6px;}
   }
 </style>
 </head>
 <body>
 <div class="printbar"><button onclick="window.print()">Print / Save as PDF</button></div>
 <div class="sheet">
-  <div class="head">
-    <h1>Selling It Right — Monthly Compliance Report</h1>
-    <p>The Terpene Sommelier</p>
-  </div>
-  <div class="body">
-    <div class="summary" id="summary"></div>
-    <div id="questions"></div>
-  </div>
-  <div class="foot">
-    <span id="gen"></span>
-    <span>The Terpene Sommelier</span>
-  </div>
+  <div class="head"><h1>Selling It Right — Monthly Compliance Report</h1><p>The Terpene Sommelier</p></div>
+  <div class="body"><div class="summary" id="summary"></div><div id="questions"></div></div>
+  <div class="foot"><span id="gen"></span><span>The Terpene Sommelier</span></div>
 </div>
-
 <script>
-// ---- three quiz banks; pick with ?q=1 | 2 | 3. Mirrors the SIR_Quiz table exactly. ----
 const BANKS = {
  "1":[
   {t:"According to Canada's Lower-Risk Cannabis Use Guidelines, why is it recommended to delay cannabis use until age 25 or later?",A:"Cannabis is more addictive for younger users",B:"Users under 25 are more likely to experience allergic reactions",C:"Federal law prohibits cannabis sales to anyone under 25",D:"The human brain is not fully developed until around age 25, making younger users more vulnerable to harm",correct:"D"},
@@ -123,67 +98,37 @@ const BANKS = {
   {t:"Cannabis product packaging in Canada must be:",A:"Brightly branded to boost sales",B:"Plain, with a yellow health-warning box",C:"Any design the producer likes",D:"Transparent so the product shows",correct:"B"},
  ],
 };
-
-function param(k){ return new URLSearchParams(location.search).get(k) || ""; }
-function esc(s){ return (s||"").replace(/[&<>]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
-
-const quizNum = (param("q")||"1").trim();
-const QUESTIONS = BANKS[quizNum] || BANKS["1"];
-const PASS_THRESHOLD = 8;
-
-const MONTHS=["January","February","March","April","May","June","July",
-  "August","September","October","November","December"];
-function fmtMonth(m){
-  if(!m) return new Date().toLocaleString('en-CA',{month:'long',year:'numeric'});
-  const mk = m.match(/^(\d{4})-(\d{1,2})/);
-  if(mk){ const mo=parseInt(mk[2],10); if(mo>=1&&mo<=12) return MONTHS[mo-1]+" "+mk[1]; }
-  return m;
-}
-
-function parseAnswers(raw){
-  raw=(raw||"").toUpperCase().trim();
-  let arr = raw.includes(",") ? raw.split(",") : raw.split("");
-  arr = arr.map(x=>x.trim()).filter(x=>x.length);
-  while(arr.length<QUESTIONS.length) arr.push("");
-  return arr.slice(0,QUESTIONS.length);
-}
-
-const staff = param("n") || "Unknown Staff";
-const storeName = param("sn");
-const storeNum = param("s");
-const monthLabel = fmtMonth(param("m"));
-const answers = parseAnswers(param("a"));
-
-let correct=0;
-answers.forEach((a,i)=>{ if(a===QUESTIONS[i].correct) correct++; });
-
-const passRaw = (param("p")||"").trim();
-const isPass = passRaw ? /^(pass|true|yes|p)$/i.test(passRaw) : (correct>=PASS_THRESHOLD);
-const passWord = isPass ? "Pass" : "Fail";
-
-const storeLine = (storeName? esc(storeName):"Store") + (storeNum? "  (#"+esc(storeNum)+")":"");
-document.getElementById("summary").innerHTML =
-  `<div class="who"><div class="name">${esc(staff)}</div>
-     <div class="meta">${storeLine} &nbsp;|&nbsp; ${esc(monthLabel)}</div></div>
-   <div class="score ${isPass?'pass':'fail'}"><div class="n">${correct}/10</div>
-     <div class="r">${passWord}</div></div>`;
-
-const opt = (q,l)=>q[l];
-document.getElementById("questions").innerHTML = QUESTIONS.map((q,i)=>{
-  const given=answers[i], ok=given===q.correct;
-  const givenTxt = given? esc(opt(q,given)||"") : "(no answer)";
-  let html = `<div class="q"><div class="text">Q${i+1}. ${esc(q.t)}</div>
-    <div class="ans ${ok?'ok':'no'}"><span class="tag">[${ok?'Correct':'Wrong'}]</span>
-      <span>Your answer: ${given||'—'}. ${givenTxt}</span></div>`;
-  if(!ok){
-    html += `<div class="correct">Correct answer: ${q.correct}. ${esc(opt(q,q.correct)||"")}</div>`;
-  }
-  return html+`</div>`;
+function param(k){return new URLSearchParams(location.search).get(k)||"";}
+function esc(s){return (s||"").replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+const quizNum=(param("q")||"1").trim();
+const QUESTIONS=BANKS[quizNum]||BANKS["1"];
+const PASS_THRESHOLD=8;
+const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
+function fmtMonth(m){if(!m)return new Date().toLocaleString('en-CA',{month:'long',year:'numeric'});const mk=m.match(/^(\d{4})-(\d{1,2})/);if(mk){const mo=parseInt(mk[2],10);if(mo>=1&&mo<=12)return MONTHS[mo-1]+" "+mk[1];}return m;}
+function parseAnswers(raw){raw=(raw||"").toUpperCase().trim();let a=raw.includes(",")?raw.split(","):raw.split("");a=a.map(x=>x.trim()).filter(x=>x.length);while(a.length<QUESTIONS.length)a.push("");return a.slice(0,QUESTIONS.length);}
+const staff=param("n")||"Unknown Staff";
+const storeName=param("sn"); const storeNum=param("s");
+// prefer the full date/time (d) when provided, otherwise fall back to the month (m)
+const monthLabel=param("d")?param("d"):fmtMonth(param("m"));
+const answers=parseAnswers(param("a"));
+let correct=0; answers.forEach((a,i)=>{if(a===QUESTIONS[i].correct)correct++;});
+const passRaw=(param("p")||"").trim();
+const isPass=passRaw?/^(pass|passed|true|yes|p)$/i.test(passRaw):(correct>=PASS_THRESHOLD);
+const passWord=isPass?"Pass":"Fail";
+const storeLine=(storeName?esc(storeName):"Store")+(storeNum?"  (#"+esc(storeNum)+")":"");
+document.getElementById("summary").innerHTML=
+ `<div class="who"><div class="name">${esc(staff)}</div><div class="meta">${storeLine} &nbsp;|&nbsp; ${esc(monthLabel)}</div></div>
+  <div class="score ${isPass?'pass':'fail'}"><div class="n">${correct}/10</div><div class="r">${passWord}</div></div>`;
+const opt=(q,l)=>q[l];
+document.getElementById("questions").innerHTML=QUESTIONS.map((q,i)=>{
+ const given=answers[i],ok=given===q.correct;
+ const gt=given?esc(opt(q,given)||""):"(no answer)";
+ let h=`<div class="q"><div class="text">Q${i+1}. ${esc(q.t)}</div>
+   <div class="ans ${ok?'ok':'no'}"><span class="tag">[${ok?'Correct':'Wrong'}]</span><span>Your answer: ${given||'—'}. ${gt}</span></div>`;
+ if(!ok) h+=`<div class="correct">Correct answer: ${q.correct}. ${esc(opt(q,q.correct)||"")}</div>`;
+ return h+`</div>`;
 }).join("");
-
-document.getElementById("gen").textContent =
-  "Generated " + new Date().toLocaleDateString('en-CA');
-document.title = `SIR Report — ${staff} — ${monthLabel}`;
+document.getElementById("gen").textContent="Generated "+new Date().toLocaleDateString('en-CA');
+document.title=`SIR Report — ${staff}`;
 </script>
-</body>
-</html>
+</body></html>
