@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shelf Tag — Diagonal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  html,body{background:#e8e8e8;font-family:'Lato',sans-serif;}
+  .tag{position:relative; width:3.5in; height:2in; background:#fff; overflow:hidden; margin:20px auto;}
+  .band{position:absolute; top:0; left:0; right:0; height:0.62in; background:#F58A34; clip-path:polygon(0 0,100% 0,100% 58%,0 100%);}
+  .logo{position:absolute; top:0.10in; left:0.14in; width:0.42in; height:0.42in; border-radius:50%; background:#fff; border:2px solid #14181c; display:flex; align-items:center; justify-content:center; overflow:hidden;}
+  .logo img{width:100%; height:100%; object-fit:contain;}
+  .logo .ph{font-family:'Oswald'; font-weight:700; font-size:7pt; color:#14181c;}
+  .species{position:absolute; top:0.15in; left:0.66in; font-family:'Oswald'; font-weight:700; font-size:10pt; letter-spacing:.14em; color:#14181c;}
+  .name{position:absolute; top:0.7in; left:0.16in; right:0.14in; font-family:'Oswald'; font-weight:700; font-size:15pt; line-height:1; color:#14181c; text-transform:uppercase;}
+  .terps{position:absolute; top:0.98in; left:0.16in; right:0.14in; font-family:'Oswald'; font-weight:600; font-size:12.5pt; line-height:1.05; color:#14181c;}
+  .desc{position:absolute; top:1.24in; left:0.16in; right:1.35in; font-size:7.5pt; font-style:italic; color:#6a7178; line-height:1.3;}
+  .cann{position:absolute; bottom:0.13in; left:0.16in; font-size:8pt; color:#98a0a7;}
+  .cann b{color:#3a4148;}
+  .pricewrap{position:absolute; bottom:0.12in; right:0.14in; text-align:right;}
+  .price{font-family:'Oswald'; font-weight:700; font-size:21pt; color:#14181c; line-height:1; cursor:pointer;}
+  .size{font-size:7.5pt; color:#98a0a7;}
+  @media print{ html,body{background:#fff;} .tag{margin:0;} @page{size:3.5in 2in; margin:0;} }
+</style>
+</head>
+<body>
+<div class="tag">
+  <div class="band" id="band"></div>
+  <div class="logo" id="logo"></div>
+  <div class="species" id="species">SATIVA</div>
+  <div class="name" id="name"></div>
+  <div class="terps" id="terps"></div>
+  <div class="desc" id="desc"></div>
+  <div class="cann">THC <b id="thc"></b>&nbsp;·&nbsp; CBD <b id="cbd"></b></div>
+  <div class="pricewrap"><div class="price" id="price">$—</div><div class="size" id="size"></div></div>
+</div>
+<script>
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function r1(n){return Math.round(n);}
+var params=new URLSearchParams(location.search);
+var DEMO=['Pineapple Express','Redecan','SATIVA','Flower','220','280','0','10',
+ 'Limonene','Myrcene','Pinene','British Columbia','',
+ 'Bright, juicy tropical lift in a portable all-in-one — easy daytime enjoyment.',
+ '','0','0','75','8','','','','','','','1','3.5','GRAM','34.99'].join('~|~|~');
+var p=(params.get('data')||DEMO).split('~|~|~');
+function g(i){return (p[i]||'').trim();}
+var species=g(2), subcat=g(3);
+var thcMin=g(4),thcMax=g(5),cbdMin=g(6),cbdMax=g(7);
+var terp1=g(8),terp2=g(9),terp3=g(10), logoUrl=g(12), desc=g(13);
+var thcOv=g(23),cbdOv=g(24), numItems=g(25),itemSize=g(26),itemUom=g(27), priceTok=g(28);
+
+// species palette (matches the diagonal card)
+var sp=species.toUpperCase(), c='#74C6EA';
+if(sp.indexOf('SATIVA')!==-1) c='#F58A34';
+else if(sp.indexOf('HYBRID')!==-1||sp.indexOf('BLEND')!==-1) c='#5AA06E';
+document.getElementById('band').style.background=c;
+
+// cannabinoid ranges (% for inhalables, mg otherwise)
+var combined=(subcat+' ').toUpperCase();
+var pct=['FLOWER','PRE-ROLL','PRE-ROLLS','PREROLL','INHALABLE','SEED','SEEDS'].some(function(x){return combined.indexOf(x)!==-1;});
+var div=pct, unit=pct?'%':' mg';
+function rng(mn,mx){var lo=parseFloat(mn),hi=parseFloat(mx);if(div){lo/=10;hi/=10;}if(isNaN(lo)&&isNaN(hi))return '—';if(lo===0||isNaN(lo))return '< '+r1(hi)+unit;if(isNaN(hi)||lo===hi)return r1(lo)+unit;return r1(lo)+'–'+r1(hi)+unit;}
+
+document.getElementById('logo').innerHTML = logoUrl ? '<img src="'+esc(logoUrl)+'">' : '<div class="ph">'+esc((g(1)||'LOGO'))+'</div>';
+document.getElementById('species').textContent = species||'—';
+document.getElementById('name').textContent = (g(0)||'').replace(/-/g,'‑');
+document.getElementById('desc').textContent = desc;
+
+// terpenes (spelled out, with removed/varies handling)
+var norm=[terp1,terp2,terp3].map(function(t){return t.toUpperCase().replace(/[_\s]/g,'');});
+var terpsTxt;
+if(!terp1) terpsTxt='Some terpenes may be present';
+else if(norm.indexOf('TERPENESREMOVED')!==-1) terpsTxt='Terpenes Removed';
+else if(norm.indexOf('TERPENEVARIES')!==-1||norm.indexOf('TERPENESVARY')!==-1) terpsTxt='Terpenes Vary';
+else terpsTxt=[terp1,terp2,terp3].filter(Boolean).map(function(t){return t.replace(/_/g,'-');}).join(' · ');
+document.getElementById('terps').textContent=terpsTxt;
+
+document.getElementById('thc').textContent = thcOv!==''?thcOv:rng(thcMin,thcMax);
+document.getElementById('cbd').textContent = cbdOv!==''?cbdOv:rng(cbdMin,cbdMax);
+
+// pack size: "N x SIZE UOM" (hide "N x" when qty <= 1)
+var qty=parseFloat(numItems), prefix=(qty>1)?(numItems+' × '):'';
+var sizeStr=[itemSize,itemUom].filter(Boolean).join(' ');
+document.getElementById('size').textContent = sizeStr ? (prefix+sizeStr).trim() : '';
+
+// price: from token, else click to enter
+var priceEl=document.getElementById('price');
+priceEl.textContent = priceTok ? '$'+priceTok : '$—';
+priceEl.addEventListener('click', function(){
+  var v=prompt('Enter price', priceTok||'');
+  if(v!==null && v.trim()!=='') priceEl.textContent='$'+v.trim().replace(/^\$/,'');
+});
+document.title=g(0)||'Shelf Tag';
+</script>
+</body>
+</html>
