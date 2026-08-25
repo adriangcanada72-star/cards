@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shelf Tag — Editorial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  html,body{background:#e8e8e8;font-family:'Lato',sans-serif;}
+  .tag{position:relative; width:3.5in; height:2in; background:#fff; overflow:hidden; margin:20px auto; padding:0.15in 0.18in;}
+  .masthead{display:flex; align-items:center; justify-content:space-between; border-bottom:4px solid #F58A34; padding-bottom:0.05in;}
+  .kick{font-family:'Oswald'; font-weight:600; font-size:10pt; letter-spacing:.2em; color:#14181c;}
+  .fmt{font-size:8pt; color:#9aa1a7;}
+  .name{font-family:'Oswald'; font-weight:700; font-size:16pt; line-height:.98; color:#14181c; text-transform:uppercase; margin-top:0.09in;}
+  .desc{font-size:8pt; font-style:italic; color:#6a7178; line-height:1.3; margin-top:0.05in;}
+  .terps{font-family:'Oswald'; font-weight:600; font-size:13pt; color:#14181c; margin-top:0.08in;}
+  .cann{position:absolute; left:0.18in; bottom:0.14in; font-size:8pt; color:#9aa1a7;}
+  .cann b{color:#14181c;}
+  .price{position:absolute; right:0.18in; bottom:0.11in; font-family:'Oswald'; font-weight:700; font-size:20pt; color:#F58A34; line-height:1; cursor:pointer;}
+  @media print{ html,body{background:#fff;} .tag{margin:0;} @page{size:3.5in 2in; margin:0;} }
+</style>
+</head>
+<body>
+<div class="tag">
+  <div class="masthead"><span class="kick" id="kick">SATIVA</span><span class="fmt" id="fmt"></span></div>
+  <div class="name" id="name"></div>
+  <div class="desc" id="desc"></div>
+  <div class="terps" id="terps"></div>
+  <div class="cann">THC <b id="thc"></b>&nbsp;·&nbsp; CBD <b id="cbd"></b></div>
+  <div class="price" id="price">$—</div>
+</div>
+<script>
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function r1(n){return Math.round(n);}
+var params=new URLSearchParams(location.search);
+var DEMO=['Pineapple Express','Redecan','SATIVA','Flower','220','280','0','10',
+ 'Limonene','Myrcene','Pinene','British Columbia','',
+ 'Bright, juicy tropical lift in a portable all-in-one — easy daytime enjoyment.',
+ '','0','0','75','8','','','','','','','1','3.5','GRAM','34.99'].join('~|~|~');
+var p=(params.get('data')||DEMO).split('~|~|~');
+function g(i){return (p[i]||'').trim();}
+var species=g(2), subcat=g(3);
+var thcMin=g(4),thcMax=g(5),cbdMin=g(6),cbdMax=g(7);
+var terp1=g(8),terp2=g(9),terp3=g(10), desc=g(13);
+var thcOv=g(23),cbdOv=g(24), numItems=g(25),itemSize=g(26),itemUom=g(27), priceTok=g(28);
+
+// species palette
+var sp=species.toUpperCase(), c='#74C6EA';
+if(sp.indexOf('SATIVA')!==-1) c='#F58A34';
+else if(sp.indexOf('HYBRID')!==-1||sp.indexOf('BLEND')!==-1) c='#5AA06E';
+document.querySelector('.masthead').style.borderBottomColor=c;
+document.getElementById('price').style.color=c;
+
+var combined=(subcat+' ').toUpperCase();
+var pct=['FLOWER','PRE-ROLL','PRE-ROLLS','PREROLL','INHALABLE','SEED','SEEDS'].some(function(x){return combined.indexOf(x)!==-1;});
+var div=pct, unit=pct?'%':' mg';
+function rng(mn,mx){var lo=parseFloat(mn),hi=parseFloat(mx);if(div){lo/=10;hi/=10;}if(isNaN(lo)&&isNaN(hi))return '—';if(lo===0||isNaN(lo))return '< '+r1(hi)+unit;if(isNaN(hi)||lo===hi)return r1(lo)+unit;return r1(lo)+'–'+r1(hi)+unit;}
+
+document.getElementById('kick').textContent = species||'—';
+var sizeStr=[itemSize,itemUom].filter(Boolean).join(' ');
+document.getElementById('fmt').textContent = [subcat, sizeStr].filter(Boolean).join(' · ');
+document.getElementById('name').textContent = (g(0)||'').replace(/-/g,'‑');
+document.getElementById('desc').textContent = desc;
+
+var norm=[terp1,terp2,terp3].map(function(t){return t.toUpperCase().replace(/[_\s]/g,'');});
+var terpsTxt;
+if(!terp1) terpsTxt='Some terpenes may be present';
+else if(norm.indexOf('TERPENESREMOVED')!==-1) terpsTxt='Terpenes Removed';
+else if(norm.indexOf('TERPENEVARIES')!==-1||norm.indexOf('TERPENESVARY')!==-1) terpsTxt='Terpenes Vary';
+else terpsTxt=[terp1,terp2,terp3].filter(Boolean).map(function(t){return t.replace(/_/g,'-');}).join(' · ');
+document.getElementById('terps').textContent=terpsTxt;
+
+document.getElementById('thc').textContent = thcOv!==''?thcOv:rng(thcMin,thcMax);
+document.getElementById('cbd').textContent = cbdOv!==''?cbdOv:rng(cbdMin,cbdMax);
+
+var priceEl=document.getElementById('price');
+priceEl.textContent = priceTok ? '$'+priceTok : '$—';
+priceEl.addEventListener('click', function(){
+  var v=prompt('Enter price', priceTok||'');
+  if(v!==null && v.trim()!=='') priceEl.textContent='$'+v.trim().replace(/^\$/,'');
+});
+document.title=g(0)||'Shelf Tag';
+</script>
+</body>
+</html>
