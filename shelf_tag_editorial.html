@@ -1,87 +1,284 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Shelf Tag — Editorial</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Shelf Tag Sheet — Editorial</title>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Raleway:wght@300;400;600;700;800&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
 <style>
-  *{margin:0;padding:0;box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-  html,body{background:#e8e8e8;font-family:'Lato',sans-serif;}
-  .tag{position:relative; width:3.5in; height:2in; background:#fff; overflow:hidden; margin:20px auto; padding:0.15in 0.18in;}
-  .masthead{display:flex; align-items:center; justify-content:space-between; border-bottom:4px solid #F58A34; padding-bottom:0.05in;}
-  .kick{font-family:'Oswald'; font-weight:600; font-size:10pt; letter-spacing:.2em; color:#14181c;}
-  .fmt{font-size:8pt; color:#9aa1a7;}
-  .name{font-family:'Oswald'; font-weight:700; font-size:16pt; line-height:.98; color:#14181c; text-transform:uppercase; margin-top:0.09in;}
-  .desc{font-size:8pt; font-style:italic; color:#6a7178; line-height:1.3; margin-top:0.05in;}
-  .terps{font-family:'Oswald'; font-weight:600; font-size:13pt; color:#14181c; margin-top:0.08in;}
-  .cann{position:absolute; left:0.18in; bottom:0.14in; font-size:8pt; color:#9aa1a7;}
-  .cann b{color:#14181c;}
-  .price{position:absolute; right:0.18in; bottom:0.11in; font-family:'Oswald'; font-weight:700; font-size:20pt; color:#F58A34; line-height:1; cursor:pointer;}
-  @media print{ html,body{background:#fff;} .tag{margin:0;} @page{size:3.5in 2in; margin:0;} }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  @page { size:8.5in 11in; margin:0; }
+  html, body { background:#e8e8e8; font-family:'Lato',sans-serif; }
+  /* ── TOOLBAR ── */
+  .toolbar {
+    display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+    padding:14px 20px; background:#fff; border-bottom:1px solid #ddd;
+    position:sticky; top:0; z-index:100;
+  }
+  .toolbar button {
+    background:#4AABBF; color:#fff; border:none; padding:9px 18px;
+    border-radius:6px; font-size:13px; font-weight:700; cursor:pointer;
+    font-family:'Lato',sans-serif;
+  }
+  .toolbar button:hover { background:#3a96a8; }
+  .toolbar button.danger { background:#e05050; }
+  .toolbar button.danger:hover { background:#c03030; }
+  .toolbar .hint { font-size:11px; color:#888; }
+  .toolbar .sep { width:1px; height:24px; background:#ddd; }
+  .badge-count {
+    background:#31AA64; color:#fff; font-size:11px; font-weight:700;
+    border-radius:10px; padding:2px 8px; font-family:'Lato',sans-serif;
+  }
+  /* ── PRICE MODAL ── */
+  .modal-overlay {
+    display:none; position:fixed; inset:0; background:rgba(0,0,0,.45);
+    z-index:200; align-items:center; justify-content:center;
+  }
+  .modal-overlay.open { display:flex; }
+  .modal { background:#fff; border-radius:10px; padding:28px 28px 22px; width:340px; box-shadow:0 8px 32px rgba(0,0,0,.2); }
+  .modal h2 { font-family:'Raleway',sans-serif; font-size:16px; font-weight:700; color:#1a1a1a; margin-bottom:4px; }
+  .modal .modal-product { font-size:11px; color:#888; margin-bottom:16px; text-transform:uppercase; letter-spacing:.05em; }
+  .modal label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:#555; display:block; margin-bottom:5px; }
+  .modal input[type=text] {
+    width:100%; border:1.5px solid #ddd; border-radius:6px; padding:10px 12px;
+    font-size:20px; font-family:'Oswald',sans-serif; font-weight:700; color:#1a1a1a; outline:none;
+  }
+  .modal input[type=text]:focus { border-color:#4AABBF; }
+  .modal .modal-actions { display:flex; gap:8px; margin-top:16px; }
+  .modal .modal-actions button { flex:1; padding:10px; border:none; border-radius:6px; font-size:13px; font-weight:700; cursor:pointer; font-family:'Lato',sans-serif; }
+  .modal .modal-actions .btn-add { background:#4AABBF; color:#fff; }
+  .modal .modal-actions .btn-add:hover { background:#3a96a8; }
+  .modal .modal-actions .btn-cancel { background:#f0f0f0; color:#555; }
+  .modal .modal-actions .btn-cancel:hover { background:#e0e0e0; }
+  /* ── QUEUE LIST ── */
+  .queue-panel { max-width:816px; margin:16px auto 0; padding:0 20px; }
+  .queue-panel h3 { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:#888; margin-bottom:8px; }
+  .queue-list { display:flex; flex-direction:column; gap:6px; }
+  .queue-item { background:#fff; border:1px solid #e0e0e0; border-radius:6px; padding:8px 12px; display:flex; align-items:center; gap:10px; font-size:12px; }
+  .queue-item .qi-swatch { width:10px; height:10px; border-radius:2px; flex-shrink:0; }
+  .queue-item .qi-name { flex:1; font-weight:700; color:#1a1a1a; font-family:'Raleway',sans-serif; font-size:12px; text-transform:uppercase; }
+  .queue-item .qi-brand { color:#888; font-size:11px; }
+  .queue-item .qi-price { font-family:'Oswald',sans-serif; font-weight:700; color:#1a1a1a; font-size:15px; min-width:48px; text-align:right; }
+  .queue-item .qi-remove { background:none; border:none; color:#ccc; cursor:pointer; font-size:16px; line-height:1; padding:0 2px; }
+  .queue-item .qi-remove:hover { color:#e05050; }
+  .queue-empty { font-size:12px; color:#aaa; padding:8px 0; }
+  /* ── SHEET ── */
+  .sheet-wrap { max-width:816px; margin:20px auto 40px; padding:0 20px; }
+  .sheet-page {
+    width:816px; height:1056px; background:#fff; box-shadow:0 4px 24px rgba(0,0,0,.15);
+    padding:48px 72px; display:grid;
+    grid-template-columns: 336px 336px; grid-template-rows: repeat(5, 192px);
+    column-gap:0px; row-gap:0px;
+  }
+  /* ── EDITORIAL TAG ── */
+  .tag {
+    width:336px; height:192px; background:#fff; overflow:hidden;
+    position:relative; border:0.5px solid #d0d0d0; font-family:'Lato',sans-serif;
+  }
+  .tag.empty { border:0.5px dashed #e0e0e0; background:#fafafa; display:flex; align-items:center; justify-content:center; }
+  .tag.empty span { font-size:11px; color:#ccc; }
+  .e-content { height:100%; padding:11px 14px 9px; display:flex; flex-direction:column; }
+  .e-masthead { display:flex; align-items:flex-end; justify-content:space-between; gap:8px; border-bottom:4px solid #14181c; padding-bottom:5px; flex-shrink:0; }
+  .e-kicker { font-family:'Lato',sans-serif; font-weight:700; font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:#14181c; }
+  .e-format { font-family:'Lato',sans-serif; font-weight:700; font-size:7.5px; letter-spacing:.05em; text-transform:uppercase; color:#8a9198; text-align:right; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:150px; }
+  .e-name {
+    font-family:'Oswald',sans-serif; font-weight:700; font-size:16px; line-height:1.02;
+    color:#14181c; text-transform:uppercase; letter-spacing:.005em; margin-top:8px;
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+  }
+  .e-lede {
+    font-family:'Lato',sans-serif; font-style:italic; font-weight:400; font-size:8px;
+    line-height:1.35; color:#4a5157; margin-top:4px;
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+  }
+  .e-terps {
+    font-family:'Raleway',sans-serif; font-weight:700; font-size:11px; line-height:1.15;
+    color:#14181c; margin-top:6px;
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+  }
+  .e-foot { margin-top:auto; display:flex; align-items:flex-end; justify-content:space-between; gap:8px; }
+  .e-cann { font-family:'Lato',sans-serif; font-size:8.5px; font-weight:400; color:#6a7177; white-space:nowrap; }
+  .e-cann b { font-weight:700; color:#14181c; }
+  .e-price { font-family:'Oswald',sans-serif; font-weight:700; font-size:19px; line-height:1; }
+  /* ── PRINT ── */
+  @media print {
+    html, body { background:#fff; margin:0; padding:0; }
+    .toolbar, .queue-panel { display:none; }
+    .sheet-wrap { margin:0; padding:0; max-width:none; }
+    .sheet-page {
+      width:8.5in; height:11in; box-shadow:none; padding:.5in .75in;
+      grid-template-columns: 3.5in 3.5in; grid-template-rows: repeat(5, 2in);
+      column-gap:0; row-gap:0;
+      -webkit-print-color-adjust:exact; print-color-adjust:exact;
+    }
+    .tag { width:3.5in; height:2in; border-color:#ccc; }
+    .tag.empty { border-color:#eee; }
+  }
 </style>
 </head>
 <body>
-<div class="tag">
-  <div class="masthead"><span class="kick" id="kick">SATIVA</span><span class="fmt" id="fmt"></span></div>
-  <div class="name" id="name"></div>
-  <div class="desc" id="desc"></div>
-  <div class="terps" id="terps"></div>
-  <div class="cann">THC <b id="thc"></b>&nbsp;·&nbsp; CBD <b id="cbd"></b></div>
-  <div class="price" id="price">$—</div>
+<div class="toolbar">
+  <button onclick="window.print()">🖨 Print / Save PDF</button>
+  <span class="hint">Editorial · Letter (8.5×11) · Margins: None · Background graphics: ON</span>
+  <div class="sep"></div>
+  <span id="badge" class="badge-count">0 / 10</span>
+  <button class="danger" onclick="clearAll()">✕ Clear Sheet</button>
+</div>
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h2>Set Price</h2>
+    <div class="modal-product" id="modal-product-name"></div>
+    <label for="price-input">Price</label>
+    <input type="text" id="price-input" placeholder="$0.00" autocomplete="off">
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-add" onclick="confirmAdd()">Add to Sheet</button>
+    </div>
+  </div>
+</div>
+<div class="queue-panel">
+  <h3>Cards on Sheet</h3>
+  <div class="queue-list" id="queue-list">
+    <div class="queue-empty">No cards added yet. Open a product in Glide and tap "Shelf Card Editorial".</div>
+  </div>
+</div>
+<div class="sheet-wrap">
+  <div class="sheet-page" id="sheet"></div>
 </div>
 <script>
-function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-function r1(n){return Math.round(n);}
-var params=new URLSearchParams(location.search);
-var DEMO=['Pineapple Express','Redecan','SATIVA','Flower','220','280','0','10',
- 'Limonene','Myrcene','Pinene','British Columbia','',
- 'Bright, juicy tropical lift in a portable all-in-one — easy daytime enjoyment.',
- '','0','0','75','8','','','','','','','1','3.5','GRAM','34.99'].join('~|~|~');
-var p=(params.get('data')||DEMO).split('~|~|~');
-function g(i){return (p[i]||'').trim();}
-var species=g(2), subcat=g(3);
-var thcMin=g(4),thcMax=g(5),cbdMin=g(6),cbdMax=g(7);
-var terp1=g(8),terp2=g(9),terp3=g(10), desc=g(13);
-var thcOv=g(23),cbdOv=g(24), numItems=g(25),itemSize=g(26),itemUom=g(27), priceTok=g(28);
+var STORAGE_KEY = 'tagSheet_editorial_v1';
+var queue = [];
+var pendingCard = null;
+try { var saved = localStorage.getItem(STORAGE_KEY); if (saved) queue = JSON.parse(saved); } catch(e) {}
 
-// species palette
-var sp=species.toUpperCase(), c='#74C6EA';
-if(sp.indexOf('SATIVA')!==-1) c='#F58A34';
-else if(sp.indexOf('HYBRID')!==-1||sp.indexOf('BLEND')!==-1) c='#5AA06E';
-document.querySelector('.masthead').style.borderBottomColor=c;
-document.getElementById('price').style.color=c;
-
-var combined=(subcat+' ').toUpperCase();
-var pct=['FLOWER','PRE-ROLL','PRE-ROLLS','PREROLL','INHALABLE','SEED','SEEDS'].some(function(x){return combined.indexOf(x)!==-1;});
-var div=pct, unit=pct?'%':' mg';
-function rng(mn,mx){var lo=parseFloat(mn),hi=parseFloat(mx);if(div){lo/=10;hi/=10;}if(isNaN(lo)&&isNaN(hi))return '—';if(lo===0||isNaN(lo))return '< '+r1(hi)+unit;if(isNaN(hi)||lo===hi)return r1(lo)+unit;return r1(lo)+'–'+r1(hi)+unit;}
-
-document.getElementById('kick').textContent = species||'—';
-var sizeStr=[itemSize,itemUom].filter(Boolean).join(' ');
-document.getElementById('fmt').textContent = [subcat, sizeStr].filter(Boolean).join(' · ');
-document.getElementById('name').textContent = (g(0)||'').replace(/-/g,'‑');
-document.getElementById('desc').textContent = desc;
-
-var norm=[terp1,terp2,terp3].map(function(t){return t.toUpperCase().replace(/[_\s]/g,'');});
-var terpsTxt;
-if(!terp1) terpsTxt='Some terpenes may be present';
-else if(norm.indexOf('TERPENESREMOVED')!==-1) terpsTxt='Terpenes Removed';
-else if(norm.indexOf('TERPENEVARIES')!==-1||norm.indexOf('TERPENESVARY')!==-1) terpsTxt='Terpenes Vary';
-else terpsTxt=[terp1,terp2,terp3].filter(Boolean).map(function(t){return t.replace(/_/g,'-');}).join(' · ');
-document.getElementById('terps').textContent=terpsTxt;
-
-document.getElementById('thc').textContent = thcOv!==''?thcOv:rng(thcMin,thcMax);
-document.getElementById('cbd').textContent = cbdOv!==''?cbdOv:rng(cbdMin,cbdMax);
-
-var priceEl=document.getElementById('price');
-priceEl.textContent = priceTok ? '$'+priceTok : '$—';
-priceEl.addEventListener('click', function(){
-  var v=prompt('Enter price', priceTok||'');
-  if(v!==null && v.trim()!=='') priceEl.textContent='$'+v.trim().replace(/^\$/,'');
+function colors(species) {
+  var s = (species||'').toUpperCase();
+  if (s.indexOf('SATIVA') !== -1) return { banner:'#F58A34', thc:'#F7A45D', cbd:'#F8B670', terp:'#FCDFBC' };
+  if (s.indexOf('HYBRID') !== -1 || s.indexOf('BLEND') !== -1) return { banner:'#5AA06E', thc:'#7CB88F', cbd:'#9DCBAA', terp:'#D1EBDA' };
+  return { banner:'#74C6EA', thc:'#97D6EF', cbd:'#ACDFF2', terp:'#DBF0FA' };
+}
+function parseParams() {
+  var params = new URLSearchParams(window.location.search);
+  var raw = params.get('data') || '';
+  var p = raw.split('~|~|~');
+  function g(i) { return (p[i] || '').trim(); }
+  var species = g(2), subcat = g(3);
+  var thcMin = g(4), thcMax = g(5), cbdMin = g(6), cbdMax = g(7);
+  var terp1 = g(8), terp2 = g(9), terp3 = g(10);
+  var combined = (subcat + ' ').toUpperCase();
+  var pctCats = ['FLOWER','PRE-ROLL','PRE-ROLLS','PREROLL','INHALABLE','SEEDS','SEED'];
+  var usePct = pctCats.some(function(c){ return combined.indexOf(c) !== -1; });
+  var unit = usePct ? '%' : ' mg/g';
+  var div10 = usePct;
+  function fmtRange(lo, hi) {
+    var l = parseFloat(lo), h = parseFloat(hi);
+    if (div10) { l = l/10; h = h/10; }
+    if (isNaN(l) && isNaN(h)) return '—';
+    if (l === 0 || isNaN(l)) return '< ' + Math.round(h) + unit;
+    if (isNaN(h) || l === h) return Math.round(l) + unit;
+    return Math.round(l) + '–' + Math.round(h) + unit;
+  }
+  var terpNorm = [terp1,terp2,terp3].map(function(t){ return t.toUpperCase().replace(/[_\s]/g,''); });
+  var terpList;
+  if (!terp1) terpList = ['Some terpenes may be present'];
+  else if (terpNorm.indexOf('TERPENESREMOVED') !== -1) terpList = ['Terpenes Removed'];
+  else if (terpNorm.indexOf('TERPENEVARIES') !== -1 || terpNorm.indexOf('TERPENESVARY') !== -1) terpList = ['Terpenes Vary'];
+  else terpList = [terp1,terp2,terp3].filter(Boolean).map(function(t){ return t.replace(/_/g,'-'); });
+  var numItems = g(25), itemSize = g(26), itemUom = g(27);
+  var qty = parseFloat(numItems);
+  var qtyPrefix = (!isNaN(qty) && qty > 1) ? (Math.round(qty) + ' × ') : '';
+  var sizeParts = [itemSize, itemUom].filter(Boolean).join(' ');
+  var sizeInfo = sizeParts ? (qtyPrefix + sizeParts).trim() : '';
+  return {
+    productName: g(0), brandName: g(1), species: species, subcat: subcat,
+    thc: g(23) !== '' ? g(23) : fmtRange(thcMin, thcMax),
+    cbd: g(24) !== '' ? g(24) : fmtRange(cbdMin, cbdMax),
+    terpenes: terpList, region: g(11), description: g(13),
+    sizeInfo: sizeInfo, price: ''
+  };
+}
+function buildTag(card) {
+  var c = colors(card.species);
+  var terpLine = card.terpenes.join(' · ');
+  var format = [card.subcat, card.sizeInfo].filter(Boolean).join(' · ');
+  return '<div class="tag">'
+    + '<div class="e-content">'
+    +   '<div class="e-masthead" style="border-bottom-color:' + c.banner + '">'
+    +     '<span class="e-kicker">' + esc(card.species) + '</span>'
+    +     '<span class="e-format">' + esc(format) + '</span>'
+    +   '</div>'
+    +   '<div class="e-name">' + esc(card.productName) + '</div>'
+    +   (card.description ? '<div class="e-lede">' + esc(card.description) + '</div>' : '')
+    +   '<div class="e-terps">' + esc(terpLine) + '</div>'
+    +   '<div class="e-foot">'
+    +     '<span class="e-cann">THC <b>' + esc(card.thc) + '</b> · CBD <b>' + esc(card.cbd) + '</b></span>'
+    +     '<span class="e-price" style="color:' + c.banner + '">' + esc(card.price) + '</span>'
+    +   '</div>'
+    + '</div>'
+    + '</div>';
+}
+function emptyTag() { return '<div class="tag empty"><span>empty</span></div>'; }
+function renderSheet() {
+  var sheet = document.getElementById('sheet');
+  var html = '';
+  for (var i = 0; i < 10; i++) html += i < queue.length ? buildTag(queue[i]) : emptyTag();
+  sheet.innerHTML = html;
+  var ql = document.getElementById('queue-list');
+  if (queue.length === 0) {
+    ql.innerHTML = '<div class="queue-empty">No cards added yet. Open a product in Glide and tap "Shelf Card Editorial".</div>';
+  } else {
+    ql.innerHTML = queue.map(function(card, i) {
+      var c = colors(card.species);
+      return '<div class="queue-item">'
+        + '<div class="qi-swatch" style="background:' + c.banner + '"></div>'
+        + '<div class="qi-name">' + esc(card.productName) + '</div>'
+        + '<div class="qi-brand">' + esc(card.brandName) + '</div>'
+        + '<div class="qi-price">' + esc(card.price) + '</div>'
+        + '<button class="qi-remove" onclick="removeCard(' + i + ')" title="Remove">✕</button>'
+        + '</div>';
+    }).join('');
+  }
+  document.getElementById('badge').textContent = queue.length + ' / 10';
+}
+function removeCard(i) { queue.splice(i, 1); save(); renderSheet(); }
+function clearAll() { queue = []; save(); renderSheet(); }
+function save() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(queue)); } catch(e) {} }
+function openModal(card) {
+  pendingCard = card;
+  document.getElementById('modal-product-name').textContent = card.productName + (card.brandName ? ' — ' + card.brandName : '');
+  var input = document.getElementById('price-input');
+  input.value = '';
+  document.getElementById('modal').classList.add('open');
+  setTimeout(function(){ input.focus(); }, 50);
+}
+function closeModal() { document.getElementById('modal').classList.remove('open'); pendingCard = null; }
+function confirmAdd() {
+  if (!pendingCard) return;
+  var raw = document.getElementById('price-input').value.trim();
+  if (raw && raw[0] !== '$') raw = '$' + raw;
+  pendingCard.price = raw || '—';
+  if (queue.length < 10) { queue.push(pendingCard); }
+  else { alert('Sheet is full (10 tags). Remove one first.'); closeModal(); return; }
+  save(); renderSheet(); closeModal();
+}
+document.getElementById('price-input').addEventListener('keydown', function(e){
+  if (e.key === 'Enter') confirmAdd();
+  if (e.key === 'Escape') closeModal();
 });
-document.title=g(0)||'Shelf Tag';
+document.getElementById('modal').addEventListener('click', function(e){ if (e.target === this) closeModal(); });
+function esc(s) {
+  return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+var params = new URLSearchParams(window.location.search);
+if (params.get('data')) {
+  var card = parseParams();
+  if (card.productName) {
+    window.addEventListener('DOMContentLoaded', function(){ renderSheet(); openModal(card); });
+  }
+} else {
+  document.addEventListener('DOMContentLoaded', function(){ renderSheet(); });
+}
 </script>
 </body>
 </html>
