@@ -78,7 +78,10 @@
   }
   .tag.empty { border:0.5px dashed #e0e0e0; background:#fafafa; display:flex; align-items:center; justify-content:center; }
   .tag.empty span { font-size:11px; color:#ccc; }
-  .e-content { height:100%; padding:11px 14px 9px; display:flex; flex-direction:column; }
+  /* store-logo watermark, behind everything */
+  .tag-wm { position:absolute; inset:0; overflow:hidden; pointer-events:none; z-index:0; }
+  .tag-wm img { position:absolute; top:50%; left:50%; height:auto; display:block; }
+  .e-content { position:relative; z-index:1; height:100%; padding:11px 14px 9px; display:flex; flex-direction:column; }
   .e-masthead { display:flex; align-items:flex-end; justify-content:space-between; gap:8px; border-bottom:4px solid #14181c; padding-bottom:5px; flex-shrink:0; }
   .e-kicker { font-family:'Lato',sans-serif; font-weight:700; font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:#14181c; }
   .e-format { font-family:'Lato',sans-serif; font-weight:700; font-size:7.5px; letter-spacing:.05em; text-transform:uppercase; color:#8a9198; text-align:right; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:150px; }
@@ -195,14 +198,25 @@ function parseParams() {
     thc: g(23) !== '' ? g(23) : fmtRange(thcMin, thcMax),
     cbd: g(24) !== '' ? g(24) : fmtRange(cbdMin, cbdMax),
     terpenes: terpList, region: g(11), description: g(13),
+    wmUrl: g(14), wmX: g(15) || '0', wmY: g(16) || '0', wmSize: g(17) || '75', wmOpacity: g(18) || '8',
     sizeInfo: sizeInfo, price: ''
   };
+}
+function wmHtml(card) {
+  if (!card.wmUrl) return '';
+  var op = (parseFloat(card.wmOpacity) || 8) / 100;
+  var src = decodeSafe(card.wmUrl);
+  return '<div class="tag-wm" style="opacity:' + op + '">'
+    + '<img src="' + esc(src) + '" style="width:' + (parseFloat(card.wmSize)||75) + '%;'
+    + 'transform:translate(-50%,-50%) translate(' + (parseFloat(card.wmX)||0) + 'px,' + (parseFloat(card.wmY)||0) + 'px);">'
+    + '</div>';
 }
 function buildTag(card) {
   var c = colors(card.species);
   var terpLine = card.terpenes.join(' · ');
   var format = [card.subcat, card.sizeInfo].filter(Boolean).join(' · ');
   return '<div class="tag">'
+    + wmHtml(card)
     + '<div class="e-content">'
     +   '<div class="e-masthead" style="border-bottom-color:' + c.banner + '">'
     +     '<span class="e-kicker">' + esc(card.species) + '</span>'
@@ -270,6 +284,7 @@ document.getElementById('modal').addEventListener('click', function(e){ if (e.ta
 function esc(s) {
   return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
+function decodeSafe(u) { try { return decodeURIComponent(u); } catch(e) { return u; } }
 var params = new URLSearchParams(window.location.search);
 if (params.get('data')) {
   var card = parseParams();
