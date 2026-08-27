@@ -95,16 +95,13 @@
   .d-band {
     position:absolute; top:0; left:0; right:0; height:60px; z-index:2;
     clip-path:polygon(0 0, 100% 0, 100% 55%, 0 100%);
-    display:flex; align-items:center; gap:9px; padding:0 12px;
+    display:flex; align-items:center; padding:0 14px;
   }
-  .d-medal {
-    width:34px; height:34px; border-radius:50%; background:#fff; flex-shrink:0;
-    display:flex; align-items:center; justify-content:center; overflow:hidden;
-    box-shadow:0 1px 4px rgba(0,0,0,.18); margin-top:-6px;
+  .d-brand {
+    font-family:'Raleway',sans-serif; font-weight:800; font-size:13px;
+    letter-spacing:.1em; text-transform:uppercase; color:#fff; margin-top:-6px;
+    display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden;
   }
-  .d-medal img { width:30px; height:30px; object-fit:contain; }
-  .d-medal .ph { font-family:'Raleway',sans-serif; font-weight:800; font-size:7px; text-transform:uppercase; color:#22282e; text-align:center; line-height:1; padding:0 2px; }
-  .d-species { font-family:'Lato',sans-serif; font-weight:700; font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:#fff; margin-top:-6px; }
   /* content sits below the band */
   .d-content { position:relative; z-index:3; height:100%; padding:66px 12px 8px; display:flex; flex-direction:column; }
   .d-name {
@@ -127,7 +124,7 @@
   .d-cann b { font-weight:700; color:#14181c; }
   .d-right { display:flex; flex-direction:column; align-items:flex-end; gap:1px; }
   .d-size { font-family:'Lato',sans-serif; font-size:7.5px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:#6a7177; white-space:nowrap; }
-  .d-price { font-family:'Oswald',sans-serif; font-weight:700; font-size:19px; line-height:1; }
+  .d-price { font-family:'Oswald',sans-serif; font-weight:700; font-size:19px; line-height:1; color:#14181c; }
   /* ── PRINT ── */
   @media print {
     html, body { background:#fff; margin:0; padding:0; }
@@ -238,13 +235,10 @@ function wmHtml(card) {
 function buildTag(card) {
   var c = colors(card.species);
   var terpLine = card.terpenes.join(' · ');
-  var medal = card.logoUrl
-    ? '<div class="d-medal"><img src="' + esc(decodeSafe(card.logoUrl)) + '" alt=""></div>'
-    : '<div class="d-medal"><div class="ph">' + esc((card.brandName||'').slice(0,3).toUpperCase()) + '</div></div>';
   return '<div class="tag">'
     + wmHtml(card)
-    + '<div class="d-band" style="background:' + c.banner + '">' + medal
-    +   '<span class="d-species">' + esc(card.species) + '</span>'
+    + '<div class="d-band" style="background:' + c.banner + '">'
+    +   '<span class="d-brand">' + esc(card.brandName) + '</span>'
     + '</div>'
     + '<div class="d-content">'
     +   '<div class="d-name">' + esc(card.productName) + '</div>'
@@ -254,7 +248,7 @@ function buildTag(card) {
     +     '<span class="d-cann">THC <b>' + esc(card.thc) + '</b> · CBD <b>' + esc(card.cbd) + '</b></span>'
     +     '<span class="d-right">'
     +       (card.sizeInfo ? '<span class="d-size">' + esc(card.sizeInfo) + '</span>' : '')
-    +       '<span class="d-price" style="color:' + c.banner + '">' + esc(card.price) + '</span>'
+    +       '<span class="d-price">' + esc(card.price) + '</span>'
     +     '</span>'
     +   '</div>'
     + '</div>'
