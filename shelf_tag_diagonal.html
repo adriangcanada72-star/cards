@@ -122,6 +122,7 @@
   .d-foot { margin-top:auto; display:flex; align-items:flex-end; justify-content:space-between; gap:8px; }
   .d-foot-left { display:flex; flex-direction:column; gap:2px; min-width:0; }
   .d-cat { font-family:'Lato',sans-serif; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:#8a9198; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .d-cat .d-strain { color:#14181c; }
   .d-cann { font-family:'Lato',sans-serif; font-size:11px; font-weight:400; color:#6a7177; white-space:nowrap; }
   .d-cann b { font-weight:700; color:#14181c; }
   .d-right { display:flex; flex-direction:column; align-items:flex-end; gap:1px; }
@@ -237,6 +238,13 @@ function wmHtml(card) {
 function buildTag(card) {
   var c = colors(card.species);
   var terpLine = card.terpenes.join(' · ');
+  var catHtml = '';
+  if (card.subcat || card.species) {
+    catHtml = '<span class="d-cat">' + esc(card.subcat);
+    if (card.subcat && card.species) catHtml += ' · ';
+    if (card.species) catHtml += '<span class="d-strain">' + esc(card.species) + '</span>';
+    catHtml += '</span>';
+  }
   return '<div class="tag">'
     + wmHtml(card)
     + '<div class="d-band" style="background:' + c.banner + '">'
@@ -248,7 +256,7 @@ function buildTag(card) {
     +   '<div class="d-terps">' + esc(terpLine) + '</div>'
     +   '<div class="d-foot">'
     +     '<span class="d-foot-left">'
-    +       (card.subcat ? '<span class="d-cat">' + esc(card.subcat) + '</span>' : '')
+    +       catHtml
     +       '<span class="d-cann">THC <b>' + esc(card.thc) + '</b> · CBD <b>' + esc(card.cbd) + '</b></span>'
     +     '</span>'
     +     '<span class="d-right">'
