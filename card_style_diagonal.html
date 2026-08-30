@@ -24,31 +24,28 @@
   .card-watermark { position:absolute; top:24px; left:24px; right:24px; bottom:24px; opacity:.08; z-index:1; pointer-events:none; }
   .card-watermark img { position:absolute; top:50%; left:50%; width:75%; height:auto; transform:translate(-50%,-50%); display:none; }
 
-  /* ── DIAGONAL: inset angled colour header, circular logo medallion, badge, footer bar ── */
+  /* ── DIAGONAL: inset angled colour header, circular logo medallion, footer bar ── */
   .g-top { position:relative; height:250px; flex-shrink:0; }
-  /* colour block floats 16px in from the top/sides with a rounded top */
   .g-cutwrap { position:absolute; top:16px; left:16px; right:16px; bottom:0; border-radius:18px 18px 0 0; overflow:hidden; z-index:0; }
   .g-cut { position:absolute; inset:0; clip-path:polygon(0 0, 100% 0, 100% 68%, 0 100%); }
   .g-txt { position:relative; z-index:2; max-width:290px; padding:42px 0 0 42px; }
   .g-name { font-family:'Raleway',sans-serif; font-weight:800; font-size:21px; line-height:1.12; color:#fff; text-transform:uppercase; letter-spacing:.02em; }
   .g-sub { font-family:'Lato',sans-serif; font-size:9px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:rgba(255,255,255,.88); margin-top:10px; }
-  .g-badge { position:absolute; z-index:3; top:36px; right:50px; width:64px; height:64px; border-radius:50%; background:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; box-shadow:0 3px 10px rgba(0,0,0,.14); }
-  .g-badge .n { font-size:7px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:#171c21; }
-  .g-badge .v { font-family:'Oswald',sans-serif; font-weight:700; font-size:12.5px; color:#171c21; line-height:1; margin-top:3px; white-space:nowrap; }
 
-  .g-medal { position:absolute; z-index:4; left:50%; transform:translateX(-50%); bottom:-94px; width:196px; height:196px; border-radius:50%; background:#fff; box-shadow:0 5px 18px rgba(0,0,0,.13); display:flex; align-items:center; justify-content:center; overflow:hidden; }
-  .g-medal img { height:178px; width:auto; max-width:184px; object-fit:contain; }
+  /* medallion: original 196px circle, but the logo image is enlarged and allowed to overflow it */
+  .g-medal { position:absolute; z-index:4; left:50%; transform:translateX(-50%); bottom:-94px; width:196px; height:196px; border-radius:50%; background:#fff; box-shadow:0 5px 18px rgba(0,0,0,.13); display:flex; align-items:center; justify-content:center; overflow:visible; }
+  .g-medal img { height:250px; width:auto; max-width:300px; object-fit:contain; }
   .g-medal .ph { font-family:'Raleway',sans-serif; font-weight:800; font-size:19px; text-transform:uppercase; text-align:center; color:#22282e; padding:0 16px; line-height:1.2; }
 
-  .g-body { flex:1; min-height:0; background:transparent; padding:110px 26px 0; display:flex; flex-direction:column; position:relative; z-index:2; }
-  .g-desc { font-size:12.5px; font-weight:400; line-height:1.55; color:#33383d; text-align:center; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+  .g-body { flex:1; min-height:0; background:transparent; padding:132px 26px 0; display:flex; flex-direction:column; position:relative; z-index:2; }
+  .g-desc { font-size:12.5px; font-weight:400; line-height:1.5; color:#33383d; text-align:center; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
 
-  .g-lbl { font-family:'Lato',sans-serif; font-weight:700; font-size:9px; letter-spacing:.2em; text-transform:uppercase; color:#98a0a7; text-align:center; margin-top:15px; }
+  .g-lbl { font-family:'Lato',sans-serif; font-weight:700; font-size:9px; letter-spacing:.2em; text-transform:uppercase; color:#98a0a7; text-align:center; margin-top:14px; }
   .g-terps { display:flex; justify-content:center; gap:8px; flex-wrap:wrap; margin-top:9px; }
   .g-terps span { font-size:12.5px; font-weight:700; color:#22282e; padding:7px 14px; border-radius:999px; }
   .g-disc { font-size:6.5px; color:#14181c; line-height:1.35; text-align:center; margin-top:7px; }
 
-  .g-cann { display:flex; justify-content:center; gap:12px; margin-top:16px; }
+  .g-cann { display:flex; justify-content:center; gap:12px; margin-top:14px; }
   .g-cann div { flex:0 0 auto; min-width:104px; border-radius:16px; padding:9px 18px; text-align:center; }
   .g-cann .n { font-size:9px; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:#171c21; }
   .g-cann .v { font-family:'Oswald',sans-serif; font-weight:700; font-size:16px; color:#171c21; line-height:1; margin-top:3px; }
@@ -85,7 +82,6 @@
         <div class="g-name" id="name"></div>
         <div class="g-sub" id="kicker"></div>
       </div>
-      <div class="g-badge"><div class="n">THC</div><div class="v" id="thcBadge"></div></div>
       <div class="g-medal" id="logo"></div>
     </div>
     <div class="g-body">
@@ -98,7 +94,7 @@
         <div id="cbdCell"><div class="n">CBD</div><div class="v" id="cbd"></div></div>
       </div>
       <div class="g-foot" id="foot">
-        <div><div class="n">Strain</div><div class="v" id="species"></div></div>
+        <div><div class="n">Size</div><div class="v" id="sizeCell"></div></div>
         <div><div class="n">Region</div><div class="v" id="region"></div></div>
         <div><div class="n">Category</div><div class="v" id="brand"></div></div>
       </div>
@@ -112,7 +108,7 @@ function round1(n){ return Math.round(n); }
 var params = new URLSearchParams(window.location.search);
 var DEMO = ['ABC Hash Glass Tipped Infused Pre-Roll LTO','Tenzo','HYBRID','Pre-Roll','380','440','0','10',
   'Beta-Caryophyllene','Limonene','Linalool','British Columbia','',
-  'Hybrid hash-infused pre-roll with a sweet apple and banana flavour.'
+  'Hybrid hash-infused pre-roll with a sweet apple and banana flavour.','', '0','0','75','8','','','','','','','','3','0.5','GRAM'
 ].join('~|~|~');
 var parts = (params.get('data') || DEMO).split('~|~|~');
 var productName=parts[0]||'', brandName=parts[1]||'', species=parts[2]||'', subcategory=parts[3]||'';
@@ -122,6 +118,7 @@ var region=parts[11]||'', logoUrl=parts[12]||'', description=parts[13]||'';
 var wmUrl=parts[14]||'', wmX=parts[15]||'0', wmY=parts[16]||'0', wmSize=parts[17]||'75', wmOpacity=parts[18]||'8';
 var thcMinPiece=parts[19]||'', thcMaxPiece=parts[20]||'', cbdMinPiece=parts[21]||'', cbdMaxPiece=parts[22]||'';
 var thcOverride=(parts[23]||'').trim(), cbdOverride=(parts[24]||'').trim();
+var numItems=parts[25]||'', itemSize=parts[26]||'', itemUom=parts[27]||'';
 
 /* ORIGINAL PALETTE */
 var sp = species.toUpperCase();
@@ -129,9 +126,10 @@ var cBanner='#74C6EA', cThc='#97D6EF', cCbd='#ACDFF2', cTerp='#DBF0FA';
 if (sp.indexOf('SATIVA')!==-1){ cBanner='#F58A34'; cThc='#F7A45D'; cCbd='#F8B670'; cTerp='#FCDFBC'; }
 else if (sp.indexOf('HYBRID')!==-1||sp.indexOf('BLEND')!==-1){ cBanner='#5AA06E'; cThc='#7CB88F'; cCbd='#9DCBAA'; cTerp='#D1EBDA'; }
 
+/* Unit logic: % for flower/pre-roll/inhalable/seeds, mg for edibles/beverages/topicals/ingestible, else mg/g; caps/tablets use per-piece mg */
 var combined=(subcategory+' ').toUpperCase();
 var pctCats=['FLOWER','PRE-ROLL','PRE-ROLLS','PREROLL','INHALABLE','SEEDS','SEED'];
-var mgCats=['BEVERAGE','BEVERAGES','EDIBLE','EDIBLES','TOPICAL','TOPICALS'];
+var mgCats=['BEVERAGE','BEVERAGES','EDIBLE','EDIBLES','TOPICAL','TOPICALS','INGEST'];
 var pieceRe=/\b(caps|capsule|capsules|tablet|tablets|softgel|softgels)\b/i;
 var usePiece=pieceRe.test((productName||'')+' '+(description||''));
 var usePct=pctCats.some(function(c){return combined.indexOf(c)!==-1;});
@@ -157,6 +155,13 @@ function fmtRange(min,max){
   if (isNaN(hi)||lo===hi) return round1(lo)+unit;
   return round1(lo)+'–'+round1(hi)+unit;
 }
+
+/* Consumer pack size: "3 × 0.5 GRAM"; drop the "N ×" part when qty <= 1 */
+var qtyN=parseFloat(numItems);
+var qtyPrefix=(!isNaN(qtyN)&&qtyN>1)?(Math.round(qtyN)+' × '):'';
+var sizeParts=[itemSize,itemUom].filter(Boolean).join(' ');
+var sizeInfo=sizeParts?(qtyPrefix+sizeParts).trim():'—';
+
 var norm=[terp1,terp2,terp3].map(function(t){return t.toUpperCase().replace(/[_\s]/g,'');});
 var terpsHtml;
 if (!terp1) terpsHtml='<span>Some terpenes may be present</span>';
@@ -176,11 +181,9 @@ var terpsEl=document.getElementById('terps'); terpsEl.innerHTML=terpsHtml;
 Array.prototype.forEach.call(terpsEl.children, function(el){ el.style.background=cTerp; });
 document.getElementById('thcCell').style.background = cThc;
 document.getElementById('cbdCell').style.background = cCbd;
-var thcTxt = thcOverride!==''?thcOverride:fmtRange(thcLo,thcHi);
-document.getElementById('thc').textContent = thcTxt;
-document.getElementById('thcBadge').textContent = thcTxt;
+document.getElementById('thc').textContent = thcOverride!==''?thcOverride:fmtRange(thcLo,thcHi);
 document.getElementById('cbd').textContent = cbdOverride!==''?cbdOverride:fmtRange(cbdLo,cbdHi);
-document.getElementById('species').textContent = species||'—';
+document.getElementById('sizeCell').textContent = sizeInfo;
 document.getElementById('region').textContent = region||'—';
 document.getElementById('brand').textContent = (subcategory||'').toUpperCase();
 document.title = productName || 'Product Card';
