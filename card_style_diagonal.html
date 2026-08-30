@@ -15,6 +15,11 @@
   .toolbar .hint { font-size:12px; color:#777; }
 
   .card-shell { width:528px; height:720px; position:relative; overflow:hidden; background:#fff; box-shadow:0 4px 24px rgba(0,0,0,.2); }
+
+  /* full-bleed colour header — extends to the card edge, past the crop marks */
+  .g-bleed { position:absolute; top:0; left:0; right:0; height:286px; z-index:1; overflow:hidden; }
+  .g-bleed .g-cut { position:absolute; inset:0; clip-path:polygon(0 0, 100% 0, 100% 68%, 0 100%); }
+
   .crop { position:absolute; background:#000; z-index:20; }
   .crop.tl-h{top:24px;left:0;width:17px;height:.5px}.crop.tl-v{top:0;left:24px;width:.5px;height:17px}
   .crop.tr-h{top:24px;right:0;width:17px;height:.5px}.crop.tr-v{top:0;right:24px;width:.5px;height:17px}
@@ -24,10 +29,7 @@
   .card-watermark { position:absolute; top:24px; left:24px; right:24px; bottom:24px; opacity:.08; z-index:1; pointer-events:none; }
   .card-watermark img { position:absolute; top:50%; left:50%; width:75%; height:auto; transform:translate(-50%,-50%); display:none; }
 
-  /* ── DIAGONAL: inset angled colour header, circular logo medallion, footer bar ── */
   .g-top { position:relative; height:250px; flex-shrink:0; }
-  .g-cutwrap { position:absolute; top:16px; left:16px; right:16px; bottom:0; border-radius:18px 18px 0 0; overflow:hidden; z-index:0; }
-  .g-cut { position:absolute; inset:0; clip-path:polygon(0 0, 100% 0, 100% 68%, 0 100%); }
   .g-txt { position:relative; z-index:2; max-width:290px; padding:42px 0 0 42px; }
   .g-name { font-family:'Raleway',sans-serif; font-weight:800; font-size:21px; line-height:1.12; color:#fff; text-transform:uppercase; letter-spacing:.02em; }
   .g-sub { font-family:'Lato',sans-serif; font-size:9px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:rgba(255,255,255,.88); margin-top:10px; }
@@ -46,14 +48,14 @@
   .g-disc { font-size:6.5px; color:#14181c; line-height:1.35; text-align:center; margin-top:7px; }
 
   .g-cann { display:flex; justify-content:center; gap:12px; margin-top:14px; }
-  .g-cann div { flex:0 0 auto; min-width:104px; border-radius:16px; padding:9px 18px; text-align:center; }
-  .g-cann .n { font-size:9px; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:#171c21; }
-  .g-cann .v { font-family:'Oswald',sans-serif; font-weight:700; font-size:16px; color:#171c21; line-height:1; margin-top:3px; }
+  .g-cann div { flex:0 0 auto; min-width:104px; border-radius:16px; padding:11px 18px; text-align:center; }
+  .g-cann .n { font-size:16px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:#171c21; }
+  .g-cann .v { font-family:'Oswald',sans-serif; font-weight:700; font-size:19px; color:#171c21; line-height:1; margin-top:4px; }
 
   .g-foot { margin:auto 0 20px; border-radius:16px; padding:13px 22px; display:flex; }
   .g-foot div { flex:1; text-align:center; }
-  .g-foot .n { font-size:7.5px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:rgba(255,255,255,.8); }
-  .g-foot .v { font-size:10.5px; font-weight:700; color:#fff; margin-top:2px; }
+  .g-foot .n { font-size:7.5px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:rgba(20,24,28,.6); }
+  .g-foot .v { font-size:10.5px; font-weight:700; color:#14181c; margin-top:2px; }
 
   @media print {
     html, body { background:#fff; margin:0; padding:0; }
@@ -70,6 +72,7 @@
 </div>
 
 <div class="card-shell">
+  <div class="g-bleed"><div class="g-cut" id="banner"></div></div>
   <div class="crop tl-h"></div><div class="crop tl-v"></div>
   <div class="crop tr-h"></div><div class="crop tr-v"></div>
   <div class="crop bl-h"></div><div class="crop bl-v"></div>
@@ -77,7 +80,6 @@
   <div class="card-watermark" id="card-watermark"><img id="card-watermark-img" alt=""></div>
   <div class="card-page">
     <div class="g-top">
-      <div class="g-cutwrap"><div class="g-cut" id="banner"></div></div>
       <div class="g-txt">
         <div class="g-name" id="name"></div>
         <div class="g-sub" id="kicker"></div>
