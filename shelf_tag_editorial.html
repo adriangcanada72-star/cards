@@ -81,23 +81,23 @@
   .e-format { font-family:'Lato',sans-serif; font-weight:700; font-size:7.5px; letter-spacing:.05em; text-transform:uppercase; color:#8a9198; text-align:right; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:150px; }
   .e-name {
     font-family:'Oswald',sans-serif; font-weight:700; font-size:16px; line-height:1.02;
-    color:#14181c; text-transform:uppercase; letter-spacing:.005em; margin-top:8px;
+    color:#14181c; text-transform:uppercase; letter-spacing:.005em; margin-top:9px;
     display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
   }
   .e-lede {
     font-family:'Lato',sans-serif; font-style:italic; font-weight:400; font-size:8px;
-    line-height:1.35; color:#4a5157; margin-top:4px;
+    line-height:1.35; color:#4a5157; margin-top:10px;
     display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
   }
   .e-terps {
     font-family:'Raleway',sans-serif; font-weight:700; font-size:11px; line-height:1.15;
-    color:#14181c; margin-top:6px;
+    color:#14181c; margin-top:12px;
     display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
   }
   .e-foot { margin-top:auto; display:flex; align-items:flex-end; justify-content:space-between; gap:8px; }
-  .e-cann { font-family:'Lato',sans-serif; font-size:8.5px; font-weight:400; color:#6a7177; white-space:nowrap; }
+  .e-cann { font-family:'Lato',sans-serif; font-size:11px; font-weight:400; color:#6a7177; white-space:nowrap; }
   .e-cann b { font-weight:700; color:#14181c; }
-  .e-price { font-family:'Oswald',sans-serif; font-weight:700; font-size:19px; line-height:1; }
+  .e-price { font-family:'Oswald',sans-serif; font-weight:700; font-size:19px; line-height:1; color:#14181c; }
   @media print {
     html, body { background:#fff; margin:0; padding:0; }
     .toolbar, .queue-panel { display:none; }
@@ -224,7 +224,7 @@ function buildTag(card) {
     +   '<div class="e-terps">' + esc(terpLine) + '</div>'
     +   '<div class="e-foot">'
     +     '<span class="e-cann">THC <b>' + esc(card.thc) + '</b> · CBD <b>' + esc(card.cbd) + '</b></span>'
-    +     '<span class="e-price" style="color:' + c.banner + '">' + esc(card.price) + '</span>'
+    +     '<span class="e-price">' + esc(card.price) + '</span>'
     +   '</div>'
     + '</div>'
     + '</div>';
