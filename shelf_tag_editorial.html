@@ -10,7 +10,6 @@
   * { margin:0; padding:0; box-sizing:border-box; }
   @page { size:8.5in 11in; margin:0; }
   html, body { background:#e8e8e8; font-family:'Lato',sans-serif; }
-  /* ── TOOLBAR ── */
   .toolbar {
     display:flex; gap:10px; align-items:center; flex-wrap:wrap;
     padding:14px 20px; background:#fff; border-bottom:1px solid #ddd;
@@ -30,7 +29,6 @@
     background:#31AA64; color:#fff; font-size:11px; font-weight:700;
     border-radius:10px; padding:2px 8px; font-family:'Lato',sans-serif;
   }
-  /* ── PRICE MODAL ── */
   .modal-overlay {
     display:none; position:fixed; inset:0; background:rgba(0,0,0,.45);
     z-index:200; align-items:center; justify-content:center;
@@ -51,7 +49,6 @@
   .modal .modal-actions .btn-add:hover { background:#3a96a8; }
   .modal .modal-actions .btn-cancel { background:#f0f0f0; color:#555; }
   .modal .modal-actions .btn-cancel:hover { background:#e0e0e0; }
-  /* ── QUEUE LIST ── */
   .queue-panel { max-width:816px; margin:16px auto 0; padding:0 20px; }
   .queue-panel h3 { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:#888; margin-bottom:8px; }
   .queue-list { display:flex; flex-direction:column; gap:6px; }
@@ -63,7 +60,6 @@
   .queue-item .qi-remove { background:none; border:none; color:#ccc; cursor:pointer; font-size:16px; line-height:1; padding:0 2px; }
   .queue-item .qi-remove:hover { color:#e05050; }
   .queue-empty { font-size:12px; color:#aaa; padding:8px 0; }
-  /* ── SHEET ── */
   .sheet-wrap { max-width:816px; margin:20px auto 40px; padding:0 20px; }
   .sheet-page {
     width:816px; height:1056px; background:#fff; box-shadow:0 4px 24px rgba(0,0,0,.15);
@@ -71,14 +67,12 @@
     grid-template-columns: 336px 336px; grid-template-rows: repeat(5, 192px);
     column-gap:0px; row-gap:0px;
   }
-  /* ── EDITORIAL TAG ── */
   .tag {
     width:336px; height:192px; background:#fff; overflow:hidden;
     position:relative; border:0.5px solid #d0d0d0; font-family:'Lato',sans-serif;
   }
   .tag.empty { border:0.5px dashed #e0e0e0; background:#fafafa; display:flex; align-items:center; justify-content:center; }
   .tag.empty span { font-size:11px; color:#ccc; }
-  /* store-logo watermark, behind everything */
   .tag-wm { position:absolute; inset:0; overflow:hidden; pointer-events:none; z-index:0; }
   .tag-wm img { position:absolute; top:50%; left:50%; height:auto; display:block; }
   .e-content { position:relative; z-index:1; height:100%; padding:11px 14px 9px; display:flex; flex-direction:column; }
@@ -104,7 +98,6 @@
   .e-cann { font-family:'Lato',sans-serif; font-size:8.5px; font-weight:400; color:#6a7177; white-space:nowrap; }
   .e-cann b { font-weight:700; color:#14181c; }
   .e-price { font-family:'Oswald',sans-serif; font-weight:700; font-size:19px; line-height:1; }
-  /* ── PRINT ── */
   @media print {
     html, body { background:#fff; margin:0; padding:0; }
     .toolbar, .queue-panel { display:none; }
@@ -169,10 +162,14 @@ function parseParams() {
   var species = g(2), subcat = g(3);
   var thcMin = g(4), thcMax = g(5), cbdMin = g(6), cbdMax = g(7);
   var terp1 = g(8), terp2 = g(9), terp3 = g(10);
+  // Unit logic: % for flower/pre-roll/inhalable/seeds,
+  // mg for edibles/beverages/topicals/ingestible extracts, else mg/g
   var combined = (subcat + ' ').toUpperCase();
   var pctCats = ['FLOWER','PRE-ROLL','PRE-ROLLS','PREROLL','INHALABLE','SEEDS','SEED'];
+  var mgCats = ['BEVERAGE','BEVERAGES','EDIBLE','EDIBLES','TOPICAL','TOPICALS','INGEST'];
   var usePct = pctCats.some(function(c){ return combined.indexOf(c) !== -1; });
-  var unit = usePct ? '%' : ' mg/g';
+  var useMgOnly = mgCats.some(function(c){ return combined.indexOf(c) !== -1; });
+  var unit = usePct ? '%' : (useMgOnly ? ' mg' : ' mg/g');
   var div10 = usePct;
   function fmtRange(lo, hi) {
     var l = parseFloat(lo), h = parseFloat(hi);
