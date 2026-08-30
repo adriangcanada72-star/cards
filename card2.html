@@ -221,11 +221,14 @@ function parseParams() {
   var thcMin    = g(4), thcMax = g(5);
   var cbdMin    = g(6), cbdMax = g(7);
   var terp1     = g(8), terp2 = g(9), terp3 = g(10);
-  // Unit logic (mirrors card.html)
+  // Unit logic: % for flower/pre-roll/inhalable/seeds,
+  // mg for edibles/beverages/topicals/ingestible extracts, else mg/g
   var combined  = (subcat + ' ').toUpperCase();
   var pctCats   = ['FLOWER','PRE-ROLL','PRE-ROLLS','PREROLL','INHALABLE','SEEDS','SEED'];
+  var mgCats    = ['BEVERAGE','BEVERAGES','EDIBLE','EDIBLES','TOPICAL','TOPICALS','INGEST'];
   var usePct    = pctCats.some(function(c){ return combined.indexOf(c) !== -1; });
-  var unit      = usePct ? '%' : ' mg/g';
+  var useMgOnly = mgCats.some(function(c){ return combined.indexOf(c) !== -1; });
+  var unit      = usePct ? '%' : (useMgOnly ? ' mg' : ' mg/g');
   var div10     = usePct;
   function fmtRange(lo, hi) {
     var l = parseFloat(lo), h = parseFloat(hi);
