@@ -207,9 +207,15 @@ function parseParams() {
   else if (terpNorm.indexOf('TERPENESREMOVED') !== -1) terpList = ['Terpenes Removed'];
   else if (terpNorm.indexOf('TERPENEVARIES') !== -1 || terpNorm.indexOf('TERPENESVARY') !== -1) terpList = ['Terpenes Vary'];
   else terpList = [terp1,terp2,terp3].filter(Boolean).map(function(t){ return t.replace(/_/g,'-'); });
+  // Consumer pack size. Pre-rolls always show the "N ×" count (even N=1), e.g. "1 × 1 GRAM".
+  // A product counts as a pre-roll by category, OR when "pre-roll" appears in the name/description.
   var numItems = g(25), itemSize = g(26), itemUom = g(27);
+  var packHay = (g(0) + ' ' + g(13)).toUpperCase();
+  var isPreroll = combined.indexOf('PRE-ROLL') !== -1 || combined.indexOf('PREROLL') !== -1 || /PRE[-\s]?ROLL/.test(packHay);
   var qty = parseFloat(numItems);
-  var qtyPrefix = (!isNaN(qty) && qty > 1) ? (Math.round(qty) + ' × ') : '';
+  var qtyPrefix;
+  if (isPreroll) { var nI = (!isNaN(qty) && qty >= 1) ? Math.round(qty) : 1; qtyPrefix = nI + ' × '; }
+  else { qtyPrefix = (!isNaN(qty) && qty > 1) ? (Math.round(qty) + ' × ') : ''; }
   var sizeParts = [itemSize, itemUom].filter(Boolean).join(' ');
   var sizeInfo = sizeParts ? (qtyPrefix + sizeParts).trim() : '';
   return {
