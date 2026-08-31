@@ -25,9 +25,8 @@
   .card-watermark img { position:absolute; top:50%; left:50%; width:75%; height:auto; transform:translate(-50%,-50%); display:none; }
 
   /* ── EDITORIAL: typography-led, generous white space, rule system ── */
-  .e-masthead { display:flex; justify-content:space-between; align-items:flex-end; margin:0 -28px; padding:14px 42px 9px; border-bottom:2.5px solid #14181c; flex-shrink:0; }
+  .e-masthead { display:flex; justify-content:flex-start; align-items:flex-end; margin:0 -28px; padding:14px 42px 9px; border-bottom:2.5px solid #14181c; flex-shrink:0; }
   .e-masthead .brand { font-family:'Raleway',sans-serif; font-weight:800; font-size:13px; letter-spacing:.16em; text-transform:uppercase; color:#14181c; }
-  .e-masthead .sp { font-family:'Lato',sans-serif; font-weight:700; font-size:9px; letter-spacing:.2em; text-transform:uppercase; padding:4px 11px; border-radius:3px; color:#fff; }
 
   .e-logo { height:158px; flex-shrink:0; display:flex; align-items:center; justify-content:center; padding:14px 14px 0; }
   .e-logo img { height:150px; width:auto; max-width:340px; object-fit:contain; }
@@ -81,7 +80,6 @@
   <div class="card-page">
     <div class="e-masthead" id="masthead">
       <div class="brand" id="brandTop"></div>
-      <div class="sp" id="banner"></div>
     </div>
     <div class="e-logo" id="logo"></div>
     <div class="e-title">
@@ -105,7 +103,7 @@
     </div>
     <div class="e-foot" id="foot">
       <div class="e-meta">
-        <div><div class="n">Size</div><div class="v" id="sizeCell"></div></div>
+        <div><div class="n">Strain Type</div><div class="v" id="species"></div></div>
         <div><div class="n">Region</div><div class="v" id="region"></div></div>
         <div><div class="n">Category</div><div class="v" id="brand"></div></div>
       </div>
@@ -129,7 +127,6 @@ var region=parts[11]||'', logoUrl=parts[12]||'', description=parts[13]||'';
 var wmUrl=parts[14]||'', wmX=parts[15]||'0', wmY=parts[16]||'0', wmSize=parts[17]||'75', wmOpacity=parts[18]||'8';
 var thcMinPiece=parts[19]||'', thcMaxPiece=parts[20]||'', cbdMinPiece=parts[21]||'', cbdMaxPiece=parts[22]||'';
 var thcOverride=(parts[23]||'').trim(), cbdOverride=(parts[24]||'').trim();
-var numItems=parts[25]||'', itemSize=parts[26]||'', itemUom=parts[27]||'';
 
 /* ORIGINAL PALETTE */
 var sp = species.toUpperCase();
@@ -166,16 +163,6 @@ function fmtRange(min,max){
   return round1(lo)+'–'+round1(hi)+unit;
 }
 
-/* Consumer pack size. Pre-rolls always show the "N ×" count (even N=1), e.g. "1 × 1 GRAM". */
-var packHay=((productName||'')+' '+(description||''));
-var isPreroll = combined.indexOf('PRE-ROLL')!==-1 || combined.indexOf('PREROLL')!==-1 || /pre[-\s]?roll/i.test(packHay);
-var qtyN=parseFloat(numItems);
-var qtyPrefix;
-if (isPreroll){ var nItems=(!isNaN(qtyN)&&qtyN>=1)?Math.round(qtyN):1; qtyPrefix=nItems+' × '; }
-else { qtyPrefix=(!isNaN(qtyN)&&qtyN>1)?(Math.round(qtyN)+' × '):''; }
-var sizeParts=[itemSize,itemUom].filter(Boolean).join(' ');
-var sizeInfo=sizeParts?(qtyPrefix+sizeParts).trim():'—';
-
 var norm=[terp1,terp2,terp3].map(function(t){return t.toUpperCase().replace(/[_\s]/g,'');});
 var terpsHtml;
 if (!terp1) terpsHtml='<span>Some terpenes may be present</span>';
@@ -184,9 +171,6 @@ else if (norm.indexOf('TERPENEVARIES')!==-1||norm.indexOf('TERPENESVARY')!==-1) 
 else terpsHtml=[terp1,terp2,terp3].filter(Boolean).map(function(t){return '<span>'+esc(t.replace(/_/g,'-'))+'</span>';}).join('');
 
 document.getElementById('brandTop').textContent = (brandName||'BRAND').toUpperCase();
-var spBadge=document.getElementById('banner');
-spBadge.textContent = (species||'').toUpperCase();
-spBadge.style.background = cBanner;
 document.getElementById('logo').innerHTML = logoUrl
   ? '<img src="'+esc(logoUrl)+'" alt="">'
   : '<div class="ph">'+esc(brandName||'BRAND')+'</div>';
@@ -200,7 +184,7 @@ document.getElementById('thcCell').style.background = cThc;
 document.getElementById('cbdCell').style.background = cCbd;
 document.getElementById('thc').textContent = thcOverride!==''?thcOverride:fmtRange(thcLo,thcHi);
 document.getElementById('cbd').textContent = cbdOverride!==''?cbdOverride:fmtRange(cbdLo,cbdHi);
-document.getElementById('sizeCell').textContent = sizeInfo;
+document.getElementById('species').textContent = species||'—';
 document.getElementById('region').textContent = region||'—';
 document.getElementById('brand').textContent = (subcategory||'').toUpperCase();
 document.title = productName || 'Product Card';
