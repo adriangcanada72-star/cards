@@ -158,9 +158,19 @@ function fmtRange(min,max){
   return round1(lo)+'–'+round1(hi)+unit;
 }
 
-/* Consumer pack size: "3 × 0.5 GRAM"; drop the "N ×" part when qty <= 1 */
+/* Consumer pack size. Pre-rolls always show the "N ×" count (even N=1), e.g. "1 × 1 GRAM".
+   A product counts as a pre-roll by category, OR when "pre-roll" appears in the name/description
+   (covers inhalable extracts that are actually pre-rolls). */
+var packHay=((productName||'')+' '+(description||''));
+var isPreroll = combined.indexOf('PRE-ROLL')!==-1 || combined.indexOf('PREROLL')!==-1 || /pre[-\s]?roll/i.test(packHay);
 var qtyN=parseFloat(numItems);
-var qtyPrefix=(!isNaN(qtyN)&&qtyN>1)?(Math.round(qtyN)+' × '):'';
+var qtyPrefix;
+if (isPreroll){
+  var nItems=(!isNaN(qtyN)&&qtyN>=1)?Math.round(qtyN):1;
+  qtyPrefix=nItems+' × ';
+} else {
+  qtyPrefix=(!isNaN(qtyN)&&qtyN>1)?(Math.round(qtyN)+' × '):'';
+}
 var sizeParts=[itemSize,itemUom].filter(Boolean).join(' ');
 var sizeInfo=sizeParts?(qtyPrefix+sizeParts).trim():'—';
 
