@@ -96,7 +96,7 @@
         <div id="cbdCell"><div class="n">CBD</div><div class="v" id="cbd"></div></div>
       </div>
       <div class="g-foot" id="foot">
-        <div><div class="n">Size</div><div class="v" id="sizeCell"></div></div>
+        <div><div class="n">Strain Type</div><div class="v" id="species"></div></div>
         <div><div class="n">Region</div><div class="v" id="region"></div></div>
         <div><div class="n">Category</div><div class="v" id="brand"></div></div>
       </div>
@@ -108,9 +108,9 @@
 function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function round1(n){ return Math.round(n); }
 var params = new URLSearchParams(window.location.search);
-var DEMO = ['ABC Hash Glass Tipped Infused Pre-Roll LTO','Tenzo','HYBRID','Pre-Roll','380','440','0','10',
-  'Beta-Caryophyllene','Limonene','Linalool','British Columbia','',
-  'Hybrid hash-infused pre-roll with a sweet apple and banana flavour.','', '0','0','75','8','','','','','','','','3','0.5','GRAM'
+var DEMO = ['CBD 100+ Oil','Glacial Gold','HYBRID','Ingestible Extracts','0','0','1000','1050',
+  '','','','British Columbia','',
+  'Hybrid organic MCT oil with 100mg of CBD per 1.0ml syringe.','','0','0','75','8','','','','','','','','1','38','GRAM'
 ].join('~|~|~');
 var parts = (params.get('data') || DEMO).split('~|~|~');
 var productName=parts[0]||'', brandName=parts[1]||'', species=parts[2]||'', subcategory=parts[3]||'';
@@ -120,7 +120,6 @@ var region=parts[11]||'', logoUrl=parts[12]||'', description=parts[13]||'';
 var wmUrl=parts[14]||'', wmX=parts[15]||'0', wmY=parts[16]||'0', wmSize=parts[17]||'75', wmOpacity=parts[18]||'8';
 var thcMinPiece=parts[19]||'', thcMaxPiece=parts[20]||'', cbdMinPiece=parts[21]||'', cbdMaxPiece=parts[22]||'';
 var thcOverride=(parts[23]||'').trim(), cbdOverride=(parts[24]||'').trim();
-var numItems=parts[25]||'', itemSize=parts[26]||'', itemUom=parts[27]||'';
 
 /* ORIGINAL PALETTE */
 var sp = species.toUpperCase();
@@ -158,22 +157,6 @@ function fmtRange(min,max){
   return round1(lo)+'–'+round1(hi)+unit;
 }
 
-/* Consumer pack size. Pre-rolls always show the "N ×" count (even N=1), e.g. "1 × 1 GRAM".
-   A product counts as a pre-roll by category, OR when "pre-roll" appears in the name/description
-   (covers inhalable extracts that are actually pre-rolls). */
-var packHay=((productName||'')+' '+(description||''));
-var isPreroll = combined.indexOf('PRE-ROLL')!==-1 || combined.indexOf('PREROLL')!==-1 || /pre[-\s]?roll/i.test(packHay);
-var qtyN=parseFloat(numItems);
-var qtyPrefix;
-if (isPreroll){
-  var nItems=(!isNaN(qtyN)&&qtyN>=1)?Math.round(qtyN):1;
-  qtyPrefix=nItems+' × ';
-} else {
-  qtyPrefix=(!isNaN(qtyN)&&qtyN>1)?(Math.round(qtyN)+' × '):'';
-}
-var sizeParts=[itemSize,itemUom].filter(Boolean).join(' ');
-var sizeInfo=sizeParts?(qtyPrefix+sizeParts).trim():'—';
-
 var norm=[terp1,terp2,terp3].map(function(t){return t.toUpperCase().replace(/[_\s]/g,'');});
 var terpsHtml;
 if (!terp1) terpsHtml='<span>Some terpenes may be present</span>';
@@ -184,7 +167,7 @@ else terpsHtml=[terp1,terp2,terp3].filter(Boolean).map(function(t){return '<span
 document.getElementById('banner').style.background = cBanner;
 document.getElementById('foot').style.background = cBanner;
 document.getElementById('name').textContent = (productName||'').replace(/-/g,'‑');
-document.getElementById('kicker').textContent = [brandName, species].filter(Boolean).join('  ·  ').toUpperCase();
+document.getElementById('kicker').textContent = (brandName||'').toUpperCase();
 document.getElementById('logo').innerHTML = logoUrl
   ? '<img src="'+esc(logoUrl)+'" alt="">'
   : '<div class="ph">'+esc(brandName||'BRAND')+'</div>';
@@ -195,7 +178,7 @@ document.getElementById('thcCell').style.background = cThc;
 document.getElementById('cbdCell').style.background = cCbd;
 document.getElementById('thc').textContent = thcOverride!==''?thcOverride:fmtRange(thcLo,thcHi);
 document.getElementById('cbd').textContent = cbdOverride!==''?cbdOverride:fmtRange(cbdLo,cbdHi);
-document.getElementById('sizeCell').textContent = sizeInfo;
+document.getElementById('species').textContent = species||'—';
 document.getElementById('region').textContent = region||'—';
 document.getElementById('brand').textContent = (subcategory||'').toUpperCase();
 document.title = productName || 'Product Card';
