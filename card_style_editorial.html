@@ -24,7 +24,7 @@
   .card-watermark { position:absolute; top:24px; left:24px; right:24px; bottom:24px; opacity:.08; z-index:1; pointer-events:none; }
   .card-watermark img { position:absolute; top:50%; left:50%; width:75%; height:auto; transform:translate(-50%,-50%); display:none; }
 
-  /* ── EDITORIAL: typography-led, generous white space, rule system, QR corner ── */
+  /* ── EDITORIAL: typography-led, generous white space, rule system ── */
   .e-masthead { display:flex; justify-content:space-between; align-items:flex-end; margin:0 -28px; padding:14px 42px 9px; border-bottom:2.5px solid #14181c; flex-shrink:0; }
   .e-masthead .brand { font-family:'Raleway',sans-serif; font-weight:800; font-size:13px; letter-spacing:.16em; text-transform:uppercase; color:#14181c; }
   .e-masthead .sp { font-family:'Lato',sans-serif; font-weight:700; font-size:9px; letter-spacing:.2em; text-transform:uppercase; padding:4px 11px; border-radius:3px; color:#fff; }
@@ -33,9 +33,8 @@
   .e-logo img { height:150px; width:auto; max-width:340px; object-fit:contain; }
   .e-logo .ph { font-family:'Raleway',sans-serif; font-weight:800; font-size:26px; text-transform:uppercase; color:#14181c; text-align:center; }
 
-  .e-title { padding:16px 14px 0; flex-shrink:0; }
-  .e-title .no { font-family:'Lato',sans-serif; font-size:8.5px; font-weight:700; letter-spacing:.26em; text-transform:uppercase; color:#9aa1a7; }
-  .e-title h1 { font-family:'Raleway',sans-serif; font-weight:800; font-size:30px; line-height:1.05; color:#14181c; text-transform:uppercase; letter-spacing:-.012em; margin-top:8px; }
+  .e-title { padding:22px 14px 0; flex-shrink:0; }
+  .e-title h1 { font-family:'Raleway',sans-serif; font-weight:800; font-size:30px; line-height:1.05; color:#14181c; text-transform:uppercase; letter-spacing:-.012em; }
   .e-title .rule { height:3px; margin:13px -42px 0; }
 
   .e-lede { padding:13px 14px 0; flex-shrink:0; }
@@ -58,8 +57,6 @@
   .e-meta { display:flex; gap:22px; justify-content:center; text-align:center; }
   .e-meta .n { font-size:7.5px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:#9aa1a7; }
   .e-meta .v { font-family:'Raleway',sans-serif; font-size:11px; font-weight:700; color:#14181c; margin-top:2px; text-transform:uppercase; }
-  .e-qr { position:absolute; right:44px; bottom:8px; width:48px; height:48px; display:flex; align-items:center; justify-content:center; }
-  .e-qr img { width:48px; height:48px; object-fit:contain; }
 
   @media print {
     html, body { background:#fff; margin:0; padding:0; }
@@ -88,7 +85,6 @@
     </div>
     <div class="e-logo" id="logo"></div>
     <div class="e-title">
-      <div class="no" id="kicker"></div>
       <h1 id="name"></h1>
       <div class="rule" id="rule"></div>
     </div>
@@ -109,11 +105,10 @@
     </div>
     <div class="e-foot" id="foot">
       <div class="e-meta">
-        <div><div class="n">Strain</div><div class="v" id="species"></div></div>
+        <div><div class="n">Size</div><div class="v" id="sizeCell"></div></div>
         <div><div class="n">Region</div><div class="v" id="region"></div></div>
         <div><div class="n">Category</div><div class="v" id="brand"></div></div>
       </div>
-      <div class="e-qr" id="qrBox"></div>
     </div>
   </div>
 </div>
@@ -122,10 +117,9 @@
 function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function round1(n){ return Math.round(n); }
 var params = new URLSearchParams(window.location.search);
-var DEMO = ['Blue Dream','Pure Sunfarms','HYBRID','Flower','180','240','0','10',
-  'Beta-Myrcene','Limonene','Alpha-Pinene','British Columbia',
-  'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/krp7y7KN4Tq6Nw8a3ILQ.png',
-  'A bright, citrus-forward hybrid with a soft herbal finish. Relaxed body, lifted mood, clear head.'
+var DEMO = ['Nannerz Infused Pre-Roll','Sheeesh','SATIVA','Inhalable Extracts','400','460','0','60',
+  'Beta-Caryophyllene','Limonene','Beta-Myrcene','QC','',
+  'Sativa-dominant, distillate-infused pre-roll loaded with banana-inspired notes.','','0','0','75','8','','','','','','','','1','1','GRAM'
 ].join('~|~|~');
 var parts = (params.get('data') || DEMO).split('~|~|~');
 var productName=parts[0]||'', brandName=parts[1]||'', species=parts[2]||'', subcategory=parts[3]||'';
@@ -135,6 +129,7 @@ var region=parts[11]||'', logoUrl=parts[12]||'', description=parts[13]||'';
 var wmUrl=parts[14]||'', wmX=parts[15]||'0', wmY=parts[16]||'0', wmSize=parts[17]||'75', wmOpacity=parts[18]||'8';
 var thcMinPiece=parts[19]||'', thcMaxPiece=parts[20]||'', cbdMinPiece=parts[21]||'', cbdMaxPiece=parts[22]||'';
 var thcOverride=(parts[23]||'').trim(), cbdOverride=(parts[24]||'').trim();
+var numItems=parts[25]||'', itemSize=parts[26]||'', itemUom=parts[27]||'';
 
 /* ORIGINAL PALETTE */
 var sp = species.toUpperCase();
@@ -144,7 +139,7 @@ else if (sp.indexOf('HYBRID')!==-1||sp.indexOf('BLEND')!==-1){ cBanner='#5AA06E'
 
 var combined=(subcategory+' ').toUpperCase();
 var pctCats=['FLOWER','PRE-ROLL','PRE-ROLLS','PREROLL','INHALABLE','SEEDS','SEED'];
-var mgCats=['BEVERAGE','BEVERAGES','EDIBLE','EDIBLES','TOPICAL','TOPICALS'];
+var mgCats=['BEVERAGE','BEVERAGES','EDIBLE','EDIBLES','TOPICAL','TOPICALS','INGEST'];
 var pieceRe=/\b(caps|capsule|capsules|tablet|tablets|softgel|softgels)\b/i;
 var usePiece=pieceRe.test((productName||'')+' '+(description||''));
 var usePct=pctCats.some(function(c){return combined.indexOf(c)!==-1;});
@@ -170,6 +165,17 @@ function fmtRange(min,max){
   if (isNaN(hi)||lo===hi) return round1(lo)+unit;
   return round1(lo)+'–'+round1(hi)+unit;
 }
+
+/* Consumer pack size. Pre-rolls always show the "N ×" count (even N=1), e.g. "1 × 1 GRAM". */
+var packHay=((productName||'')+' '+(description||''));
+var isPreroll = combined.indexOf('PRE-ROLL')!==-1 || combined.indexOf('PREROLL')!==-1 || /pre[-\s]?roll/i.test(packHay);
+var qtyN=parseFloat(numItems);
+var qtyPrefix;
+if (isPreroll){ var nItems=(!isNaN(qtyN)&&qtyN>=1)?Math.round(qtyN):1; qtyPrefix=nItems+' × '; }
+else { qtyPrefix=(!isNaN(qtyN)&&qtyN>1)?(Math.round(qtyN)+' × '):''; }
+var sizeParts=[itemSize,itemUom].filter(Boolean).join(' ');
+var sizeInfo=sizeParts?(qtyPrefix+sizeParts).trim():'—';
+
 var norm=[terp1,terp2,terp3].map(function(t){return t.toUpperCase().replace(/[_\s]/g,'');});
 var terpsHtml;
 if (!terp1) terpsHtml='<span>Some terpenes may be present</span>';
@@ -184,10 +190,8 @@ spBadge.style.background = cBanner;
 document.getElementById('logo').innerHTML = logoUrl
   ? '<img src="'+esc(logoUrl)+'" alt="">'
   : '<div class="ph">'+esc(brandName||'BRAND')+'</div>';
-document.getElementById('kicker').textContent = (subcategory||'').toUpperCase();
 document.getElementById('name').textContent = (productName||'').replace(/-/g,'‑');
 document.getElementById('rule').style.background = cBanner;
-/* top + bottom rules match the middle accent rule (species colour) */
 document.getElementById('masthead').style.borderBottomColor = cBanner;
 document.getElementById('foot').style.borderTopColor = cBanner;
 document.getElementById('desc').textContent = description;
@@ -196,7 +200,7 @@ document.getElementById('thcCell').style.background = cThc;
 document.getElementById('cbdCell').style.background = cCbd;
 document.getElementById('thc').textContent = thcOverride!==''?thcOverride:fmtRange(thcLo,thcHi);
 document.getElementById('cbd').textContent = cbdOverride!==''?cbdOverride:fmtRange(cbdLo,cbdHi);
-document.getElementById('species').textContent = species||'—';
+document.getElementById('sizeCell').textContent = sizeInfo;
 document.getElementById('region').textContent = region||'—';
 document.getElementById('brand').textContent = (subcategory||'').toUpperCase();
 document.title = productName || 'Product Card';
@@ -206,17 +210,6 @@ document.title = productName || 'Product Card';
   var el=document.getElementById('name'); var len=(productName||'').length;
   if (len>34) el.style.fontSize='21px';
   else if (len>24) el.style.fontSize='25px';
-})();
-
-/* Optional QR — encodes the product name; hides itself if offline/unavailable */
-(function(){
-  var box=document.getElementById('qrBox');
-  if (!productName) return;
-  var img=new Image();
-  img.onerror=function(){ box.style.display='none'; };
-  img.alt='';
-  img.src='https://api.qrserver.com/v1/create-qr-code/?size=120x120&margin=0&data='+encodeURIComponent(productName+' '+brandName);
-  box.appendChild(img);
 })();
 
 if (wmUrl){
