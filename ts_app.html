@@ -9,16 +9,16 @@
 input,select{background:#0f1512;border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:9px 11px;font-size:14px}
 #q{flex:1;min-width:200px}
 .list{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
-.pcard{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;cursor:pointer;transition:border-color .15s;display:flex;gap:10px;align-items:flex-start}
-.pcard:hover{border-color:var(--green)}.pcard img{width:34px;height:34px;object-fit:contain;border-radius:6px;background:#fff}
+.pcard{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;cursor:pointer;transition:border-color .15s;display:flex;gap:12px;align-items:flex-start}
+.pcard:hover{border-color:var(--green)}.pcard img{width:56px;height:56px;object-fit:contain;border-radius:8px;background:#fff;padding:3px}
 .pname{font-weight:700;font-size:14px;margin-bottom:2px}.pmeta{color:var(--muted);font-size:12px}
 .src{display:inline-block;font-size:10px;padding:2px 7px;border-radius:999px;border:1px solid var(--line);margin-top:6px}
 .src.dd{color:#a6d0e8;border-color:#33566b}.src.bc{color:#a6e0b8;border-color:#33663f}.muted{color:var(--muted)}
 #ov{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-start;justify-content:center;padding:24px;overflow:auto}#ov.on{display:flex}
 .sheet{background:var(--panel);border:1px solid var(--line);border-radius:14px;max-width:680px;width:100%;padding:20px}
 .close{float:right;cursor:pointer;color:var(--muted);font-size:20px;border:none;background:none}
-.phead{display:flex;gap:14px;align-items:center;margin-bottom:6px}
-.phead img{width:64px;height:64px;object-fit:contain;background:#fff;border-radius:10px;padding:4px}
+.phead{display:flex;gap:16px;align-items:center;margin-bottom:6px}
+.phead img{width:104px;height:104px;object-fit:contain;background:#fff;border-radius:12px;padding:6px}
 .phead h2{margin:0;font-size:22px}
 .shortdesc{color:#cfe0d6;font-size:14px;margin:8px 0 4px}
 .tcard{display:flex;gap:12px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin-bottom:8px}
@@ -229,6 +229,7 @@ function kv(k,v){ return `<div><div class="k">${k}</div><div class="v">${(v===nu
 
 function openDetail(p){
   const raw=p.raw||{};
+  const shortD=p.short_description||raw.ECOMM_SHORT_DESCRIPTION||raw.Short_Desc_Final||"";
   const t=[normTerp(p.terpene_1),normTerp(p.terpene_2),normTerp(p.terpene_3)];
   const opts='<option value="">(none)</option>'+terpeneNames.map(n=>`<option>${n}</option>`).join("");
   const lg=brandLogo(p.brand);
@@ -238,7 +239,7 @@ function openDetail(p){
   const sheet=document.getElementById("sheet");
   sheet.innerHTML=`<button class="close" onclick="document.getElementById('ov').classList.remove('on')">✕</button>
     <div class="phead">${lg?`<img src="${lg}">`:""}<div><h2>${p.name||"(no name)"}</h2><div class="muted">${p.brand||""} · ${p.category||""} · ${p.catalog_source}</div></div></div>
-    ${p.short_description?`<div class="shortdesc">${p.short_description}</div>`:""}
+    ${shortD?`<div class="shortdesc">${shortD}</div>`:""}
     <div class="sect">Terpene trio (catalog)</div>
     ${t.map(terpCard).join("")||'<div class="muted">No terpenes listed.</div>'}
     <div class="sect">This batch — enter from the package</div>
@@ -257,7 +258,8 @@ function openDetail(p){
       ${kv("Unit count",p.num_consumer_items)}${kv("Size / unit",sizeU||"—")}
       ${kv("Province",p.origin_region)}${kv("Subregion",raw.ORIGIN_SUBREGION)}
       ${kv("THC",thc)}${kv("CBD",cbd)}
-      ${kv("Lifecycle",p.lifecycle_status)}${kv("Country",p.origin_country||raw.ORIGIN_COUNTRY)}
+      ${kv("Lifecycle",p.lifecycle_status)}
+      ${shortD?`<div class="full">${kv("Short description",shortD)}</div>`:""}
       ${p.long_description?`<div class="full">${kv("Description",p.long_description)}</div>`:""}
     </div>`;
   document.getElementById("d_t1").value=t[0];document.getElementById("d_t2").value=t[1];document.getElementById("d_t3").value=t[2];
