@@ -2,29 +2,31 @@
 <title>The Terpene Sommelier</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{--bg:#0f1412;--panel:#18201d;--line:#2a3833;--txt:#e8efe9;--muted:#8fa79c;--green:#5AA06E;--cer:#74C6EA;--som:#F58A34;--gold:#d9b45b;}
+:root{--bg:#f5f7f6;--panel:#ffffff;--line:#e2e8e4;--txt:#14201a;--muted:#66756c;--green:#2f7d4f;--cer:#2b93cf;--som:#e07a1c;--gold:#c99a2f;}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;line-height:1.45}
-.wrap{max-width:1000px;margin:0 auto;padding:18px}h1{font-size:20px;margin:0 0 12px;letter-spacing:.5px}
+.wrap{max-width:1000px;margin:0 auto;padding:18px}h1{font-size:20px;margin:0 0 12px;letter-spacing:.3px}
 .controls{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap}
-input,select{background:#0f1512;border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:9px 11px;font-size:14px}
+input,select{background:#fff;border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:9px 11px;font-size:14px}
 #q{flex:1;min-width:200px}
-.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
-.pcard{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;cursor:pointer;transition:border-color .15s;display:flex;gap:12px;align-items:flex-start}
-.pcard:hover{border-color:var(--green)}.pcard img{width:64px;height:64px;object-fit:contain;border-radius:8px;background:#fff;padding:4px}
-.pname{font-weight:700;font-size:14px;margin-bottom:2px}.pmeta{color:var(--muted);font-size:12px}
-.src{display:inline-block;font-size:10px;padding:2px 7px;border-radius:999px;border:1px solid var(--line);margin-top:6px}
-.src.dd{color:#a6d0e8;border-color:#33566b}.src.bc{color:#a6e0b8;border-color:#33663f}.muted{color:var(--muted)}
-#ov{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-start;justify-content:center;padding:24px;overflow:auto}#ov.on{display:flex}
-.sheet{background:var(--panel);border:1px solid var(--line);border-radius:14px;max-width:680px;width:100%;padding:20px;position:relative}
-.close{position:absolute;top:14px;right:16px;cursor:pointer;color:var(--txt);font-size:26px;line-height:1;border:none;background:#0f1512;border:1px solid var(--line);border-radius:8px;width:40px;height:40px}
-.phead{display:flex;flex-direction:column;align-items:center;gap:12px;margin:6px 0 6px}
-.phead img{width:100%;max-width:420px;height:auto;max-height:220px;object-fit:contain;background:#fff;border-radius:14px;padding:12px}
-.phead .ptitle{text-align:center}
-.phead h2{margin:0;font-size:24px}
-.shortdesc{color:#cfe0d6;font-size:14px;margin:8px 0 4px}
-.tcard{display:flex;gap:12px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin-bottom:8px}
-.tcard img{width:40px;height:40px;object-fit:cover;border-radius:8px}
-.tph{width:40px;height:40px;border-radius:8px;background:#20302a}
+.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.pcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;cursor:pointer;transition:box-shadow .15s,border-color .15s;display:flex;flex-direction:column;gap:10px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.pcard:hover{border-color:var(--green);box-shadow:0 4px 14px rgba(0,0,0,.08)}
+.pcard .lg{width:100%;height:150px;background:#fff;border:1px solid var(--line);border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.pcard .lg img{max-width:92%;max-height:92%;object-fit:contain}
+.pname{font-weight:700;font-size:15px;margin-bottom:2px}.pmeta{color:var(--muted);font-size:12px}
+.src{display:inline-block;font-size:10px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);margin-top:4px}
+.src.dd{color:#1f6f9e;border-color:#bcd9e8;background:#eef6fb}.src.bc{color:#2f7d4f;border-color:#c3e2ce;background:#eef7f1}.muted{color:var(--muted)}
+#ov{position:fixed;inset:0;background:rgba(20,30,25,.45);display:none;align-items:flex-start;justify-content:center;padding:24px;overflow:auto}#ov.on{display:flex}
+.sheet{background:var(--panel);border:1px solid var(--line);border-radius:16px;max-width:680px;width:100%;padding:22px;position:relative;box-shadow:0 10px 40px rgba(0,0,0,.2)}
+.close{position:absolute;top:14px;right:16px;cursor:pointer;color:var(--txt);font-size:22px;line-height:1;background:#fff;border:1px solid var(--line);border-radius:8px;width:40px;height:40px}
+.phead{display:flex;flex-direction:column;align-items:center;gap:12px;margin:4px 0 6px}
+.logobox{width:100%;background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;align-items:center;justify-content:center;min-height:180px}
+.logobox img{max-width:100%;max-height:240px;object-fit:contain}
+.ptitle{text-align:center}.phead h2{margin:0;font-size:24px}
+.shortdesc{color:#33433a;font-size:14px;margin:8px 0 4px}
+.tcard{display:flex;gap:12px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin-bottom:8px;background:#fafcfb}
+.tcard img{width:42px;height:42px;object-fit:cover;border-radius:8px}
+.tph{width:42px;height:42px;border-radius:8px;background:#e8efe9}
 .tname{font-weight:700;font-size:14px}.tsc{color:var(--muted);font-size:12px}
 .inrow{display:grid;grid-template-columns:52px 1fr 92px;gap:8px;align-items:center;margin-bottom:7px}.inrow .pos{color:var(--muted);font-size:12px}
 .chem{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:10px 0}.chem label{display:block;font-size:12px;color:var(--muted);margin-bottom:3px}.chem input{width:100%}
@@ -32,13 +34,13 @@ input,select{background:#0f1512;border:1px solid var(--line);color:var(--txt);bo
 .sect{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin:16px 0 8px;border-top:1px solid var(--line);padding-top:12px}
 .meter{margin:11px 0}.meter .head{display:flex;justify-content:space-between;margin-bottom:5px}.meter .name{font-weight:600;font-size:14px}
 .scale{display:grid;grid-template-columns:repeat(11,1fr);gap:3px}
-.seg{height:22px;border-radius:4px;background:#141b18;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:10px;color:#5c7067}
-.seg.on-cer{background:var(--cer);color:#04212e;font-weight:700}.seg.on-som{background:var(--som);color:#2e1601;font-weight:700}.seg.on-ov{background:var(--gold);color:#2c2200;font-weight:700}
-.badge{display:inline-block;background:#12211a;border:1px solid var(--green);color:#a6e0b8;padding:5px 12px;border-radius:999px;font-weight:700;font-size:14px;margin:6px 0}
+.seg{height:22px;border-radius:4px;background:#eef2f0;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:10px;color:#93a29a}
+.seg.on-cer{background:var(--cer);color:#fff;font-weight:700;border-color:var(--cer)}.seg.on-som{background:var(--som);color:#fff;font-weight:700;border-color:var(--som)}.seg.on-ov{background:var(--gold);color:#221900;font-weight:700;border-color:var(--gold)}
+.badge{display:inline-block;background:#eaf5ee;border:1px solid var(--green);color:#1f6b3f;padding:5px 12px;border-radius:999px;font-weight:700;font-size:14px;margin:6px 0}
 .strength{color:var(--muted);font-size:13px;margin-top:10px}
 .kv{display:grid;grid-template-columns:1fr 1fr;gap:10px 18px;font-size:13px;margin-top:6px}
 .kv .k{color:var(--muted);font-size:11px}.kv .v{font-weight:600}.kv .full{grid-column:1 / -1}
-.warn{background:#2a1c12;border:1px solid #6b4a2a;color:#e8c9a6;padding:10px 12px;border-radius:8px;font-size:13px;margin-bottom:12px;display:none}
+.warn{background:#fbf1e2;border:1px solid #e5c99a;color:#7a5a24;padding:10px 12px;border-radius:8px;font-size:13px;margin-bottom:12px;display:none}
 </style></head><body><div class="wrap">
 <h1>The Terpene Sommelier &middot; Product Browser</h1>
 <div id="cfgwarn" class="warn"></div>
@@ -216,7 +218,9 @@ async function search(){ if(!sb) return;
   countEl.textContent=`${data.length} shown${count?` of ${count} matching`:""}`;
   window._rows=data;
   listEl.innerHTML=data.map((p,i)=>{const sc=p.catalog_source==="Direct Delivery"?"dd":"bc";const lg=brandLogo(p.brand);
-    return `<div class="pcard" data-i="${i}">${lg?`<img src="${lg}">`:""}<div><div class="pname">${p.name||"(no name)"}</div>
+    return `<div class="pcard" data-i="${i}">
+      <div class="lg">${lg?`<img src="${lg}">`:'<span class="muted" style="font-size:11px">no logo</span>'}</div>
+      <div><div class="pname">${p.name||"(no name)"}</div>
       <div class="pmeta">${p.brand||""} ${p.category?("· "+p.category):""}</div>
       <div class="pmeta">${[p.terpene_1,p.terpene_2,p.terpene_3].filter(Boolean).join(", ")}</div>
       <span class="src ${sc}">${p.catalog_source}</span></div></div>`;}).join("");
@@ -240,7 +244,8 @@ function openDetail(p){
   const sizeU=(p.consumer_item_size!=null?p.consumer_item_size:"")+(p.consumer_item_size_uom?(" "+p.consumer_item_size_uom):"");
   const sheet=document.getElementById("sheet");
   sheet.innerHTML=`<button class="close" onclick="closeDetail()">✕</button>
-    <div class="phead">${lg?`<img src="${lg}">`:""}<div class="ptitle"><h2>${p.name||"(no name)"}</h2><div class="muted">${p.brand||""} · ${p.category||""} · ${p.catalog_source}</div></div></div>
+    <div class="phead"><div class="logobox">${lg?`<img src="${lg}">`:'<span class="muted">no logo</span>'}</div>
+      <div class="ptitle"><h2>${p.name||"(no name)"}</h2><div class="muted">${p.brand||""} · ${p.category||""} · ${p.catalog_source}</div></div></div>
     ${shortD?`<div class="shortdesc">${shortD}</div>`:""}
     <div class="sect">Terpene trio (catalog)</div>
     ${t.map(terpCard).join("")||'<div class="muted">No terpenes listed.</div>'}
@@ -279,7 +284,6 @@ function recompute(){
   const r=computeTriax(i);
   document.getElementById("d_out").innerHTML=meterRow("Cerebral",r.cerebral,"on-cer")+meterRow("Somatic",r.somatic,"on-som")+meterRow("Overall",r.overall,"on-ov")
     +`<div>Profile: <span class="badge">${r.profile}</span></div><div class="strength">${r.strength||"Enter this batch's percentages to sharpen the prediction."}</div>`;}
-// NOTE: clicking the backdrop does NOT close — must use the ✕ button.
 qEl.addEventListener("input",()=>{clearTimeout(timer);timer=setTimeout(search,250);});
 srcEl.addEventListener("change",search);
 (async()=>{ await loadBrands(); search(); })();
