@@ -5,9 +5,15 @@
 :root{--bg:#f5f7f6;--panel:#ffffff;--line:#e2e8e4;--txt:#14201a;--muted:#66756c;--green:#2f7d4f;--cer:#2b93cf;--som:#e07a1c;--gold:#c99a2f;}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;line-height:1.45}
 .wrap{max-width:1000px;margin:0 auto;padding:18px}h1{font-size:20px;margin:0 0 12px;letter-spacing:.3px}
-.controls{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap}
 input,select{background:#fff;border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:9px 11px;font-size:14px}
-#q{flex:1;min-width:200px}
+.controls{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap}#q{flex:1;min-width:200px}
+.focus{display:grid;grid-template-columns:1fr 1fr;gap:16px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.fcol label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);display:block;margin-bottom:6px}
+.chips{min-height:24px;margin-bottom:8px;display:flex;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:600;margin:3px 4px 0 0}
+.chip.fav{background:#eaf7ef;color:#1f6b3f;border:1px solid #bfe3cd}.chip.avoid{background:#fdecec;color:#b23b3b;border:1px solid #f0c3c3}
+.chip b{cursor:pointer}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}.filters select{flex:1;min-width:132px}
 .list{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
 .pcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;cursor:pointer;transition:box-shadow .15s,border-color .15s;display:flex;flex-direction:column;gap:10px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
 .pcard:hover{border-color:var(--green);box-shadow:0 4px 14px rgba(0,0,0,.08)}
@@ -18,15 +24,14 @@ input,select{background:#fff;border:1px solid var(--line);color:var(--txt);borde
 .src.dd{color:#1f6f9e;border-color:#bcd9e8;background:#eef6fb}.src.bc{color:#2f7d4f;border-color:#c3e2ce;background:#eef7f1}.muted{color:var(--muted)}
 #ov{position:fixed;inset:0;background:rgba(20,30,25,.45);display:none;align-items:flex-start;justify-content:center;padding:24px;overflow:auto}#ov.on{display:flex}
 .sheet{background:var(--panel);border:1px solid var(--line);border-radius:16px;max-width:680px;width:100%;padding:22px;position:relative;box-shadow:0 10px 40px rgba(0,0,0,.2)}
-.close{position:absolute;top:14px;right:16px;cursor:pointer;color:var(--txt);font-size:22px;line-height:1;background:#fff;border:1px solid var(--line);border-radius:8px;width:40px;height:40px}
+.close{position:absolute;top:14px;right:16px;cursor:pointer;color:var(--txt);font-size:22px;background:#fff;border:1px solid var(--line);border-radius:8px;width:40px;height:40px}
 .phead{display:flex;flex-direction:column;align-items:center;gap:12px;margin:4px 0 6px}
 .logobox{width:100%;background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;align-items:center;justify-content:center;min-height:180px}
 .logobox img{max-width:100%;max-height:240px;object-fit:contain}
 .ptitle{text-align:center}.phead h2{margin:0;font-size:24px}
 .shortdesc{color:#33433a;font-size:14px;margin:8px 0 4px}
 .tcard{display:flex;gap:12px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin-bottom:8px;background:#fafcfb}
-.tcard img{width:42px;height:42px;object-fit:cover;border-radius:8px}
-.tph{width:42px;height:42px;border-radius:8px;background:#e8efe9}
+.tcard img{width:42px;height:42px;object-fit:cover;border-radius:8px}.tph{width:42px;height:42px;border-radius:8px;background:#e8efe9}
 .tname{font-weight:700;font-size:14px}.tsc{color:var(--muted);font-size:12px}
 .inrow{display:grid;grid-template-columns:52px 1fr 92px;gap:8px;align-items:center;margin-bottom:7px}.inrow .pos{color:var(--muted);font-size:12px}
 .chem{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:10px 0}.chem label{display:block;font-size:12px;color:var(--muted);margin-bottom:3px}.chem input{width:100%}
@@ -38,14 +43,18 @@ input,select{background:#fff;border:1px solid var(--line);color:var(--txt);borde
 .seg.on-cer{background:var(--cer);color:#fff;font-weight:700;border-color:var(--cer)}.seg.on-som{background:var(--som);color:#fff;font-weight:700;border-color:var(--som)}.seg.on-ov{background:var(--gold);color:#221900;font-weight:700;border-color:var(--gold)}
 .badge{display:inline-block;background:#eaf5ee;border:1px solid var(--green);color:#1f6b3f;padding:5px 12px;border-radius:999px;font-weight:700;font-size:14px;margin:6px 0}
 .strength{color:var(--muted);font-size:13px;margin-top:10px}
-.kv{display:grid;grid-template-columns:1fr 1fr;gap:10px 18px;font-size:13px;margin-top:6px}
-.kv .k{color:var(--muted);font-size:11px}.kv .v{font-weight:600}.kv .full{grid-column:1 / -1}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:10px 18px;font-size:13px;margin-top:6px}.kv .k{color:var(--muted);font-size:11px}.kv .v{font-weight:600}.kv .full{grid-column:1 / -1}
 .warn{background:#fbf1e2;border:1px solid #e5c99a;color:#7a5a24;padding:10px 12px;border-radius:8px;font-size:13px;margin-bottom:12px;display:none}
 </style></head><body><div class="wrap">
 <h1>The Terpene Sommelier &middot; Product Browser</h1>
 <div id="cfgwarn" class="warn"></div>
+<div class="focus">
+  <div class="fcol"><label>★ Favorite terpenes</label><div class="chips" id="favBox"></div><select id="addFav"></select></div>
+  <div class="fcol"><label>⊘ Avoid terpenes</label><div class="chips" id="avoidBox"></div><select id="addAvoid"></select></div>
+</div>
 <div class="controls"><input id="q" placeholder="Search product or brand…">
 <select id="src"><option value="">All sources</option><option>BCLDB</option><option>Direct Delivery</option></select></div>
+<div class="filters" id="filters"></div>
 <div id="count" class="muted" style="font-size:12px;margin-bottom:8px"></div>
 <div class="list" id="list"></div></div>
 <div id="ov"><div class="sheet" id="sheet"></div></div>
@@ -177,7 +186,8 @@ if (typeof module !== "undefined" && module.exports) {
                      CEREBRAL_LABELS, SOMATIC_LABELS, OVERALL_LABELS };
 }
 
-const TERP_IMG = {"Humulene": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/PGIeBNlqSaaED8OhOPVF.png", "Alpha-Pinene": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/13tjId51VyiyGYpvVyTj.png", "Caryophyllene": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/PdwcX8f85VJ2sk3PHvDZ.png", "Myrcene": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/IRtOjavKkIutQADksAQw.png", "Beta-Pinene": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/4bONx21XhySYeKAhUg3Y.png", "Bisabolol": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/aDhtBrgRymAM3rRLMaSA.png", "Borneol": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/svKvXqvbyBL6oHwsfP7K.png", "Camphene": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/Mr9qJ5r89etsXjJ9N3re.png", "Carene": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/2ItqnK3zWmuhqwP3m5qI.png", "Cedrene": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/50z5dKavVE3aOcdWUljU.png", "Cymene": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/mNNDTJYdcdsPhYAL1Rfy.png", "Eucalyptol": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/nYo0KIF1bjkyYAPQtOpB.png", "Farnesene": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/ujy89Tp8EQZtNZ7IU2w5.png", "Fenchol": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/dEvnZITrv5AQNprhXCYq.png", "Geraniol": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/gt0YFQBkH0fR7yWAJEQw.png", "Guaiol": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/J1ymPuflZ308G6x9to7I.png", "Isopulegol": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/1QRqAoUGq5zecY1UiGce.png", "Limonene": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/mDJFJYGbAYoXQRmTepZX.png", "Linalool": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/Dyrzzzusx2VRTduUa71l.png", "Menthol": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/QBWRdhIGFPLbiu93vi5o.png", "Nerolidol": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/WTK6znDtwmWMT6p9kDJH.png", "Ocimene": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/GPAYIPfxsnJL8IB8XHdk.png", "Phellandrene": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/pfoZKdeUalj3yFDzvkQq.png", "Sabinene": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/KlPYm8Z6QIpSK72mEuMD.png", "Selinadienes": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/ewoS66ssO80zMIFITFVI.png", "Terpinene": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/DJ0B7vBSQMNZvL4asTIq.png", "Terpineol": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/0yD49oD1qJTEBBKSYkZM.png", "Terpinolene": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/lPnm2pIgN6HKBLJtQVS7.png", "Valencene": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/SmbrJySCKniiwqCGxacb.png"};
+const TERP_IMG={"Humulene": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/PGIeBNlqSaaED8OhOPVF.png", "Alpha-Pinene": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/13tjId51VyiyGYpvVyTj.png", "Caryophyllene": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/PdwcX8f85VJ2sk3PHvDZ.png", "Myrcene": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/IRtOjavKkIutQADksAQw.png", "Beta-Pinene": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/4bONx21XhySYeKAhUg3Y.png", "Bisabolol": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/aDhtBrgRymAM3rRLMaSA.png", "Borneol": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/svKvXqvbyBL6oHwsfP7K.png", "Camphene": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/Mr9qJ5r89etsXjJ9N3re.png", "Carene": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/2ItqnK3zWmuhqwP3m5qI.png", "Cedrene": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/50z5dKavVE3aOcdWUljU.png", "Cymene": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/mNNDTJYdcdsPhYAL1Rfy.png", "Eucalyptol": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/nYo0KIF1bjkyYAPQtOpB.png", "Farnesene": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/ujy89Tp8EQZtNZ7IU2w5.png", "Fenchol": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/dEvnZITrv5AQNprhXCYq.png", "Geraniol": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/gt0YFQBkH0fR7yWAJEQw.png", "Guaiol": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/J1ymPuflZ308G6x9to7I.png", "Isopulegol": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/1QRqAoUGq5zecY1UiGce.png", "Limonene": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/mDJFJYGbAYoXQRmTepZX.png", "Linalool": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/Dyrzzzusx2VRTduUa71l.png", "Menthol": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/QBWRdhIGFPLbiu93vi5o.png", "Nerolidol": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/WTK6znDtwmWMT6p9kDJH.png", "Ocimene": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/GPAYIPfxsnJL8IB8XHdk.png", "Phellandrene": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/pfoZKdeUalj3yFDzvkQq.png", "Sabinene": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/KlPYm8Z6QIpSK72mEuMD.png", "Selinadienes": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/ewoS66ssO80zMIFITFVI.png", "Terpinene": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/DJ0B7vBSQMNZvL4asTIq.png", "Terpineol": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/0yD49oD1qJTEBBKSYkZM.png", "Terpinolene": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/lPnm2pIgN6HKBLJtQVS7.png", "Valencene": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/41PjtcGV2ruPcLtOK2SK/pub/SmbrJySCKniiwqCGxacb.png"};
+const FOPTS={"category": ["Beverages", "Edibles", "Flower", "Ingestible Extracts", "Inhalable Extracts", "Plants", "Pre-roll", "Seeds", "Topicals"], "species": ["BLEND", "HYBRID", "INDICA", "SATIVA"], "province": ["AB", "BC", "MB", "NB", "NL", "NS", "ON", "PE", "QC", "SK"], "extraction": ["Alcohol", "Butane", "CO2", "Dry_Sieve", "Ethanol", "Heat", "Heptane", "Hexane", "Isopropanol", "Water"], "harvesting": ["HAND", "MACHINE"], "growing": ["Greenhouse", "Hybrid_Greenhouse", "Indoor", "Outdoor"], "lifecycle": ["ACTIVE", "Active", "PRODUCT_EXIT"]};
 
 const SUPABASE_URL = "https://kkijtcpqfrzsttgwvqgs.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_aJCQWiBURvJebEWfSC6R7g_rVQv2d1Y";
@@ -196,34 +206,51 @@ async function loadBrands(){ if(!sb) return; const {data}=await sb.from("brands"
   if(data) data.forEach(b=>{ if(b.name) BRANDS[b.name.toLowerCase()]=b.logo_url; }); }
 function brandLogo(name){ return name?BRANDS[name.toLowerCase()]||"":""; }
 
-function cannab(minv,maxv,uom){
-  const conv=v=>{ if(v===null||v===undefined||v==="")return null; v=parseFloat(v); if(!isFinite(v))return null;
-    const u=(uom||"").toLowerCase(); if(u.includes("mg/g")) return {n:v/10,u:"%"}; if(u==="mg") return {n:v,u:" mg"}; return {n:v,u:"%"}; };
-  const a=conv(minv),b=conv(maxv); if(!a&&!b) return "—";
-  const u=(b||a).u, f=x=>Number.isInteger(x.n)?x.n:(+x.n.toFixed(1));
-  return (a&&b)?`${f(a)}–${f(b)}${u}`:`${f(a||b)}${u}`;
+// ---- build filter dropdowns ----
+const FILTERS=[["category","Category"],["species","Strain type"],["province","Province"],
+  ["extraction","Extraction"],["harvesting","Harvesting"],["growing","Growing method"],["lifecycle","Lifecycle"]];
+const FIELDMAP={category:"category",species:"species",province:"origin_region",extraction:"extraction_process",harvesting:"harvesting_method",growing:"growing_method",lifecycle:"lifecycle_status"};
+document.getElementById("filters").innerHTML=FILTERS.map(([k,label])=>{
+  const o=(FOPTS[k]||[]).map(v=>`<option value="${v}">${v}</option>`).join("");
+  return `<select id="f_${k}"><option value="">${label}: all</option>${o}</select>`;}).join("");
+
+// ---- terpene focus chips ----
+let FAV=[], AVOID=[];
+function fillAdd(sel,ph){ sel.innerHTML=`<option value="">${ph}</option>`+terpeneNames.map(n=>`<option>${n}</option>`).join(""); }
+fillAdd(document.getElementById("addFav"),"+ add favorite…");
+fillAdd(document.getElementById("addAvoid"),"+ add to avoid…");
+function renderChips(){
+  document.getElementById("favBox").innerHTML=FAV.map(t=>`<span class="chip fav">${t}<b data-k="fav" data-t="${t}">✕</b></span>`).join("")||'<span class="muted" style="font-size:12px">none</span>';
+  document.getElementById("avoidBox").innerHTML=AVOID.map(t=>`<span class="chip avoid">${t}<b data-k="avoid" data-t="${t}">✕</b></span>`).join("")||'<span class="muted" style="font-size:12px">none</span>';
+  document.querySelectorAll(".chip b").forEach(b=>b.onclick=()=>{const t=b.dataset.t;if(b.dataset.k==="fav")FAV=FAV.filter(x=>x!==t);else AVOID=AVOID.filter(x=>x!==t);renderChips();search();});
 }
-function cannabMid(minv,maxv,uom){const c=v=>{if(v===null||v===undefined||v==="")return null;v=parseFloat(v);if(!isFinite(v))return null;const u=(uom||"").toLowerCase();if(u.includes("mg/g"))return v/10;if(u==="mg")return null;return v;};const a=c(minv),b=c(maxv);if(a!=null&&b!=null)return +(((a+b)/2).toFixed(1));return a!=null?a:b;}
+document.getElementById("addFav").onchange=e=>{const v=e.target.value;if(v&&!FAV.includes(v)){FAV.push(v);renderChips();search();}e.target.value="";};
+document.getElementById("addAvoid").onchange=e=>{const v=e.target.value;if(v&&!AVOID.includes(v)){AVOID.push(v);renderChips();search();}e.target.value="";};
+renderChips();
+
+function cannab(minv,maxv,uom){const conv=v=>{if(v===null||v===undefined||v==="")return null;v=parseFloat(v);if(!isFinite(v))return null;const u=(uom||"").toLowerCase();if(u.includes("mg/g"))return{n:v/10,u:"%"};if(u==="mg")return{n:v,u:" mg"};return{n:v,u:"%"};};const a=conv(minv),b=conv(maxv);if(!a&&!b)return"—";const u=(b||a).u,f=x=>Number.isInteger(x.n)?x.n:(+x.n.toFixed(1));return(a&&b)?`${f(a)}–${f(b)}${u}`:`${f(a||b)}${u}`;}
+function cannabMid(minv,maxv,uom){const c=v=>{if(v===null||v===undefined||v==="")return null;v=parseFloat(v);if(!isFinite(v))return null;const u=(uom||"").toLowerCase();if(u.includes("mg/g"))return v/10;if(u==="mg")return null;return v;};const a=c(minv),b=c(maxv);if(a!=null&&b!=null)return+(((a+b)/2).toFixed(1));return a!=null?a:b;}
 
 const listEl=document.getElementById("list"),countEl=document.getElementById("count");
 const qEl=document.getElementById("q"),srcEl=document.getElementById("src");let timer=null;
 
 async function search(){ if(!sb) return;
-  const term=qEl.value.trim(),src=srcEl.value;
-  let query=sb.from("products").select("*",{count:"exact"}).order("name").limit(60);
-  if(term) query=query.or(`name.ilike.%${term}%,brand.ilike.%${term}%`);
-  if(src) query=query.eq("catalog_source",src);
-  const {data,error,count}=await query;
+  let q=sb.from("products").select("*",{count:"exact"}).order("name").limit(60);
+  const term=qEl.value.trim(); if(term) q=q.or(`name.ilike.%${term}%,brand.ilike.%${term}%`);
+  if(srcEl.value) q=q.eq("catalog_source",srcEl.value);
+  for(const [k] of FILTERS){ const v=document.getElementById("f_"+k).value; if(v) q=q.eq(FIELDMAP[k],v); }
+  if(FAV.length) q=q.or(FAV.map(t=>`all_terpenes.ilike.%${t.toLowerCase()}%`).join(","));
+  for(const t of AVOID) q=q.not("all_terpenes","ilike",`%${t.toLowerCase()}%`);
+  const {data,error,count}=await q;
   if(error){ countEl.textContent="Error: "+error.message; return; }
   countEl.textContent=`${data.length} shown${count?` of ${count} matching`:""}`;
   window._rows=data;
   listEl.innerHTML=data.map((p,i)=>{const sc=p.catalog_source==="Direct Delivery"?"dd":"bc";const lg=brandLogo(p.brand);
-    return `<div class="pcard" data-i="${i}">
-      <div class="lg">${lg?`<img src="${lg}">`:'<span class="muted" style="font-size:11px">no logo</span>'}</div>
+    return `<div class="pcard" data-i="${i}"><div class="lg">${lg?`<img src="${lg}">`:'<span class="muted" style="font-size:11px">no logo</span>'}</div>
       <div><div class="pname">${p.name||"(no name)"}</div>
       <div class="pmeta">${p.brand||""} ${p.category?("· "+p.category):""}</div>
       <div class="pmeta">${[p.terpene_1,p.terpene_2,p.terpene_3].filter(Boolean).join(", ")}</div>
-      <span class="src ${sc}">${p.catalog_source}</span></div></div>`;}).join("");
+      <span class="src ${sc}">${p.catalog_source}</span></div></div>`;}).join("")||'<div class="muted">No products match these filters.</div>';
   document.querySelectorAll(".pcard").forEach(el=>el.onclick=()=>openDetail(window._rows[+el.dataset.i]));
 }
 
@@ -262,6 +289,8 @@ function openDetail(p){
     <div class="kv">
       ${kv("SKU",p.sku)}${kv("Catalog",p.catalog_source)}
       ${kv("Category",p.category)}${kv("Strain type",p.species)}
+      ${kv("Extraction",p.extraction_process)}${kv("Growing",p.growing_method)}
+      ${kv("Harvesting",p.harvesting_method||raw.HARVESTING_METHOD)}${kv("Consumption",p.consumption_method)}
       ${kv("Unit count",p.num_consumer_items)}${kv("Size / unit",sizeU||"—")}
       ${kv("Province",p.origin_region)}${kv("Subregion",raw.ORIGIN_SUBREGION)}
       ${kv("THC",thc)}${kv("CBD",cbd)}
@@ -284,6 +313,7 @@ function recompute(){
   const r=computeTriax(i);
   document.getElementById("d_out").innerHTML=meterRow("Cerebral",r.cerebral,"on-cer")+meterRow("Somatic",r.somatic,"on-som")+meterRow("Overall",r.overall,"on-ov")
     +`<div>Profile: <span class="badge">${r.profile}</span></div><div class="strength">${r.strength||"Enter this batch's percentages to sharpen the prediction."}</div>`;}
+FILTERS.forEach(([k])=>document.getElementById("f_"+k).addEventListener("change",search));
 qEl.addEventListener("input",()=>{clearTimeout(timer);timer=setTimeout(search,250);});
 srcEl.addEventListener("change",search);
 (async()=>{ await loadBrands(); search(); })();
