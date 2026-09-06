@@ -21,12 +21,13 @@ input,select{background:#0f1512;border:1px solid var(--line);color:var(--txt);bo
 .phead img{width:64px;height:64px;object-fit:contain;background:#fff;border-radius:10px;padding:4px}
 .phead h2{margin:0;font-size:22px}
 .shortdesc{color:#cfe0d6;font-size:14px;margin:8px 0 4px}
-.tcard{display:flex;gap:12px;align-items:center;background:#12191600;border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin-bottom:8px}
+.tcard{display:flex;gap:12px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin-bottom:8px}
 .tcard img{width:40px;height:40px;object-fit:cover;border-radius:8px}
 .tph{width:40px;height:40px;border-radius:8px;background:#20302a}
 .tname{font-weight:700;font-size:14px}.tsc{color:var(--muted);font-size:12px}
 .inrow{display:grid;grid-template-columns:52px 1fr 92px;gap:8px;align-items:center;margin-bottom:7px}.inrow .pos{color:var(--muted);font-size:12px}
 .chem{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:10px 0}.chem label{display:block;font-size:12px;color:var(--muted);margin-bottom:3px}.chem input{width:100%}
+.hint{font-size:11px;color:var(--muted);margin:2px 0 0}
 .sect{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin:16px 0 8px;border-top:1px solid var(--line);padding-top:12px}
 .meter{margin:11px 0}.meter .head{display:flex;justify-content:space-between;margin-bottom:5px}.meter .name{font-weight:600;font-size:14px}
 .scale{display:grid;grid-template-columns:repeat(11,1fr);gap:3px}
@@ -35,8 +36,7 @@ input,select{background:#0f1512;border:1px solid var(--line);color:var(--txt);bo
 .badge{display:inline-block;background:#12211a;border:1px solid var(--green);color:#a6e0b8;padding:5px 12px;border-radius:999px;font-weight:700;font-size:14px;margin:6px 0}
 .strength{color:var(--muted);font-size:13px;margin-top:10px}
 .kv{display:grid;grid-template-columns:1fr 1fr;gap:10px 18px;font-size:13px;margin-top:6px}
-.kv .k{color:var(--muted);font-size:11px}.kv .v{font-weight:600}
-.kv .full{grid-column:1 / -1}
+.kv .k{color:var(--muted);font-size:11px}.kv .v{font-weight:600}.kv .full{grid-column:1 / -1}
 .warn{background:#2a1c12;border:1px solid #6b4a2a;color:#e8c9a6;padding:10px 12px;border-radius:8px;font-size:13px;margin-bottom:12px;display:none}
 </style></head><body><div class="wrap">
 <h1>The Terpene Sommelier &middot; Product Browser</h1>
@@ -192,17 +192,14 @@ async function loadBrands(){ if(!sb) return; const {data}=await sb.from("brands"
   if(data) data.forEach(b=>{ if(b.name) BRANDS[b.name.toLowerCase()]=b.logo_url; }); }
 function brandLogo(name){ return name?BRANDS[name.toLowerCase()]||"":""; }
 
-// mg/g -> %; leave % and mg as-is
 function cannab(minv,maxv,uom){
   const conv=v=>{ if(v===null||v===undefined||v==="")return null; v=parseFloat(v); if(!isFinite(v))return null;
-    const u=(uom||"").toLowerCase();
-    if(u.includes("mg/g")) return {n:v/10,u:"%"};
-    if(u==="mg") return {n:v,u:" mg"};
-    return {n:v,u:"%"}; };
+    const u=(uom||"").toLowerCase(); if(u.includes("mg/g")) return {n:v/10,u:"%"}; if(u==="mg") return {n:v,u:" mg"}; return {n:v,u:"%"}; };
   const a=conv(minv),b=conv(maxv); if(!a&&!b) return "—";
   const u=(b||a).u, f=x=>Number.isInteger(x.n)?x.n:(+x.n.toFixed(1));
   return (a&&b)?`${f(a)}–${f(b)}${u}`:`${f(a||b)}${u}`;
 }
+function cannabMid(minv,maxv,uom){const c=v=>{if(v===null||v===undefined||v==="")return null;v=parseFloat(v);if(!isFinite(v))return null;const u=(uom||"").toLowerCase();if(u.includes("mg/g"))return v/10;if(u==="mg")return null;return v;};const a=c(minv),b=c(maxv);if(a!=null&&b!=null)return +(((a+b)/2).toFixed(1));return a!=null?a:b;}
 
 const listEl=document.getElementById("list"),countEl=document.getElementById("count");
 const qEl=document.getElementById("q"),srcEl=document.getElementById("src");let timer=null;
@@ -250,7 +247,8 @@ function openDetail(p){
     <div class="inrow"><span class="pos">3rd</span><select id="d_t3">${opts}</select><input id="d_p3" type="number" step="0.01" placeholder="%"></div>
     <div class="chem"><div><label>THC %</label><input id="d_thc" type="number" step="0.1"></div>
       <div><label>CBD %</label><input id="d_cbd" type="number" step="0.1"></div>
-      <div><label>Total terpenes %</label><input id="d_tt" type="number" step="0.1"></div></div>
+      <div><label>Total terpenes %</label><input id="d_tt" type="number" step="0.1" placeholder="auto: sum above"></div></div>
+    <div class="hint">THC pre-filled from the catalog midpoint; Total terpenes defaults to the sum of the three above. Adjust for this batch.</div>
     <div class="sect">Effect read-out</div><div id="d_out"></div>
     <div class="sect">Product details</div>
     <div class="kv">
@@ -263,11 +261,17 @@ function openDetail(p){
       ${p.long_description?`<div class="full">${kv("Description",p.long_description)}</div>`:""}
     </div>`;
   document.getElementById("d_t1").value=t[0];document.getElementById("d_t2").value=t[1];document.getElementById("d_t3").value=t[2];
+  const _thcMid=cannabMid(p.thc_min,p.thc_max,raw.PER_RETAIL_UNIT_THC_UOM); if(_thcMid!=null) document.getElementById("d_thc").value=_thcMid;
+  const _cbdMid=cannabMid(p.cbd_min,p.cbd_max,raw.PER_RETAIL_UNIT_CBD_UOM); if(_cbdMid!=null) document.getElementById("d_cbd").value=_cbdMid;
   ["d_t1","d_t2","d_t3","d_p1","d_p2","d_p3","d_thc","d_cbd","d_tt"].forEach(id=>document.getElementById(id).addEventListener("input",recompute));
   recompute();
   document.getElementById("ov").classList.add("on");
 }
-function recompute(){const i={t1:d_t1.value,t2:d_t2.value,t3:d_t3.value,p1:d_p1.value,p2:d_p2.value,p3:d_p3.value,thc:d_thc.value,cbd:d_cbd.value,totalTerp:d_tt.value};
+function recompute(){
+  const p1=parseFloat(d_p1.value)||0,p2=parseFloat(d_p2.value)||0,p3=parseFloat(d_p3.value)||0;
+  const tt = d_tt.value.trim()===""? (p1+p2+p3) : parseFloat(d_tt.value);
+  const thc = d_thc.value.trim()===""? 20 : parseFloat(d_thc.value);
+  const i={t1:d_t1.value,t2:d_t2.value,t3:d_t3.value,p1:d_p1.value,p2:d_p2.value,p3:d_p3.value,thc:thc,cbd:d_cbd.value,totalTerp:tt};
   const r=computeTriax(i);
   document.getElementById("d_out").innerHTML=meterRow("Cerebral",r.cerebral,"on-cer")+meterRow("Somatic",r.somatic,"on-som")+meterRow("Overall",r.overall,"on-ov")
     +`<div>Profile: <span class="badge">${r.profile}</span></div><div class="strength">${r.strength||"Enter this batch's percentages to sharpen the prediction."}</div>`;}
