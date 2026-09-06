@@ -10,16 +10,17 @@ input,select{background:#0f1512;border:1px solid var(--line);color:var(--txt);bo
 #q{flex:1;min-width:200px}
 .list{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
 .pcard{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;cursor:pointer;transition:border-color .15s;display:flex;gap:12px;align-items:flex-start}
-.pcard:hover{border-color:var(--green)}.pcard img{width:56px;height:56px;object-fit:contain;border-radius:8px;background:#fff;padding:3px}
+.pcard:hover{border-color:var(--green)}.pcard img{width:64px;height:64px;object-fit:contain;border-radius:8px;background:#fff;padding:4px}
 .pname{font-weight:700;font-size:14px;margin-bottom:2px}.pmeta{color:var(--muted);font-size:12px}
 .src{display:inline-block;font-size:10px;padding:2px 7px;border-radius:999px;border:1px solid var(--line);margin-top:6px}
 .src.dd{color:#a6d0e8;border-color:#33566b}.src.bc{color:#a6e0b8;border-color:#33663f}.muted{color:var(--muted)}
 #ov{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-start;justify-content:center;padding:24px;overflow:auto}#ov.on{display:flex}
-.sheet{background:var(--panel);border:1px solid var(--line);border-radius:14px;max-width:680px;width:100%;padding:20px}
-.close{float:right;cursor:pointer;color:var(--muted);font-size:20px;border:none;background:none}
-.phead{display:flex;gap:16px;align-items:center;margin-bottom:6px}
-.phead img{width:104px;height:104px;object-fit:contain;background:#fff;border-radius:12px;padding:6px}
-.phead h2{margin:0;font-size:22px}
+.sheet{background:var(--panel);border:1px solid var(--line);border-radius:14px;max-width:680px;width:100%;padding:20px;position:relative}
+.close{position:absolute;top:14px;right:16px;cursor:pointer;color:var(--txt);font-size:26px;line-height:1;border:none;background:#0f1512;border:1px solid var(--line);border-radius:8px;width:40px;height:40px}
+.phead{display:flex;flex-direction:column;align-items:center;gap:12px;margin:6px 0 6px}
+.phead img{width:100%;max-width:420px;height:auto;max-height:220px;object-fit:contain;background:#fff;border-radius:14px;padding:12px}
+.phead .ptitle{text-align:center}
+.phead h2{margin:0;font-size:24px}
 .shortdesc{color:#cfe0d6;font-size:14px;margin:8px 0 4px}
 .tcard{display:flex;gap:12px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin-bottom:8px}
 .tcard img{width:40px;height:40px;object-fit:cover;border-radius:8px}
@@ -181,6 +182,7 @@ const SUPABASE_ANON_KEY = "sb_publishable_aJCQWiBURvJebEWfSC6R7g_rVQv2d1Y";
 let sb=null;
 if(SUPABASE_URL.startsWith("http")){ sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY); }
 else{ const w=document.getElementById("cfgwarn"); w.style.display="block"; w.textContent="Add Supabase URL + key in the CONFIG block."; }
+function closeDetail(){ document.getElementById("ov").classList.remove("on"); }
 
 const _names=new Set(terpeneNames);
 function normTerp(n){ if(!n) return ""; if(_names.has(n)) return n;
@@ -237,8 +239,8 @@ function openDetail(p){
   const cbd=cannab(p.cbd_min,p.cbd_max,raw.PER_RETAIL_UNIT_CBD_UOM);
   const sizeU=(p.consumer_item_size!=null?p.consumer_item_size:"")+(p.consumer_item_size_uom?(" "+p.consumer_item_size_uom):"");
   const sheet=document.getElementById("sheet");
-  sheet.innerHTML=`<button class="close" onclick="document.getElementById('ov').classList.remove('on')">✕</button>
-    <div class="phead">${lg?`<img src="${lg}">`:""}<div><h2>${p.name||"(no name)"}</h2><div class="muted">${p.brand||""} · ${p.category||""} · ${p.catalog_source}</div></div></div>
+  sheet.innerHTML=`<button class="close" onclick="closeDetail()">✕</button>
+    <div class="phead">${lg?`<img src="${lg}">`:""}<div class="ptitle"><h2>${p.name||"(no name)"}</h2><div class="muted">${p.brand||""} · ${p.category||""} · ${p.catalog_source}</div></div></div>
     ${shortD?`<div class="shortdesc">${shortD}</div>`:""}
     <div class="sect">Terpene trio (catalog)</div>
     ${t.map(terpCard).join("")||'<div class="muted">No terpenes listed.</div>'}
@@ -277,7 +279,7 @@ function recompute(){
   const r=computeTriax(i);
   document.getElementById("d_out").innerHTML=meterRow("Cerebral",r.cerebral,"on-cer")+meterRow("Somatic",r.somatic,"on-som")+meterRow("Overall",r.overall,"on-ov")
     +`<div>Profile: <span class="badge">${r.profile}</span></div><div class="strength">${r.strength||"Enter this batch's percentages to sharpen the prediction."}</div>`;}
-document.getElementById("ov").onclick=e=>{if(e.target.id==="ov")e.currentTarget.classList.remove("on");};
+// NOTE: clicking the backdrop does NOT close — must use the ✕ button.
 qEl.addEventListener("input",()=>{clearTimeout(timer);timer=setTimeout(search,250);});
 srcEl.addEventListener("change",search);
 (async()=>{ await loadBrands(); search(); })();
