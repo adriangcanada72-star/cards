@@ -36,6 +36,8 @@ input,select{background:#fff;border:1px solid var(--line);color:var(--txt);borde
 .pcard:hover{border-color:var(--green);box-shadow:0 4px 14px rgba(0,0,0,.08)}
 .pcard .lg{width:100%;height:200px;background:#fff;border:1px solid var(--line);border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .pcard .lg img{max-width:94%;max-height:94%;object-fit:contain}
+.lg .logotext{font-weight:800;font-size:22px;color:var(--txt);text-align:center;padding:0 10px;line-height:1.2}
+.logobox .logotext{font-weight:800;font-size:34px;color:var(--txt);text-align:center;padding:0 14px;line-height:1.15}
 .pname{font-weight:700;font-size:15px;margin-bottom:2px}.pmeta{color:var(--muted);font-size:12px}
 .src{display:inline-block;font-size:10px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);margin-top:4px}
 .src.dd{color:#1f6f9e;border-color:#bcd9e8;background:#eef6fb}.src.bc{color:#2f7d4f;border-color:#c3e2ce;background:#eef7f1}.muted{color:var(--muted)}
@@ -279,7 +281,7 @@ async function search(){ if(!sb) return; updateBadge();
   countEl.textContent=`${data.length} shown${count?` of ${count} matching`:""}`;
   window._rows=data;
   listEl.innerHTML=data.map((p,i)=>{const sc=p.catalog_source==="Direct Delivery"?"dd":"bc";const lg=brandLogo(p.brand);
-    return `<div class="pcard" data-i="${i}"><div class="lg">${lg?`<img src="${lg}">`:'<span class="muted" style="font-size:11px">no logo</span>'}</div>
+    return `<div class="pcard" data-i="${i}"><div class="lg">${lg?`<img src="${lg}">`:`<span class="logotext">${p.brand||"—"}</span>`}</div>
       <div><div class="pname">${p.name||"(no name)"}</div><div class="pmeta">${p.brand||""} ${p.category?("· "+p.category):""}</div>
       <div class="pmeta">${[p.terpene_1,p.terpene_2,p.terpene_3].filter(Boolean).join(", ")}</div>
       <span class="src ${sc}">${p.catalog_source}</span></div></div>`;}).join("")||'<div class="muted">No products match these filters.</div>';
@@ -312,7 +314,7 @@ function openDetail(p){
   const thc=cannab(p.thc_min,p.thc_max,raw.PER_RETAIL_UNIT_THC_UOM); const cbd=cannab(p.cbd_min,p.cbd_max,raw.PER_RETAIL_UNIT_CBD_UOM);
   const sizeU=(p.consumer_item_size!=null?p.consumer_item_size:"")+(p.consumer_item_size_uom?(" "+p.consumer_item_size_uom):"");
   document.getElementById("sheet").innerHTML=`<button class="close" onclick="closeDetail()">✕</button>
-    <div class="phead"><div class="logobox">${lg?`<img src="${lg}">`:'<span class="muted">no logo</span>'}</div>
+    <div class="phead"><div class="logobox">${lg?`<img src="${lg}">`:`<span class="logotext">${p.brand||"—"}</span>`}</div>
       <div class="ptitle"><h2>${p.name||"(no name)"}</h2><div class="muted">${p.brand||""} · ${p.category||""} · ${p.catalog_source}</div></div></div>
     ${shortD?`<div class="shortdesc">${shortD}</div>`:""}
     <div class="sect">Terpene trio (catalog) — tap for detail</div>
