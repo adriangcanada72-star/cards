@@ -11,7 +11,7 @@ nav{display:flex;gap:6px}nav a{cursor:pointer;font-weight:700;color:var(--muted)
 nav a.active{color:var(--green);background:#eaf5ee}
 input,select{background:#fff;border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:9px 11px;font-size:14px}
 .controls{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap}#q{flex:1;min-width:200px}
-.focus{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.focus{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:8px}
 .fcol{border-radius:14px;padding:14px 16px;border:1px solid var(--line)}
 .fcol.fav{background:linear-gradient(180deg,#f2fbf5,#eaf7ef);border-color:#cfe9d8}
 .fcol.avoid{background:linear-gradient(180deg,#fef4f4,#fdecec);border-color:#f2cccc}
@@ -25,7 +25,10 @@ input,select{background:#fff;border:1px solid var(--line);color:var(--txt);borde
 .chip.fav{color:#1c6b3d;border:1px solid #bfe3cd}.chip.avoid{color:#a83a3a;border:1px solid #f0c3c3}
 .chip b{cursor:pointer;opacity:.6;padding-left:2px}.chip b:hover{opacity:1}
 .fcol select{width:100%;background:rgba(255,255,255,.75)}
-.ftoggle{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:9px 13px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:10px}
+.clearbtn{background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer}
+.clearbtn:hover{border-color:var(--red);color:var(--red)}
+.rowline{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.ftoggle{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:9px 13px;font-size:14px;font-weight:600;cursor:pointer}
 .ftoggle .badge{background:var(--green);color:#fff;border-radius:999px;font-size:11px;padding:1px 7px}
 .filters{display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:8px;margin-bottom:12px}
 .list{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
@@ -72,8 +75,9 @@ input,select{background:#fff;border:1px solid var(--line);color:var(--txt);borde
  <div class="fcol fav"><div class="fhead"><span class="ficon fav"><svg viewBox="0 0 24 24" fill="#2f7d4f"><path d="M12 2.5l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.9 6.2 20.9l1.1-6.5L2.6 9.35l6.5-.95z"/></svg></span><span><div class="t">Favorite terpenes</div><div class="s">show products featuring these</div></span></div><div class="chips" id="favBox"></div><select id="addFav"></select></div>
  <div class="fcol avoid"><div class="fhead"><span class="ficon avoid"><svg viewBox="0 0 24 24" fill="none" stroke="#c14848" stroke-width="2.2"><circle cx="12" cy="12" r="8.5"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span><span><div class="t">Avoid terpenes</div><div class="s">hide products containing these</div></span></div><div class="chips" id="avoidBox"></div><select id="addAvoid"></select></div>
 </div>
+<div class="rowline"><button class="clearbtn" id="clearFocus">✕ Clear favorites &amp; avoid</button></div>
 <div class="controls"><input id="q" placeholder="Search product or brand…"><select id="src"><option value="">All sources</option><option>BCLDB</option><option>Direct Delivery</option></select></div>
-<button class="ftoggle" id="filterToggle">☰ Filters<span class="badge" id="fcount" style="display:none"></span></button>
+<div class="rowline"><button class="ftoggle" id="filterToggle">☰ Filters<span class="badge" id="fcount" style="display:none"></span></button><button class="clearbtn" id="clearFilters">✕ Clear filters</button></div>
 <div class="filters" id="filters" style="display:none"></div>
 <div id="count" class="muted" style="font-size:12px;margin-bottom:8px"></div>
 <div class="list" id="list"></div>
@@ -257,6 +261,8 @@ function renderChips(){
 }
 document.getElementById("addFav").onchange=e=>{const v=e.target.value;if(v&&!FAV.includes(v)){FAV.push(v);renderChips();search();}e.target.value="";};
 document.getElementById("addAvoid").onchange=e=>{const v=e.target.value;if(v&&!AVOID.includes(v)){AVOID.push(v);renderChips();search();}e.target.value="";};
+document.getElementById("clearFocus").onclick=()=>{ FAV=[];AVOID=[];renderChips();search(); };
+document.getElementById("clearFilters").onclick=()=>{ document.getElementById("q").value="";document.getElementById("src").value="";FILTERS.forEach(([k])=>document.getElementById("f_"+k).value="");search(); };
 renderChips();
 function updateBadge(){ let n=0; for(const [k] of FILTERS){ if(document.getElementById("f_"+k).value) n++; } const b=document.getElementById("fcount"); if(n){b.style.display="inline-block";b.textContent=n;}else b.style.display="none"; }
 function cannab(minv,maxv,uom){const conv=v=>{if(v===null||v===undefined||v==="")return null;v=parseFloat(v);if(!isFinite(v))return null;const u=(uom||"").toLowerCase();if(u.includes("mg/g"))return{n:v/10,u:"%"};if(u==="mg")return{n:v,u:" mg"};return{n:v,u:"%"};};const a=conv(minv),b=conv(maxv);if(!a&&!b)return"—";const u=(b||a).u,f=x=>Number.isInteger(x.n)?x.n:(+x.n.toFixed(1));return(a&&b)?`${f(a)}–${f(b)}${u}`:`${f(a||b)}${u}`;}
