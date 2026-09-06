@@ -73,13 +73,9 @@ input,select{background:#fff;border:1px solid var(--line);color:var(--txt);borde
 .mname{font-weight:700;font-size:14px}.mval{font-weight:800;font-size:20px;transition:color .3s}
 .track{position:relative;height:10px;border-radius:999px;background:#e9eeeb;margin:8px 4px 2px}
 .zero{position:absolute;left:50%;top:-3px;bottom:-3px;width:2px;background:#cdd6d0;transform:translateX(-1px);border-radius:2px}
-.fill{position:absolute;top:0;bottom:0;border-radius:999px;left:50%;width:0;transition:left .6s cubic-bezier(.22,1,.36,1),width .6s cubic-bezier(.22,1,.36,1)}
-.f-cer{background:linear-gradient(90deg,#7cc6ec,#2b93cf)}.f-som{background:linear-gradient(90deg,#f4b06a,#e07a1c)}.f-ov{background:linear-gradient(90deg,#e6c766,#c99a2f)}
-.knob{position:absolute;top:50%;left:50%;width:20px;height:20px;border-radius:50%;background:#fff;border:3px solid #2b93cf;transform:translate(-50%,-50%);transition:left .6s cubic-bezier(.22,1,.36,1)}
-.k-cer{border-color:#2b93cf;animation:pCer 2.2s infinite}.k-som{border-color:#e07a1c;animation:pSom 2.2s infinite}.k-ov{border-color:#c99a2f;animation:pOv 2.2s infinite}
-@keyframes pCer{0%{box-shadow:0 0 0 0 rgba(43,147,207,.5)}70%{box-shadow:0 0 0 11px rgba(43,147,207,0)}100%{box-shadow:0 0 0 0 rgba(43,147,207,0)}}
-@keyframes pSom{0%{box-shadow:0 0 0 0 rgba(224,122,28,.5)}70%{box-shadow:0 0 0 11px rgba(224,122,28,0)}100%{box-shadow:0 0 0 0 rgba(224,122,28,0)}}
-@keyframes pOv{0%{box-shadow:0 0 0 0 rgba(201,154,47,.5)}70%{box-shadow:0 0 0 11px rgba(201,154,47,0)}100%{box-shadow:0 0 0 0 rgba(201,154,47,0)}}
+.fill{position:absolute;top:0;bottom:0;border-radius:999px;left:50%;width:0;background:#5AA06E;transition:left .6s cubic-bezier(.22,1,.36,1),width .6s cubic-bezier(.22,1,.36,1),background .3s}
+.knob{position:absolute;top:50%;left:50%;width:20px;height:20px;border-radius:50%;background:#fff;border:3px solid #5AA06E;transform:translate(-50%,-50%);transition:left .6s cubic-bezier(.22,1,.36,1),border-color .3s;animation:pulse 2.2s infinite;--gl:rgba(90,160,110,.55)}
+@keyframes pulse{0%{box-shadow:0 0 0 0 var(--gl)}70%{box-shadow:0 0 0 11px rgba(0,0,0,0)}100%{box-shadow:0 0 0 0 rgba(0,0,0,0)}}
 .ticks{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin:3px 4px 0}
 @media(max-width:560px){.focus{grid-template-columns:1fr}}
 </style></head><body><div class="wrap">
@@ -302,8 +298,15 @@ async function search(){ if(!sb) return; updateBadge();
 }
 function seg(a,c){let h="";for(let s=-5;s<=5;s++){const on=s===a?" "+c:"";h+=`<div class="seg${on}">${(s>0?"+":"")+s}</div>`;}return `<div class="scale">${h}</div>`;}
 function meterRow(n,v,c){return `<div class="meter"><div class="head"><span class="name">${n}</span><span>${v>0?"+":""}${v}</span></div>${seg(v,c)}</div>`;}
-function meterSkeleton(name,id,cls){return `<div class="m2"><div class="m2head"><span class="mname">${name}</span><span class="mval" id="${id}_v">0</span></div><div class="track"><div class="zero"></div><div class="fill f-${cls}" id="${id}_f"></div><div class="knob k-${cls}" id="${id}_k"></div></div><div class="ticks"><span>−5</span><span>0</span><span>+5</span></div></div>`;}
-function setMeter(id,val){const p=(val+5)/10*100;const k=document.getElementById(id+"_k"),f=document.getElementById(id+"_f"),v=document.getElementById(id+"_v");if(!k)return;k.style.left=p+"%";if(val>=0){f.style.left="50%";f.style.width=(p-50)+"%";}else{f.style.left=p+"%";f.style.width=(50-p)+"%";}v.textContent=(val>0?"+":"")+val;}
+function meterSkeleton(name,id,cls){return `<div class="m2"><div class="m2head"><span class="mname">${name}</span><span class="mval" id="${id}_v">0</span></div><div class="track"><div class="zero"></div><div class="fill" id="${id}_f"></div><div class="knob" id="${id}_k"></div></div><div class="ticks"><span>−5</span><span>0</span><span>+5</span></div></div>`;}
+const LEAN_COL={o:{c:"#F58A34",g:"rgba(245,138,52,.55)"},g:{c:"#5AA06E",g:"rgba(90,160,110,.55)"},b:{c:"#74C6EA",g:"rgba(116,198,234,.55)"}};
+function leanCol(val){ return val>=2?LEAN_COL.o : (val<=-2?LEAN_COL.b : LEAN_COL.g); }
+function setMeter(id,val){const p=(val+5)/10*100;const k=document.getElementById(id+"_k"),f=document.getElementById(id+"_f"),v=document.getElementById(id+"_v");if(!k)return;
+  const col=leanCol(val);
+  k.style.left=p+"%"; k.style.borderColor=col.c; k.style.setProperty("--gl",col.g);
+  f.style.background=col.c;
+  if(val>=0){f.style.left="50%";f.style.width=(p-50)+"%";}else{f.style.left=p+"%";f.style.width=(50-p)+"%";}
+  v.textContent=(val>0?"+":"")+val; v.style.color=col.c;}
 function terpCardRaw(raw){ if(!raw) return ""; const m=terpMatch(raw);
   if(m){ const t=TERPS[m]; return `<div class="tcard clickable" onclick="openTerp('${m}')">${t.image_url?`<img src="${t.image_url}">`:'<div class="tph"></div>'}<div><div class="tname">${t.name}</div><div class="tsc">Cerebral ${t.cerebral} · Somatic ${t.somatic}</div></div><span class="chev">›</span></div>`; }
   const en=normTerp(raw),L=_look(en),img=TERP_IMG[en];
