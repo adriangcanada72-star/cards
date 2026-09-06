@@ -4,47 +4,37 @@
 <style>
 :root{--bg:#0f1412;--panel:#18201d;--line:#2a3833;--txt:#e8efe9;--muted:#8fa79c;--green:#5AA06E;--cer:#74C6EA;--som:#F58A34;--gold:#d9b45b;}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;line-height:1.45}
-.wrap{max-width:1000px;margin:0 auto;padding:18px}
-h1{font-size:20px;margin:0 0 12px;letter-spacing:.5px}
+.wrap{max-width:1000px;margin:0 auto;padding:18px}h1{font-size:20px;margin:0 0 12px;letter-spacing:.5px}
 .controls{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap}
-input,select{background:#0f1512;border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:10px 12px;font-size:14px}
+input,select{background:#0f1512;border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:9px 11px;font-size:14px}
 #q{flex:1;min-width:200px}
 .list{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
 .pcard{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;cursor:pointer;transition:border-color .15s}
-.pcard:hover{border-color:var(--green)}
-.pname{font-weight:700;font-size:14px;margin-bottom:2px}
-.pmeta{color:var(--muted);font-size:12px}
+.pcard:hover{border-color:var(--green)}.pname{font-weight:700;font-size:14px;margin-bottom:2px}.pmeta{color:var(--muted);font-size:12px}
 .src{display:inline-block;font-size:10px;padding:2px 7px;border-radius:999px;border:1px solid var(--line);margin-top:6px}
-.src.dd{color:#a6d0e8;border-color:#33566b}.src.bc{color:#a6e0b8;border-color:#33663f}
-.muted{color:var(--muted)}
-/* detail overlay */
-#ov{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-start;justify-content:center;padding:24px;overflow:auto}
-#ov.on{display:flex}
-.sheet{background:var(--panel);border:1px solid var(--line);border-radius:14px;max-width:640px;width:100%;padding:20px}
-.sheet h2{margin:0 0 2px;font-size:20px}
-.close{float:right;cursor:pointer;color:var(--muted);font-size:20px;border:none;background:none}
-.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:13px;margin:10px 0}
-.kv .k{color:var(--muted)}
-.meter{margin:12px 0}.meter .head{display:flex;justify-content:space-between;margin-bottom:5px}.meter .name{font-weight:600;font-size:14px}
+.src.dd{color:#a6d0e8;border-color:#33566b}.src.bc{color:#a6e0b8;border-color:#33663f}.muted{color:var(--muted)}
+#ov{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-start;justify-content:center;padding:24px;overflow:auto}#ov.on{display:flex}
+.sheet{background:var(--panel);border:1px solid var(--line);border-radius:14px;max-width:660px;width:100%;padding:20px}
+.sheet h2{margin:0 0 2px;font-size:20px}.close{float:right;cursor:pointer;color:var(--muted);font-size:20px;border:none;background:none}
+.inrow{display:grid;grid-template-columns:52px 1fr 92px;gap:8px;align-items:center;margin-bottom:7px}.inrow .pos{color:var(--muted);font-size:12px}
+.chem{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:10px 0}.chem label{display:block;font-size:12px;color:var(--muted);margin-bottom:3px}.chem input{width:100%}
+.sect{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin:14px 0 8px}
+.hint{font-size:11px;color:var(--muted);margin:-4px 0 8px}
+.meter{margin:11px 0}.meter .head{display:flex;justify-content:space-between;margin-bottom:5px}.meter .name{font-weight:600;font-size:14px}
 .scale{display:grid;grid-template-columns:repeat(11,1fr);gap:3px}
-.seg{height:24px;border-radius:4px;background:#141b18;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:10px;color:#5c7067}
+.seg{height:22px;border-radius:4px;background:#141b18;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:10px;color:#5c7067}
 .seg.on-cer{background:var(--cer);color:#04212e;font-weight:700}.seg.on-som{background:var(--som);color:#2e1601;font-weight:700}.seg.on-ov{background:var(--gold);color:#2c2200;font-weight:700}
-.badge{display:inline-block;background:#12211a;border:1px solid var(--green);color:#a6e0b8;padding:5px 12px;border-radius:999px;font-weight:700;font-size:14px;margin:8px 0}
+.badge{display:inline-block;background:#12211a;border:1px solid var(--green);color:#a6e0b8;padding:5px 12px;border-radius:999px;font-weight:700;font-size:14px;margin:6px 0}
 .strength{color:var(--muted);font-size:13px;margin-top:10px;border-top:1px solid var(--line);padding-top:10px}
-.warn{background:#2a1c12;border:1px solid #6b4a2a;color:#e8c9a6;padding:10px 12px;border-radius:8px;font-size:13px;margin-bottom:12px}
+.warn{background:#2a1c12;border:1px solid #6b4a2a;color:#e8c9a6;padding:10px 12px;border-radius:8px;font-size:13px;margin-bottom:12px;display:none}
 </style></head><body><div class="wrap">
 <h1>The Terpene Sommelier &middot; Product Browser</h1>
-<div id="cfgwarn" class="warn" style="display:none"></div>
-<div class="controls">
-  <input id="q" placeholder="Search product or brand…">
-  <select id="src"><option value="">All sources</option><option>BCLDB</option><option>Direct Delivery</option></select>
-</div>
+<div id="cfgwarn" class="warn"></div>
+<div class="controls"><input id="q" placeholder="Search product or brand…">
+<select id="src"><option value="">All sources</option><option>BCLDB</option><option>Direct Delivery</option></select></div>
 <div id="count" class="muted" style="font-size:12px;margin-bottom:8px"></div>
-<div class="list" id="list"></div>
-</div>
-
+<div class="list" id="list"></div></div>
 <div id="ov"><div class="sheet" id="sheet"></div></div>
-
 <script>
 // AUTO-GENERATED from TRIAX_v3_TwoAxis_Calculator_10.xlsx
 // Core engine + data. Usable in Node (require) and inlined in browser.
@@ -173,68 +163,71 @@ if (typeof module !== "undefined" && module.exports) {
                      CEREBRAL_LABELS, SOMATIC_LABELS, OVERALL_LABELS };
 }
 
-
-// ================= CONFIG — paste your Supabase values here =================
-const SUPABASE_URL = "https://kkijtcpqfrzsttgwvqgs.supabase.co";      // Settings → API → Project URL
-const SUPABASE_ANON_KEY = "sb_publishable_aJCQWiBURvJebEWfSC6R7g_rVQv2d1Y";    // Settings → API → anon public key
-// ===========================================================================
+const SUPABASE_URL = "https://kkijtcpqfrzsttgwvqgs.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_aJCQWiBURvJebEWfSC6R7g_rVQv2d1Y";
 
 const POS=["1st","2nd","3rd"];
 let sb=null;
-if(SUPABASE_URL.startsWith("http")){ sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); }
-else { const w=document.getElementById("cfgwarn"); w.style.display="block";
-  w.textContent="Add your Supabase Project URL and anon key in the CONFIG block near the top of this file's <script>, then reload."; }
+if(SUPABASE_URL.startsWith("http")){ sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY); }
+else{ const w=document.getElementById("cfgwarn"); w.style.display="block"; w.textContent="Add Supabase URL + key in the CONFIG block."; }
 
-const listEl=document.getElementById("list"), countEl=document.getElementById("count");
-const qEl=document.getElementById("q"), srcEl=document.getElementById("src");
-let timer=null;
+const _names=new Set(terpeneNames);
+function normTerp(n){ if(!n) return ""; if(_names.has(n)) return n;
+  const h=n.replace(/_/g,"-"); if(_names.has(h)) return h;
+  const s=h.replace(/^Alpha-/,"").replace(/^Beta-/,""); if(_names.has(s)) return s; return ""; }
 
-async function search(){
-  if(!sb) return;
-  const term=qEl.value.trim(), src=srcEl.value;
+const listEl=document.getElementById("list"),countEl=document.getElementById("count");
+const qEl=document.getElementById("q"),srcEl=document.getElementById("src");let timer=null;
+
+async function search(){ if(!sb) return;
+  const term=qEl.value.trim(),src=srcEl.value;
   let query=sb.from("products").select("*",{count:"exact"}).order("name").limit(60);
   if(term) query=query.or(`name.ilike.%${term}%,brand.ilike.%${term}%`);
   if(src) query=query.eq("catalog_source",src);
   const {data,error,count}=await query;
   if(error){ countEl.textContent="Error: "+error.message; return; }
   countEl.textContent=`${data.length} shown${count?` of ${count} matching`:""}`;
-  listEl.innerHTML=data.map((p,i)=>{
-    const sc = p.catalog_source==="Direct Delivery"?"dd":"bc";
-    return `<div class="pcard" data-i="${i}">
-      <div class="pname">${p.name||"(no name)"}</div>
-      <div class="pmeta">${p.brand||""} ${p.category?("· "+p.category):""}</div>
-      <div class="pmeta">${p.terpene_1||""}${p.terpene_2?(", "+p.terpene_2):""}${p.terpene_3?(", "+p.terpene_3):""}</div>
-      <span class="src ${sc}">${p.catalog_source}</span></div>`;
-  }).join("");
   window._rows=data;
+  listEl.innerHTML=data.map((p,i)=>{const sc=p.catalog_source==="Direct Delivery"?"dd":"bc";
+    return `<div class="pcard" data-i="${i}"><div class="pname">${p.name||"(no name)"}</div>
+      <div class="pmeta">${p.brand||""} ${p.category?("· "+p.category):""}</div>
+      <div class="pmeta">${[p.terpene_1,p.terpene_2,p.terpene_3].filter(Boolean).join(", ")}</div>
+      <span class="src ${sc}">${p.catalog_source}</span></div>`;}).join("");
   document.querySelectorAll(".pcard").forEach(el=>el.onclick=()=>openDetail(window._rows[+el.dataset.i]));
 }
 
-function seg(active,cls){let h="";for(let s=-5;s<=5;s++){const on=s===active?" "+cls:"";h+=`<div class="seg${on}">${(s>0?"+":"")+s}</div>`;}return `<div class="scale">${h}</div>`;}
-function meterRow(name,val,cls){return `<div class="meter"><div class="head"><span class="name">${name}</span><span>${val>0?"+":""}${val}</span></div>${seg(val,cls)}</div>`;}
+function seg(a,c){let h="";for(let s=-5;s<=5;s++){const on=s===a?" "+c:"";h+=`<div class="seg${on}">${(s>0?"+":"")+s}</div>`;}return `<div class="scale">${h}</div>`;}
+function meterRow(n,v,c){return `<div class="meter"><div class="head"><span class="name">${n}</span><span>${v>0?"+":""}${v}</span></div>${seg(v,c)}</div>`;}
 
 function openDetail(p){
-  const r=computeTriax({t1:p.terpene_1,t2:p.terpene_2,t3:p.terpene_3,
-    p1:p.terpene_1_pct,p2:p.terpene_2_pct,p3:p.terpene_3_pct,
-    thc:p.thc,cbd:p.cbd,totalTerp:p.total_terpenes_pct});
-  const pct=v=>(v||v===0)&&v!==""?v:"—";
+  const opts='<option value="">(none)</option>'+terpeneNames.map(n=>`<option>${n}</option>`).join("");
+  const thcHint=(p.thc_min||p.thc_max)?`catalog range ${p.thc_min??"?"}–${p.thc_max??"?"}%`:"";
+  const cbdHint=(p.cbd_min||p.cbd_max)?`catalog range ${p.cbd_min??"?"}–${p.cbd_max??"?"}%`:"";
   const sheet=document.getElementById("sheet");
   sheet.innerHTML=`<button class="close" onclick="document.getElementById('ov').classList.remove('on')">✕</button>
     <h2>${p.name||"(no name)"}</h2>
     <div class="muted">${p.brand||""} · ${p.category||""} · ${p.catalog_source}</div>
-    <div class="kv">
-      <span class="k">THC</span><span>${pct(p.thc)}%${p.cbd?` · CBD ${p.cbd}%`:""}</span>
-      <span class="k">Total terpenes</span><span>${pct(p.total_terpenes_pct)}%</span>
-      <span class="k">Terpenes</span><span>${[ [p.terpene_1,p.terpene_1_pct],[p.terpene_2,p.terpene_2_pct],[p.terpene_3,p.terpene_3_pct] ].filter(t=>t[0]).map(t=>`${t[0]}${t[1]?` (${t[1]}%)`:""}`).join(", ")||"—"}</span>
-    </div>
-    ${meterRow("Cerebral",r.cerebral,"on-cer")}
-    ${meterRow("Somatic",r.somatic,"on-som")}
-    ${meterRow("Overall",r.overall,"on-ov")}
-    <div>Profile: <span class="badge">${r.profile}</span></div>
-    <div class="strength">${r.strength||"Enter terpene percentages to sharpen this prediction."}</div>`;
+    <div class="sect">This batch — enter from the package</div>
+    <div class="inrow"><span class="pos">1st</span><select id="d_t1">${opts}</select><input id="d_p1" type="number" step="0.01" placeholder="%"></div>
+    <div class="inrow"><span class="pos">2nd</span><select id="d_t2">${opts}</select><input id="d_p2" type="number" step="0.01" placeholder="%"></div>
+    <div class="inrow"><span class="pos">3rd</span><select id="d_t3">${opts}</select><input id="d_p3" type="number" step="0.01" placeholder="%"></div>
+    <div class="chem"><div><label>THC %</label><input id="d_thc" type="number" step="0.1"></div>
+      <div><label>CBD %</label><input id="d_cbd" type="number" step="0.1"></div>
+      <div><label>Total terpenes %</label><input id="d_tt" type="number" step="0.1"></div></div>
+    ${(thcHint||cbdHint)?`<div class="hint">${[thcHint&&("THC "+thcHint),cbdHint&&("CBD "+cbdHint)].filter(Boolean).join(" · ")}</div>`:""}
+    <div class="sect">Effect read-out</div><div id="d_out"></div>`;
+  document.getElementById("d_t1").value=normTerp(p.terpene_1);
+  document.getElementById("d_t2").value=normTerp(p.terpene_2);
+  document.getElementById("d_t3").value=normTerp(p.terpene_3);
+  ["d_t1","d_t2","d_t3","d_p1","d_p2","d_p3","d_thc","d_cbd","d_tt"].forEach(id=>document.getElementById(id).addEventListener("input",recompute));
+  recompute();
   document.getElementById("ov").classList.add("on");
 }
-document.getElementById("ov").onclick=e=>{ if(e.target.id==="ov") e.currentTarget.classList.remove("on"); };
+function recompute(){const i={t1:d_t1.value,t2:d_t2.value,t3:d_t3.value,p1:d_p1.value,p2:d_p2.value,p3:d_p3.value,thc:d_thc.value,cbd:d_cbd.value,totalTerp:d_tt.value};
+  const r=computeTriax(i);
+  document.getElementById("d_out").innerHTML=meterRow("Cerebral",r.cerebral,"on-cer")+meterRow("Somatic",r.somatic,"on-som")+meterRow("Overall",r.overall,"on-ov")
+    +`<div>Profile: <span class="badge">${r.profile}</span></div><div class="strength">${r.strength||"Enter this batch's percentages to sharpen the prediction."}</div>`;}
+document.getElementById("ov").onclick=e=>{if(e.target.id==="ov")e.currentTarget.classList.remove("on");};
 qEl.addEventListener("input",()=>{clearTimeout(timer);timer=setTimeout(search,250);});
 srcEl.addEventListener("change",search);
 search();
