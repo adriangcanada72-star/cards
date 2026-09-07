@@ -80,6 +80,14 @@ input,select{background:#fff;border:1px solid var(--line);color:var(--txt);borde
 .ticks{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin:3px 4px 0}
 .mcard{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
 .mcard h3{margin:0 0 4px;font-size:16px}.mcard .sub{color:var(--muted);font-size:12px;margin-bottom:12px}
+.mch{display:flex;justify-content:space-between;align-items:center;gap:10px;cursor:pointer}
+.mch h3{margin:0}
+.mcard.collapsed .mbody{display:none}
+.mcard.collapsed h3{margin-bottom:0}
+.mswitch{position:relative;width:40px;height:23px;border-radius:12px;background:#cbd5cf;transition:.15s;flex:none}
+.mswitch::after{content:"";position:absolute;top:2px;left:2px;width:19px;height:19px;border-radius:50%;background:#fff;transition:.15s;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.mcard:not(.collapsed) .mswitch{background:var(--brand,#2f6f4f)}
+.mcard:not(.collapsed) .mswitch::after{left:18px}
 .mrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.mrow input[type=file]{flex:1;min-width:200px}
 .syncbtn{background:var(--green);color:#fff;border:none;border-radius:8px;padding:10px 16px;font-weight:700;cursor:pointer}
 .syncbtn:disabled{opacity:.5;cursor:default}
@@ -143,17 +151,17 @@ input,select{background:#fff;border:1px solid var(--line);color:var(--txt);borde
 <div id="view-terpenes" style="display:none"><div class="list" id="terpList"></div></div>
 <div id="view-manage" style="display:none">
  <div id="acctBox"></div>
+ <div id="inviteBox"></div>
  <div id="styleBox"></div>
  <div id="watermarkBox"></div>
- <div id="inviteBox"></div>
  <div id="adminBox" style="display:none"><div class="mcard"><h3>Store applications — review</h3><div class="sub">Approve or reject BC retailer registrations. Check the store number and Selling It Right certificate before approving.</div><div id="adminList"></div></div></div>
  <div id="syncWrap">
- <div class="mcard"><h3>BCLDB — Central Delivery catalog</h3><div class="sub">Upload the weekly BCLDB Central Delivery export (.csv). Adds &amp; updates products and removes SKUs no longer in the file. Direct Delivery products are untouched.</div>
+ <div class="mcard collapsed"><div class="mch" onclick="this.closest('.mcard').classList.toggle('collapsed')"><h3>BCLDB — Central Delivery catalog</h3><span class="mswitch"></span></div><div class="mbody"><div class="sub">Upload the weekly BCLDB Central Delivery export (.csv). Adds &amp; updates products and removes SKUs no longer in the file. Direct Delivery products are untouched.</div>
   <div class="mrow"><input type="file" id="fileBCLDB" accept=".csv,.txt"><button class="syncbtn" id="syncBCLDB">Sync BCLDB catalog</button></div>
-  <div class="pbar"><i id="barBCLDB"></i></div><div class="pmsg" id="msgBCLDB"></div></div>
- <div class="mcard"><h3>Direct Delivery catalog</h3><div class="sub">Upload the weekly Direct Delivery export (.csv). Syncs the Direct Delivery catalog only.</div>
+  <div class="pbar"><i id="barBCLDB"></i></div><div class="pmsg" id="msgBCLDB"></div></div></div>
+ <div class="mcard collapsed"><div class="mch" onclick="this.closest('.mcard').classList.toggle('collapsed')"><h3>Direct Delivery catalog</h3><span class="mswitch"></span></div><div class="mbody"><div class="sub">Upload the weekly Direct Delivery export (.csv). Syncs the Direct Delivery catalog only.</div>
   <div class="mrow"><input type="file" id="fileDD" accept=".csv,.txt"><button class="syncbtn" id="syncDD">Sync Direct Delivery catalog</button></div>
-  <div class="pbar"><i id="barDD"></i></div><div class="pmsg" id="msgDD"></div></div>
+  <div class="pbar"><i id="barDD"></i></div><div class="pmsg" id="msgDD"></div></div></div>
  </div>
 </div>
 </div>
@@ -375,11 +383,11 @@ function renderWatermarkCard(manager){ const box=document.getElementById("waterm
   WMSET={ card:{x:nv(s.card_wm_x,0),y:nv(s.card_wm_y,0),size:nv(s.card_wm_size,75),op:nv(s.card_wm_opacity,8)},
           tag:{x:nv(s.tag_wm_x,0),y:nv(s.tag_wm_y,0),size:nv(s.tag_wm_size,75),op:nv(s.tag_wm_opacity,8)} };
   const url=s.watermark_url||"";
-  box.innerHTML=`<div class="mcard"><h3>Watermark</h3><div class="sub">Upload a watermark, then drag it to position on the card and tag; adjust size and opacity with the sliders. All styles use these settings.</div>
+  box.innerHTML=`<div class="mcard collapsed"><div class="mch" onclick="this.closest('.mcard').classList.toggle('collapsed')"><h3>Watermark</h3><span class="mswitch"></span></div><div class="mbody"><div class="sub">Upload a watermark, then drag it to position on the card and tag; adjust size and opacity with the sliders. All styles use these settings.</div>
     <div class="mrow"><input type="file" id="wm_file" accept="image/*" style="flex:1;margin:0"><button class="syncbtn" id="wm_up">Upload / replace image</button></div>
     ${url?"":'<div class="pmeta muted" style="margin:8px 0">No watermark uploaded yet — upload one to position it.</div>'}
     <div class="wmprevs">${wmPreviewHTML("card","Card",url)}${wmPreviewHTML("tag","Shelf tag",url)}</div>
-    <button class="syncbtn" id="wm_save" style="margin-top:12px">Save watermark</button><div class="pmsg" id="wm_msg"></div></div>`;
+    <button class="syncbtn" id="wm_save" style="margin-top:12px">Save watermark</button><div class="pmsg" id="wm_msg"></div></div></div>`;
   document.getElementById("wm_up").onclick=uploadWatermark;
   document.getElementById("wm_save").onclick=saveWatermark;
   setupWmPreview("card"); setupWmPreview("tag");
@@ -776,9 +784,9 @@ async function refreshManage(){
   document.getElementById("syncWrap").style.display=manager?"block":"none";
   const sBox=document.getElementById("styleBox");
   if(manager && ME.store_id){
-    sBox.innerHTML=`<div class="mcard"><h3>Card &amp; tag style</h3><div class="sub">Print style used for product cards and shelf tags.</div>
+    sBox.innerHTML=`<div class="mcard collapsed"><div class="mch" onclick="this.closest('.mcard').classList.toggle('collapsed')"><h3>Card &amp; tag style</h3><span class="mswitch"></span></div><div class="mbody"><div class="sub">Print style used for product cards and shelf tags.</div>
       <select id="styleSel" style="max-width:240px"><option value="diagonal">Diagonal</option><option value="editorial">Editorial</option><option value="greenery">Greenery</option></select>
-      <div class="pmsg" id="style_msg"></div></div>`;
+      <div class="pmsg" id="style_msg"></div></div></div>`;
     document.getElementById("styleSel").value=(STORE&&STORE.card_style)||"diagonal";
     document.getElementById("styleSel").onchange=async(e)=>{ const v=e.target.value; const {data,error}=await sb.from("stores").update({card_style:v}).eq("id",ME.store_id).select();
       if(error){ document.getElementById("style_msg").textContent="Error: "+error.message; return; }
