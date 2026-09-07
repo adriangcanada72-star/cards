@@ -77,6 +77,9 @@ input,select{background:#fff;border:1px solid var(--line);color:var(--txt);borde
 .sirreport .repfoot{color:#8a978e;font-size:11px;margin-top:18px;text-align:center}
 .certwrap{max-width:680px;margin:0 auto;padding:6px 0 40px}
 .certwrap h1{font-size:26px;margin:6px 0 2px;text-align:center}
+.certhead{text-align:center;margin-bottom:10px}
+.certhead .certlogo{max-width:300px;max-height:96px;margin:4px auto 8px;display:block}
+.certhead h1{font-size:24px;margin:0}
 .certprog{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;margin:14px 0 18px;text-align:center}
 .certbar{height:12px;background:#eef2f0;border-radius:999px;overflow:hidden;margin:10px 0}
 .certbar i{display:block;height:100%;background:var(--green)}
@@ -516,16 +519,16 @@ function allModulesDone(){ return MODULES.length>0 && MODULES.every(m=>modPassed
 function finalPassed(){ return MY_ATTEMPTS.some(a=>(a.is_final_pass||a.module_number===FINAL_NUM) && a.passed); }
 async function renderCertHome(){
   const box=document.getElementById("certHome");
-  box.innerHTML='<div class="certwrap"><h1>Certification</h1><div class="muted" style="text-align:center">Loading…</div></div>';
+  box.innerHTML='<div class="certwrap">'+certHeader()+'<div class="muted" style="text-align:center">Loading…</div></div>';
   await loadCertData();
   const done=MODULES.filter(m=>modPassed(m.module_number)).length, tot=MODULES.length;
   const pct=tot?Math.round(done/tot*100):0, certified=finalPassed();
-  let html=`<div class="certwrap"><h1>Certification</h1>
+  let html=`<div class="certwrap">${certHeader()}
     <div class="certprog"><div style="font-weight:700">${escH(ACTIVE?ACTIVE.name:"")}</div>
       <div class="certbar"><i style="width:${certified?100:pct}%"></i></div>
       <div class="muted" style="font-size:13px">${done} of ${tot} modules complete${certified?" · Final exam passed":""}</div>
-      ${certified?'<div class="certbadge">✓ Certified Terpene Sommelier</div><div style="margin-top:10px"><button class="sirbtn" style="max-width:320px;margin:0 auto" onclick="openCertificate()">View Certificate</button></div>':""}
-      <div style="margin-top:10px"><button class="clearbtn" onclick="openCourseOutline()">📋 View course outline</button></div>
+      ${certified?'<div class="certbadge">✓ Certified Terpene Sommelier</div><div style="margin-top:10px"><button class="sirbtn" style="max-width:340px;margin:0 auto" onclick="openCertificate()">🖨 Print Level 1 Certificate</button></div>':""}
+      <button class="sirbtn alt" style="max-width:340px;margin:12px auto 0" onclick="openCourseOutline()">📋 View course outline</button>
     </div>`;
   let prevDone=true;
   MODULES.forEach(m=>{ const p=modPassed(m.module_number); const locked=!prevDone && !p;
@@ -593,7 +596,42 @@ async function certifyStaff(){ if(!sb||!ACTIVE) return;
   await sb.from("staff").update({is_certified:true,final_exam_passed:true,certificate_url:url,certification_date:new Date().toISOString()}).eq("id",ACTIVE.id);
   ACTIVE.is_certified=true; ACTIVE.certificate_url=url;
 }
-function openCertificate(){ const url=(ACTIVE&&ACTIVE.certificate_url)||(CERT_BASE+"certificate.html?name="+encodeURIComponent(ACTIVE?ACTIVE.name:"")+"&date="+encodeURIComponent(new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}))); window.open(url,"_blank"); }
+function certLogoSrc(){ const b=document.getElementById("brandLogo"); return b?b.src:""; }
+function certHeader(){ const s=certLogoSrc(); return `<div class="certhead">${s?`<img class="certlogo" src="${s}">`:""}<h1>Terpene Sommelier Level 1 Certification</h1></div>`; }
+function openCertificate(){ printCertificate(ACTIVE?ACTIVE.name:"", (ACTIVE&&ACTIVE.certification_date)||null, (STORE&&STORE.name)||""); }
+function printCertificate(name,dateISO,store){
+  const dateStr = dateISO ? new Date(dateISO).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}) : new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+  const w=window.open("","_blank","width=1040,height=780"); if(!w){ alert("Allow pop-ups to print the certificate."); return; }
+  const logo=certLogoSrc();
+  w.document.write(`<html><head><title>Terpene Sommelier — Level 1 Certificate — ${escH(name)}</title><style>
+    @page{size:landscape;margin:0}
+    *{box-sizing:border-box} html,body{margin:0;padding:0}
+    body{font-family:Georgia,'Times New Roman',serif;color:#14201a;background:#eef1ee;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
+    .cert{position:relative;width:1000px;max-width:100%;aspect-ratio:1.4142/1;background:#fff;border:2px solid #2f7d4f;padding:54px 64px;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,.12)}
+    .cert::before{content:"";position:absolute;inset:12px;border:1px solid #cdb56a;pointer-events:none}
+    .clogo{max-width:300px;max-height:120px;margin:6px auto 10px;display:block}
+    .ckicker{letter-spacing:4px;text-transform:uppercase;font-size:13px;color:#66756c;margin-top:6px}
+    .ctitle{font-size:30px;font-weight:700;color:#1f6b3f;margin:6px 0 2px}
+    .csub{font-size:15px;color:#66756c;margin-bottom:22px}
+    .cpre{font-size:15px;color:#44514a;margin:14px 0 6px}
+    .cname{font-size:40px;font-weight:700;margin:6px 0;border-bottom:2px solid #cdb56a;display:inline-block;padding:0 30px 8px}
+    .cbody{font-size:15px;color:#44514a;max-width:640px;margin:16px auto 0;line-height:1.6}
+    .cmeta{display:flex;justify-content:space-between;align-items:flex-end;margin-top:46px;padding:0 20px}
+    .cmeta .lbl{font-size:12px;color:#66756c;text-transform:uppercase;letter-spacing:1px;border-top:1px solid #99a69d;padding-top:6px;min-width:220px}
+    .cseal{width:96px;height:96px;border-radius:50%;border:3px solid #cdb56a;color:#1f6b3f;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:700;line-height:1.1;font-size:13px;text-transform:uppercase}
+    @media print{ body{background:#fff;padding:0} .cert{box-shadow:none;border-color:#2f7d4f} }
+  </style></head><body><div class="cert">
+    ${logo?`<img class="clogo" src="${logo}">`:""}
+    <div class="ckicker">Certificate of Completion</div>
+    <div class="ctitle">Terpene Sommelier — Level 1 Certification</div>
+    <div class="csub">The Terpene Sommelier${store?(" · "+escH(store)):""}</div>
+    <div class="cpre">This is to certify that</div>
+    <div class="cname">${escH(name||"")}</div>
+    <div class="cbody">has successfully completed all ten training modules and passed the Level 1 final examination, demonstrating proficiency in cannabis terpene science, the Terpene Effect Analyzer framework, product interpretation, and responsible retail practice.</div>
+    <div class="cmeta"><div class="lbl">Date · ${dateStr}</div><div class="cseal">Level 1<br>Certified</div><div class="lbl">The Terpene Sommelier</div></div>
+  </div></body></html>`);
+  w.document.close(); setTimeout(()=>{ w.focus(); w.print(); },400);
+}
 function showCertResult(num,isFinal,qs,sel,score,correct,passed){
   const rev=qs.map((q,i)=>{ const my=sel[i],ca=(q.correct_answer||"").toUpperCase(),ok=my===ca;
     const opts=["a","b","c","d"].map(l=>{const L=l.toUpperCase();const t=q["option_"+l];if(!t)return"";const mark=(L===ca)?" ✓":(L===my&&!ok?" ✗":"");return `<label style="cursor:default"><span><b>${L}.</b> ${escH(t)}${mark}</span></label>`;}).join("");
@@ -1217,6 +1255,7 @@ function renderStaffList(){ const l=document.getElementById("staffList"); if(!l)
   l.innerHTML=STAFF.map(s=>`<div style="border-bottom:1px solid var(--line);padding:6px 0"><div class="mrow" style="justify-content:space-between;align-items:center;gap:8px;border:none;padding:0">
     <span>${s.name} · ${s.role} · PIN ${s.pin?"****":"—"}</span>
     <span style="display:flex;gap:6px;flex-wrap:wrap">
+      ${(s.is_certified||s.final_exam_passed)?`<button class="clearbtn" data-cert="${s.id}">🖨 Certificate</button>`:""}
       <button class="clearbtn" data-sir="${s.id}">SIR history</button>
       <button class="clearbtn" data-mod="${s.id}">Module history</button>
       <button class="clearbtn" data-role="${s.id}">${s.role==="manager"?"Make staff":"Make manager"}</button>
@@ -1228,7 +1267,8 @@ function renderStaffList(){ const l=document.getElementById("staffList"); if(!l)
   l.querySelectorAll("button[data-role]").forEach(b=>b.onclick=async()=>{ const s=STAFF.find(x=>String(x.id)===b.dataset.role); if(!s)return; const nr=s.role==="manager"?"staff":"manager"; await sb.from("staff").update({role:nr}).eq("id",s.id); await loadStoreStaff(); renderStaffList(); });
   l.querySelectorAll("button[data-pin]").forEach(b=>b.onclick=async()=>{ const p=prompt("New 4-digit PIN:"); if(p==null)return; if(!/^[0-9]{4}$/.test(p)){ alert("PIN must be 4 digits."); return; } await sb.from("staff").update({pin:p}).eq("id",b.dataset.pin); await loadStoreStaff(); renderStaffList(); });
   l.querySelectorAll("button[data-sir]").forEach(b=>b.onclick=()=>toggleStaffSIR(b.dataset.sir));
-  l.querySelectorAll("button[data-mod]").forEach(b=>b.onclick=()=>toggleStaffMod(b.dataset.mod)); }
+  l.querySelectorAll("button[data-mod]").forEach(b=>b.onclick=()=>toggleStaffMod(b.dataset.mod));
+  l.querySelectorAll("button[data-cert]").forEach(b=>b.onclick=()=>{ const s=STAFF.find(x=>String(x.id)===b.dataset.cert); if(s) printCertificate(s.name,s.certification_date,(STORE&&STORE.name)||""); }); }
 async function toggleStaffMod(id){ const el=document.getElementById("modh_"+id); if(!el)return;
   if(el.style.display!=="none"){ el.style.display="none"; return; }
   el.style.display="block"; el.innerHTML='<div class="muted" style="font-size:12px">Loading…</div>';
