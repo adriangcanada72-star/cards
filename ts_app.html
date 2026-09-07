@@ -655,6 +655,7 @@ function renderStaffBar(){ const el=document.getElementById("staffBar"); if(!el)
   el.innerHTML= ACTIVE?`<span class="staffchip">${ACTIVE.name}${ACTIVE.role==="manager"?" · manager":""}</span><button class="lockbtn" id="lockBtn">Lock</button>`:"";
   const lb=document.getElementById("lockBtn"); if(lb) lb.onclick=lockStaff; }
 async function refreshManage(){
+  await loadStoreStaff();
   let storeName=""; if(ME.store_id){ const {data:st}=await sb.from("stores").select("name,store_number").eq("id",ME.store_id).maybeSingle(); if(st) storeName=`${st.name} (#${st.store_number})`; }
   document.getElementById("acctBox").innerHTML=`<div class="mcard"><h3>Account</h3>
     <div class="kv"><div><div class="k">Signed-in email</div><div class="v">${ME.email||""}</div></div><div><div class="k">Active staff</div><div class="v">${ACTIVE?ACTIVE.name+" · "+ACTIVE.role:"—"}</div></div>${storeName?`<div class="full"><div class="k">Store</div><div class="v">${storeName}</div></div>`:""}</div>
