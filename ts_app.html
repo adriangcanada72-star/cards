@@ -113,10 +113,16 @@ input,select{background:#fff;border:1px solid var(--line);color:var(--txt);borde
 .cardsheet{background:#fff;border-radius:12px;width:100%;max-width:920px;height:92vh;position:relative;box-shadow:0 10px 40px rgba(0,0,0,.3);overflow:hidden}
 .cardsheet iframe{width:100%;height:100%;border:none;background:#fff}
 .cardsheet .close{position:absolute;top:10px;right:12px;z-index:2}
-.wmgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:6px}
-.wmcol .wmh{font-weight:700;font-size:13px;margin-bottom:8px}
-.wmf{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);margin-bottom:7px;gap:8px}
-.wmf input{width:90px}
+.wmprevs{display:flex;gap:18px;flex-wrap:wrap;margin-top:10px}
+.wmprevwrap{flex:0 0 auto}.wmlabel{font-weight:700;font-size:13px;margin-bottom:6px}
+.wmprev{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:8px;background:#fff;touch-action:none;user-select:none}
+.wmstage{position:absolute;top:0;left:0;transform-origin:top left}
+.wmmock{position:absolute;inset:0;background:#fff}
+.wmmock .band{position:absolute;left:0;right:0;background:#F58A34;color:#fff;font-weight:800;display:flex;align-items:center;padding:0 26px;letter-spacing:.02em}
+.wmarea{position:absolute;overflow:hidden}
+.wmimg{position:absolute;top:50%;left:50%;height:auto;cursor:move;max-width:none}
+.wmslider{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);margin-top:6px}
+.wmslider input[type=range]{flex:1}
 @media(max-width:560px){.focus{grid-template-columns:1fr}}
 </style></head><body><div class="wrap">
 <div id="authscreen" class="authwrap"></div>
@@ -332,19 +338,45 @@ function openCard(p,type){ const style=(STORE&&STORE.card_style)||"diagonal"; co
   document.getElementById("cardFrame").src=CARDS_BASE+f+"?data="+encodeURIComponent(buildCardData(p,desc,wm));
   document.getElementById("ovc").classList.add("on"); }
 function closeCard(){ document.getElementById("ovc").classList.remove("on"); document.getElementById("cardFrame").src="about:blank"; }
-function wmField(id,label,val){ return `<label class="wmf">${label}<input id="${id}" type="number" value="${val}"></label>`; }
+const WM_DIMS={ card:{W:528,H:720,inset:24,k:0.40,bandTop:250,bandH:70,bandFs:22}, tag:{W:336,H:192,inset:0,k:0.70,bandTop:0,bandH:60,bandFs:15} };
+let WMSET={card:{x:0,y:0,size:75,op:8}, tag:{x:0,y:0,size:75,op:8}};
+let WM_DRAG=null;
+function wmMove(e){ if(!WM_DRAG)return; const D=WM_DIMS[WM_DRAG.kind]; const pt=e.touches?e.touches[0]:e;
+  WMSET[WM_DRAG.kind].x=Math.round(WM_DRAG.ox+(pt.clientX-WM_DRAG.sx)/D.k);
+  WMSET[WM_DRAG.kind].y=Math.round(WM_DRAG.oy+(pt.clientY-WM_DRAG.sy)/D.k); applyWm(WM_DRAG.kind); if(e.cancelable)e.preventDefault(); }
+function wmUp(){ WM_DRAG=null; }
+window.addEventListener("mousemove",wmMove); window.addEventListener("mouseup",wmUp);
+window.addEventListener("touchmove",wmMove,{passive:false}); window.addEventListener("touchend",wmUp);
+function startWmDrag(kind,e){ const pt=e.touches?e.touches[0]:e; WM_DRAG={kind,sx:pt.clientX,sy:pt.clientY,ox:WMSET[kind].x,oy:WMSET[kind].y}; if(e.cancelable)e.preventDefault(); }
+function applyWm(kind){ const st=WMSET[kind],img=document.getElementById("wmimg_"+kind); if(!img)return;
+  img.style.width=st.size+"%"; img.style.opacity=(st.op/100); img.style.transform="translate(-50%,-50%) translate("+st.x+"px,"+st.y+"px)"; }
+function wmPreviewHTML(kind,label,url){ const D=WM_DIMS[kind];
+  return `<div class="wmprevwrap"><div class="wmlabel">${label}</div>
+    <div class="wmprev" id="wmprev_${kind}" style="width:${Math.round(D.W*D.k)}px;height:${Math.round(D.H*D.k)}px">
+      <div class="wmstage" style="width:${D.W}px;height:${D.H}px;transform:scale(${D.k})">
+        <div class="wmmock"><div class="band" style="top:${D.bandTop}px;height:${D.bandH}px;font-size:${D.bandFs}px">SAMPLE PRODUCT</div></div>
+        <div class="wmarea" style="left:${D.inset}px;top:${D.inset}px;right:${D.inset}px;bottom:${D.inset}px">
+          <img class="wmimg" id="wmimg_${kind}" ${url?`src="${url}"`:""} draggable="false"></div>
+      </div></div>
+    <div class="wmslider">Size<input type="range" id="wmsize_${kind}" min="10" max="150" value="${WMSET[kind].size}"></div>
+    <div class="wmslider">Opacity<input type="range" id="wmop_${kind}" min="1" max="60" value="${WMSET[kind].op}"></div></div>`; }
+function setupWmPreview(kind){ applyWm(kind);
+  const img=document.getElementById("wmimg_"+kind); if(img){ img.addEventListener("mousedown",e=>startWmDrag(kind,e)); img.addEventListener("touchstart",e=>startWmDrag(kind,e),{passive:false}); }
+  document.getElementById("wmsize_"+kind).oninput=e=>{ WMSET[kind].size=parseFloat(e.target.value); applyWm(kind); };
+  document.getElementById("wmop_"+kind).oninput=e=>{ WMSET[kind].op=parseFloat(e.target.value); applyWm(kind); }; }
 function renderWatermarkCard(manager){ const box=document.getElementById("watermarkBox"); if(!manager||!ME.store_id){ box.innerHTML=""; return; }
-  const s=STORE||{}, v=(x,d)=>(x===null||x===undefined||x==="")?d:x;
-  box.innerHTML=`<div class="mcard"><h3>Watermark</h3><div class="sub">Upload a store watermark shown behind every card &amp; tag style. Set position, size and opacity separately for cards and tags.</div>
-    <div class="mrow"><input type="file" id="wm_file" accept="image/*" style="flex:1;margin:0"><button class="syncbtn" id="wm_up">Upload image</button></div>
-    <div id="wm_prev" style="margin:10px 0">${s.watermark_url?`<img src="${s.watermark_url}" style="max-height:70px;background:#eef2f0;border-radius:8px;padding:4px">`:'<span class="pmeta muted">No watermark uploaded.</span>'}</div>
-    <div class="wmgrid">
-      <div class="wmcol"><div class="wmh">Cards</div>${wmField("cw_x","X (px)",v(s.card_wm_x,0))}${wmField("cw_y","Y (px)",v(s.card_wm_y,0))}${wmField("cw_size","Size %",v(s.card_wm_size,75))}${wmField("cw_op","Opacity %",v(s.card_wm_opacity,8))}</div>
-      <div class="wmcol"><div class="wmh">Tags</div>${wmField("tw_x","X (px)",v(s.tag_wm_x,0))}${wmField("tw_y","Y (px)",v(s.tag_wm_y,0))}${wmField("tw_size","Size %",v(s.tag_wm_size,75))}${wmField("tw_op","Opacity %",v(s.tag_wm_opacity,8))}</div>
-    </div>
-    <button class="syncbtn" id="wm_save" style="margin-top:10px">Save settings</button><div class="pmsg" id="wm_msg"></div></div>`;
+  const s=STORE||{}, nv=(x,d)=>{const n=parseFloat(x);return isNaN(n)?d:n;};
+  WMSET={ card:{x:nv(s.card_wm_x,0),y:nv(s.card_wm_y,0),size:nv(s.card_wm_size,75),op:nv(s.card_wm_opacity,8)},
+          tag:{x:nv(s.tag_wm_x,0),y:nv(s.tag_wm_y,0),size:nv(s.tag_wm_size,75),op:nv(s.tag_wm_opacity,8)} };
+  const url=s.watermark_url||"";
+  box.innerHTML=`<div class="mcard"><h3>Watermark</h3><div class="sub">Upload a watermark, then drag it to position on the card and tag; adjust size and opacity with the sliders. All styles use these settings.</div>
+    <div class="mrow"><input type="file" id="wm_file" accept="image/*" style="flex:1;margin:0"><button class="syncbtn" id="wm_up">Upload / replace image</button></div>
+    ${url?"":'<div class="pmeta muted" style="margin:8px 0">No watermark uploaded yet — upload one to position it.</div>'}
+    <div class="wmprevs">${wmPreviewHTML("card","Card",url)}${wmPreviewHTML("tag","Shelf tag",url)}</div>
+    <button class="syncbtn" id="wm_save" style="margin-top:12px">Save watermark</button><div class="pmsg" id="wm_msg"></div></div>`;
   document.getElementById("wm_up").onclick=uploadWatermark;
   document.getElementById("wm_save").onclick=saveWatermark;
+  setupWmPreview("card"); setupWmPreview("tag");
 }
 async function uploadWatermark(){ const f=document.getElementById("wm_file").files[0],m=document.getElementById("wm_msg"); if(!f){m.textContent="Choose an image.";return;}
   m.textContent="Uploading…";
@@ -354,17 +386,15 @@ async function uploadWatermark(){ const f=document.getElementById("wm_file").fil
   const {data:pub}=sb.storage.from("watermarks").getPublicUrl(path); const url=pub.publicUrl;
   const {error}=await sb.from("stores").update({watermark_url:url}).eq("id",ME.store_id);
   if(error){ m.textContent="Error: "+error.message; return; }
-  STORE.watermark_url=url; document.getElementById("wm_prev").innerHTML=`<img src="${url}" style="max-height:70px;background:#eef2f0;border-radius:8px;padding:4px">`; m.textContent="Uploaded.";
+  STORE.watermark_url=url; ["card","tag"].forEach(k=>{const im=document.getElementById("wmimg_"+k); if(im){ im.src=url; applyWm(k);} }); m.textContent="Uploaded.";
 }
-async function saveWatermark(){ const n=id=>{ const x=parseFloat(document.getElementById(id).value); return isNaN(x)?null:x; };
-  const patch={ card_wm_x:n("cw_x"),card_wm_y:n("cw_y"),card_wm_size:n("cw_size"),card_wm_opacity:n("cw_op"),
-    tag_wm_x:n("tw_x"),tag_wm_y:n("tw_y"),tag_wm_size:n("tw_size"),tag_wm_opacity:n("tw_op") };
-  const m=document.getElementById("wm_msg"); m.textContent="Saving…";
+async function saveWatermark(){ const m=document.getElementById("wm_msg"); m.textContent="Saving…";
+  const patch={ card_wm_x:WMSET.card.x,card_wm_y:WMSET.card.y,card_wm_size:WMSET.card.size,card_wm_opacity:WMSET.card.op,
+    tag_wm_x:WMSET.tag.x,tag_wm_y:WMSET.tag.y,tag_wm_size:WMSET.tag.size,tag_wm_opacity:WMSET.tag.op };
   const {data,error}=await sb.from("stores").update(patch).eq("id",ME.store_id).select();
   if(error){ m.textContent="Error: "+error.message; return; }
   if(!data||!data.length){ m.textContent="Not saved — no permission."; return; }
-  Object.assign(STORE,patch); m.textContent="Saved.";
-}
+  Object.assign(STORE,patch); m.textContent="Saved."; }
 const ALIAS={Caryophyllene:"Beta-Caryophyllene",Myrcene:"Beta-Myrcene",Humulene:"Alpha-Humulene",Pinene:"Alpha-Pinene",Geranyl_Acetate:"Geranyl-Acetate",Germacrene_B:"Germacrene-B"};
 function terpMatch(raw){ if(!raw) return null; if(TERPS[raw]) return raw;
   const h=raw.replace(/_/g,"-"); if(TERPS[h]) return h;
