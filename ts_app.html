@@ -349,8 +349,10 @@ window.addEventListener("mousemove",wmMove); window.addEventListener("mouseup",w
 window.addEventListener("touchmove",wmMove,{passive:false}); window.addEventListener("touchend",wmUp);
 function startWmDrag(kind,e){ const pt=e.touches?e.touches[0]:e; WM_DRAG={kind,sx:pt.clientX,sy:pt.clientY,ox:WMSET[kind].x,oy:WMSET[kind].y}; if(e.cancelable)e.preventDefault(); }
 function applyWm(kind){ const st=WMSET[kind],img=document.getElementById("wmimg_"+kind); if(!img)return;
-  img.style.width=st.size+"%"; img.style.opacity=(st.op/100); img.style.transform="translate(-50%,-50%) translate("+st.x+"px,"+st.y+"px)"; }
-function wmPreviewHTML(kind,label,url){ const D=WM_DIMS[kind];
+  img.style.width=st.size+"%"; img.style.opacity=(st.op/100); img.style.transform="translate(-50%,-50%) translate("+st.x+"px,"+st.y+"px)";
+  const sx=document.getElementById("wmx_"+kind), sy=document.getElementById("wmy_"+kind);
+  if(sx)sx.value=st.x; if(sy)sy.value=st.y; }
+function wmPreviewHTML(kind,label,url){ const D=WM_DIMS[kind]; const xr=Math.round(D.W/2), yr=Math.round(D.H/2);
   return `<div class="wmprevwrap"><div class="wmlabel">${label}</div>
     <div class="wmprev" id="wmprev_${kind}" style="width:${Math.round(D.W*D.k)}px;height:${Math.round(D.H*D.k)}px">
       <div class="wmstage" style="width:${D.W}px;height:${D.H}px;transform:scale(${D.k})">
@@ -358,10 +360,14 @@ function wmPreviewHTML(kind,label,url){ const D=WM_DIMS[kind];
         <div class="wmarea" style="left:${D.inset}px;top:${D.inset}px;right:${D.inset}px;bottom:${D.inset}px">
           <img class="wmimg" id="wmimg_${kind}" ${url?`src="${url}"`:""} draggable="false"></div>
       </div></div>
+    <div class="wmslider">Horizontal<input type="range" id="wmx_${kind}" min="-${xr}" max="${xr}" value="${WMSET[kind].x}"></div>
+    <div class="wmslider">Vertical<input type="range" id="wmy_${kind}" min="-${yr}" max="${yr}" value="${WMSET[kind].y}"></div>
     <div class="wmslider">Size<input type="range" id="wmsize_${kind}" min="10" max="150" value="${WMSET[kind].size}"></div>
     <div class="wmslider">Opacity<input type="range" id="wmop_${kind}" min="1" max="60" value="${WMSET[kind].op}"></div></div>`; }
 function setupWmPreview(kind){ applyWm(kind);
   const img=document.getElementById("wmimg_"+kind); if(img){ img.addEventListener("mousedown",e=>startWmDrag(kind,e)); img.addEventListener("touchstart",e=>startWmDrag(kind,e),{passive:false}); }
+  document.getElementById("wmx_"+kind).oninput=e=>{ WMSET[kind].x=parseFloat(e.target.value); applyWm(kind); };
+  document.getElementById("wmy_"+kind).oninput=e=>{ WMSET[kind].y=parseFloat(e.target.value); applyWm(kind); };
   document.getElementById("wmsize_"+kind).oninput=e=>{ WMSET[kind].size=parseFloat(e.target.value); applyWm(kind); };
   document.getElementById("wmop_"+kind).oninput=e=>{ WMSET[kind].op=parseFloat(e.target.value); applyWm(kind); }; }
 function renderWatermarkCard(manager){ const box=document.getElementById("watermarkBox"); if(!manager||!ME.store_id){ box.innerHTML=""; return; }
