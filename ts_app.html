@@ -194,7 +194,42 @@ input,select{background:#fff;border:1px solid var(--line);color:var(--txt);borde
 .wmimg{position:absolute;top:50%;left:50%;height:auto;cursor:move;max-width:none}
 .wmslider{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);margin-top:6px}
 .wmslider input[type=range]{flex:1}
-@media(max-width:560px){.focus{grid-template-columns:1fr}}
+@media(max-width:760px){
+ .wrap{padding:12px}
+ .topbar{flex-direction:column;align-items:stretch;gap:10px;margin-bottom:12px}
+ .topbar img.logo{height:56px;align-self:center}
+ nav{overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;gap:4px;padding-bottom:4px;justify-content:flex-start}
+ nav::-webkit-scrollbar{height:0}
+ nav a{white-space:nowrap;padding:9px 13px;font-size:14px}
+ .staffbar{margin-left:0;justify-content:space-between;width:100%}
+ .focus{grid-template-columns:1fr}
+ .controls{gap:8px}.controls #q{min-width:0;flex:1 1 100%}
+ .controls select,.controls #sortdir{flex:1 1 auto}
+ .list{grid-template-columns:1fr 1fr;gap:10px}
+ .pcard{padding:10px}
+ .pcard .lg{height:130px}
+ .pname{font-size:14px}
+ #ov,#ovt,#ovs,#ovm{padding:8px}
+ .sheet{padding:16px;border-radius:12px}
+ .close{width:34px;height:34px;font-size:19px;top:10px;right:10px}
+ .logobox{min-height:170px;padding:12px}.logobox img{max-height:220px}
+ .phead h2{font-size:20px}
+ .chem{gap:6px}
+ .kv{grid-template-columns:1fr}
+ .tdhead img{width:84px;height:84px}
+ .certhead .certlogo{max-height:66px}.certhead h1{font-size:19px}
+ .sirwrap h1{font-size:22px}
+ .sirbtn{padding:15px;font-size:15px}
+ .modrow{padding:12px;gap:10px}.modrow .mtit{font-size:14px}
+ .wmprevs{gap:12px}.wmprevwrap{flex:1 1 100%}
+ .cardsheet{height:88vh}
+ input,select,textarea,.ainput,.pinin{font-size:16px}
+}
+@media(max-width:420px){
+ .list{grid-template-columns:1fr}
+ .pcard .lg{height:170px}
+ .stafftiles{grid-template-columns:1fr}
+}
 </style></head><body><div class="wrap">
 <div id="authscreen" class="authwrap"></div>
 <div id="appmain" style="display:none">
