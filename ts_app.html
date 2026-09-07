@@ -590,8 +590,11 @@ async function route(){
   const uid=session.user.id, email=session.user.email;
   let {data:prof}=await sb.from("profiles").select("*").eq("id",uid).maybeSingle();
   if(!prof){ await sleep(700); ({data:prof}=await sb.from("profiles").select("*").eq("id",uid).maybeSingle()); }
-  if(prof && prof.status==="approved"){ ME=prof; ME.email=email; await loadStoreStaff();
-    if(STAFF.length===0){ enterApp({name:(prof.full_name||"Manager"),role:"manager",id:null}, "manage"); }
+  if(prof && prof.status==="approved"){ ME=prof; ME.email=email;
+    if(ME.role==="admin" || !ME.store_id){ if(!ACTIVE) enterApp({name:(prof.full_name||"Admin"),role:"manager",id:null},"manage"); return; }
+    await loadStoreStaff();
+    if(ACTIVE) return;                 // already switched in — don't clobber
+    if(STAFF.length===0) firstManagerSetup();
     else showLock();
     return; }
   const {data:apps}=await sb.from("store_applications").select("*").eq("applicant_id",uid).order("created_at",{ascending:false}).limit(1);
@@ -599,6 +602,20 @@ async function route(){
   if(apps&&apps.length&&apps[0].status==="rejected") rejectedScreen(apps[0]);
   else if(apps&&apps.length) pendingScreen(email);
   else applicationScreen(email);
+}
+function firstManagerSetup(){ ACTIVE=null; appMain.style.display="none";
+  authEl.innerHTML=`<div class="authcard">${logoTag()}<h2>Set up your manager PIN</h2><p>Create your own staff profile with a 4-digit PIN — you'll sign in with this, and add more staff after.</p>
+    <div class="afield">Your name</div><input class="ainput" id="fm_name" value="${(ME.full_name||"").replace(/"/g,"&quot;")}">
+    <div class="afield">4-digit PIN</div><input class="ainput" id="fm_pin" inputmode="numeric" maxlength="4" placeholder="e.g. 1234">
+    <button class="abtn" id="fm_go">Create my profile</button><button class="alink" id="fm_out">Sign out store</button><div class="amsg" id="fm_msg"></div></div>`;
+  authEl.classList.add("on");
+  document.getElementById("fm_out").onclick=signOut;
+  document.getElementById("fm_go").onclick=async()=>{ const name=document.getElementById("fm_name").value.trim(),pin=document.getElementById("fm_pin").value.trim(),m=document.getElementById("fm_msg");
+    if(!name||!/^[0-9]{4}$/.test(pin)){ m.textContent="Enter your name and a 4-digit PIN."; return; }
+    document.getElementById("fm_go").disabled=true; m.textContent="Creating…";
+    const {error}=await sb.from("staff").insert({store_id:ME.store_id,name:name,role:"manager",pin:pin});
+    if(error){ m.textContent="Error: "+error.message; document.getElementById("fm_go").disabled=false; return; }
+    await loadStoreStaff(); showLock(); };
 }
 function showLock(){ ACTIVE=null; appMain.style.display="none";
   const tiles=STAFF.map(s=>`<button class="stafftile" data-id="${s.id}"><span class="sn">${s.name}</span><span class="sr">${s.role}</span></button>`).join("")||'<div class="muted">No staff yet.</div>';
@@ -691,6 +708,6 @@ async function reviewApp(btn,approve){ const id=btn.closest(".appitem").dataset.
   const {error}=await sb.rpc("admin_review",{app_id:id,approve:approve,notes:notes});
   if(error){ alert("Error: "+error.message); btn.disabled=false; return; } loadApprovals(); }
 
-if(sb){ sb.auth.onAuthStateChange((event)=>{ if(event==="PASSWORD_RECOVERY"){ recoveryScreen(); } else { route(); } }); route(); }
+if(sb){ sb.auth.onAuthStateChange((event)=>{ if(event==="PASSWORD_RECOVERY"){ recoveryScreen(); return; } if(event==="SIGNED_IN" && ACTIVE){ return; } route(); }); route(); }
 else { showAuth('<h2>Configuration needed</h2><p>Supabase keys are not set.</p>'); }
 </script></body></html>
