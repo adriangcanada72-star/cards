@@ -276,6 +276,7 @@ input,select{background:#fff;border:1px solid var(--line);color:var(--txt);borde
 <div id="view-cert" style="display:none"><div id="certHome"></div></div>
 <div id="view-manage" style="display:none">
  <div id="acctBox"></div>
+ <div id="billingBox"></div>
  <div id="inviteBox"></div>
  <div id="styleBox"></div>
  <div id="watermarkBox"></div>
@@ -438,7 +439,12 @@ if(SUPABASE_URL.startsWith("http")){ sb=supabase.createClient(SUPABASE_URL,SUPAB
 else{ const w=document.getElementById("cfgwarn"); w.style.display="block"; w.textContent="Add Supabase URL + key in the CONFIG block."; }
 function closeDetail(){ document.getElementById("ov").classList.remove("on"); }
 function closeTerp(){ document.getElementById("ovt").classList.remove("on"); }
-function showView(v){ document.getElementById("view-products").style.display=v==="products"?"block":"none";
+function storeHasAccess(){ const s=STORE||{}; if(s.comped) return true;
+  if(s.subscription_status==="active") return true;
+  if(s.subscription_status==="trialing"){ return !s.trial_ends_at || new Date(s.trial_ends_at)>new Date(); }
+  return false; }
+function showView(v){ if(v!=="manage" && !storeHasAccess()){ showPaywall(); return; }
+  document.getElementById("view-products").style.display=v==="products"?"block":"none";
   document.getElementById("view-terpenes").style.display=v==="terpenes"?"block":"none";
   document.getElementById("view-sir").style.display=v==="sir"?"block":"none";
   document.getElementById("view-cert").style.display=v==="cert"?"block":"none";
@@ -1300,8 +1306,71 @@ function pinPrompt(staff){ if(!staff) return; const area=document.getElementById
 let idleTimer=null; const IDLE_MS=5*60*1000;
 function resetIdle(){ clearTimeout(idleTimer); if(ACTIVE){ idleTimer=setTimeout(()=>{ if(ACTIVE) lockStaff(); }, IDLE_MS); } }
 ["mousemove","mousedown","keydown","touchstart","scroll","click"].forEach(ev=>document.addEventListener(ev,resetIdle,{passive:true}));
-function enterApp(staff,view){ ACTIVE=staff; hideAuth(); initApp(); applyGating(); renderStaffBar(); refreshManage(); showView(view||"products"); resetIdle(); }
+async function enterApp(staff,view){ ACTIVE=staff; hideAuth(); initApp(); applyGating(); renderStaffBar();
+  await loadStore(); refreshManage();
+  if(!storeHasAccess()){ if(location.search.indexOf("checkout=success")>=0){ pollPayment(); return; } showPaywall(); return; }
+  showView(view||"products"); resetIdle(); }
 function unlock(staff){ enterApp(staff,"products"); }
+function postAccessGranted(){ hideAuth(); appMain.style.display="block"; applyGating(); renderStaffBar(); refreshManage(); showView("products"); resetIdle(); }
+function showPaywall(){ appMain.style.display="none";
+  const s=STORE||{}, mgr=(ACTIVE&&ACTIVE.role==="manager");
+  const trialEnded=(s.subscription_status==="trialing"&&s.trial_ends_at&&new Date(s.trial_ends_at)<new Date());
+  const msg = s.subscription_status==="past_due" ? "Your subscription payment is past due." :
+              s.subscription_status==="canceled" ? "Your subscription has been canceled." :
+              trialEnded ? "Your free trial has ended." : "Subscribe to unlock the full app.";
+  authEl.innerHTML=`<div class="authcard">${logoTag()}<h2>Activate The Terpene Sommelier</h2><p>${msg}</p>
+    ${mgr?`<button class="abtn" id="pw_sub">Subscribe with Stripe</button>`:`<p class="afield">Ask your store manager to start the subscription, or enter an access code below.</p>`}
+    <div class="afield" style="margin-top:12px">Have an access code?</div>
+    <input class="ainput" id="pw_code" placeholder="Enter access code">
+    <button class="abtn" id="pw_redeem">Unlock with code</button>
+    <div class="amsg" id="pw_msg"></div>
+    <div style="margin-top:6px"><button class="alink" id="pw_switch">Switch staff</button> · <button class="alink" id="pw_out">Sign out store</button></div></div>`;
+  authEl.classList.add("on");
+  const sb1=document.getElementById("pw_sub"); if(sb1) sb1.onclick=startCheckout;
+  document.getElementById("pw_redeem").onclick=redeemAccessCode;
+  document.getElementById("pw_switch").onclick=lockStaff;
+  document.getElementById("pw_out").onclick=signOut;
+  document.getElementById("pw_code").addEventListener("keydown",e=>{ if(e.key==="Enter") redeemAccessCode(); }); }
+function pollPayment(){ appMain.style.display="none";
+  authEl.innerHTML=`<div class="authcard">${logoTag()}<h2>Activating…</h2><p>Confirming your payment with Stripe — this can take a few seconds.</p><div class="amsg" id="pp_msg">Checking…</div></div>`;
+  authEl.classList.add("on");
+  let tries=0; const t=setInterval(async()=>{ tries++; await loadStore();
+    if(storeHasAccess()){ clearInterval(t); try{history.replaceState({},"",location.pathname);}catch(e){} postAccessGranted(); }
+    else if(tries>=6){ clearInterval(t); try{history.replaceState({},"",location.pathname);}catch(e){} showPaywall(); }
+  },2500); }
+async function startCheckout(){ const m=document.getElementById("pw_msg")||document.getElementById("bill_msg"); if(m)m.textContent="Opening secure checkout…";
+  try{ const {data,error}=await sb.functions.invoke("create-checkout",{body:{}});
+    if(error||!data||!data.url){ if(m)m.textContent="Checkout error: "+((data&&data.error)||(error&&error.message)||"unavailable"); return; }
+    window.location.href=data.url;
+  }catch(e){ if(m)m.textContent="Checkout error: "+(e&&e.message||e); } }
+async function startPortal(){ const m=document.getElementById("bill_msg"); if(m)m.textContent="Opening billing portal…";
+  try{ const {data,error}=await sb.functions.invoke("create-portal",{body:{}});
+    if(error||!data||!data.url){ if(m)m.textContent="Portal error: "+((data&&data.error)||(error&&error.message)||"unavailable"); return; }
+    window.location.href=data.url;
+  }catch(e){ if(m)m.textContent="Portal error: "+(e&&e.message||e); } }
+async function redeemAccessCode(){ const el=document.getElementById("pw_code")||document.getElementById("bill_code");
+  const m=document.getElementById("pw_msg")||document.getElementById("bill_msg");
+  const code=((el&&el.value)||"").trim(); if(!code){ if(m)m.textContent="Enter a code."; return; }
+  if(m)m.textContent="Checking…";
+  const {data,error}=await sb.rpc("redeem_access_code",{p_code:code});
+  if(error){ if(m)m.textContent="Error: "+error.message; return; }
+  const res=data||{}; if(!res.ok){ if(m)m.textContent=res.error||"Invalid code."; return; }
+  await loadStore();
+  if(authEl.classList.contains("on")){ postAccessGranted(); }
+  else { renderBillingCard(ACTIVE&&ACTIVE.role==="manager"); const bm=document.getElementById("bill_msg"); if(bm)bm.textContent="Access unlocked."; } }
+function renderBillingCard(manager){ const box=document.getElementById("billingBox"); if(!box) return; if(!manager){ box.innerHTML=""; return; }
+  const s=STORE||{};
+  const label = s.comped ? "Comped — free access" : (s.subscription_status||"none");
+  const trial = (s.subscription_status==="trialing"&&s.trial_ends_at) ? (" · trial ends "+new Date(s.trial_ends_at).toLocaleDateString()) : "";
+  const renew = (s.subscription_status==="active"&&s.current_period_end) ? (" · renews "+new Date(s.current_period_end).toLocaleDateString()) : "";
+  box.innerHTML=`<div class="mcard"><h3>Billing &amp; subscription</h3>
+    <div class="sub">Status: <b>${label}${trial}${renew}</b></div>
+    ${s.comped?"":`<div class="mrow"><button class="syncbtn" id="bl_sub">${s.stripe_subscription_id?"Manage subscription":"Subscribe"}</button></div>`}
+    <div class="afield" style="margin-top:12px">Access code</div>
+    <div class="mrow"><input id="bill_code" placeholder="Enter access code" style="flex:1;min-width:160px"><button class="syncbtn" id="bl_code">Apply</button></div>
+    <div class="pmsg" id="bill_msg"></div></div>`;
+  const bs=document.getElementById("bl_sub"); if(bs) bs.onclick=()=> s.stripe_subscription_id?startPortal():startCheckout();
+  document.getElementById("bl_code").onclick=redeemAccessCode; }
 function lockStaff(){ showLock(); }
 function applyGating(){ const nm=document.getElementById("navManage"); if(nm) nm.style.display=(ACTIVE&&ACTIVE.role==="manager")?"inline-block":"none"; }
 function renderStaffBar(){ const el=document.getElementById("staffBar"); if(!el) return;
@@ -1328,6 +1397,7 @@ async function refreshManage(){
       if(!data||!data.length){ document.getElementById("style_msg").textContent="Not saved — no permission to update the store."; return; }
       STORE.card_style=v; document.getElementById("style_msg").textContent="Saved."; };
   } else sBox.innerHTML="";
+  renderBillingCard(manager);
   renderWatermarkCard(manager);
   renderStaffCard(manager);
   const adminBox=document.getElementById("adminBox");
