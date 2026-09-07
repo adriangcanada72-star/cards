@@ -434,6 +434,10 @@ const SIR_LOGO="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAlwAAADhCAYAAAAd12
 
 const SUPABASE_URL = "https://kkijtcpqfrzsttgwvqgs.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_aJCQWiBURvJebEWfSC6R7g_rVQv2d1Y";
+// Stripe Payment Link (paste the URL from Stripe → Payment Links). Leave "" until set.
+const STRIPE_PAYMENT_LINK = "https://buy.stripe.com/test_6oU6oI4JW3VDcmN0536J200";
+// Optional: Stripe Customer Portal login URL for managing/cancelling. Leave "" to hide.
+const STRIPE_PORTAL_URL = "";
 let sb=null;
 if(SUPABASE_URL.startsWith("http")){ sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY); }
 else{ const w=document.getElementById("cfgwarn"); w.style.display="block"; w.textContent="Add Supabase URL + key in the CONFIG block."; }
@@ -1339,16 +1343,15 @@ function pollPayment(){ appMain.style.display="none";
     if(storeHasAccess()){ clearInterval(t); try{history.replaceState({},"",location.pathname);}catch(e){} postAccessGranted(); }
     else if(tries>=6){ clearInterval(t); try{history.replaceState({},"",location.pathname);}catch(e){} showPaywall(); }
   },2500); }
-async function startCheckout(){ const m=document.getElementById("pw_msg")||document.getElementById("bill_msg"); if(m)m.textContent="Opening secure checkout…";
-  try{ const {data,error}=await sb.functions.invoke("create-checkout",{body:{}});
-    if(error||!data||!data.url){ if(m)m.textContent="Checkout error: "+((data&&data.error)||(error&&error.message)||"unavailable"); return; }
-    window.location.href=data.url;
-  }catch(e){ if(m)m.textContent="Checkout error: "+(e&&e.message||e); } }
-async function startPortal(){ const m=document.getElementById("bill_msg"); if(m)m.textContent="Opening billing portal…";
-  try{ const {data,error}=await sb.functions.invoke("create-portal",{body:{}});
-    if(error||!data||!data.url){ if(m)m.textContent="Portal error: "+((data&&data.error)||(error&&error.message)||"unavailable"); return; }
-    window.location.href=data.url;
-  }catch(e){ if(m)m.textContent="Portal error: "+(e&&e.message||e); } }
+function startCheckout(){ const m=document.getElementById("pw_msg")||document.getElementById("bill_msg");
+  if(!STRIPE_PAYMENT_LINK){ if(m)m.textContent="Subscription link not set up yet — contact support."; return; }
+  const sid=(STORE&&STORE.id)||""; const sep=STRIPE_PAYMENT_LINK.includes("?")?"&":"?";
+  let url=STRIPE_PAYMENT_LINK+sep+"client_reference_id="+encodeURIComponent(sid);
+  if(ME&&ME.email) url+="&prefilled_email="+encodeURIComponent(ME.email);
+  window.location.href=url; }
+function startPortal(){ const m=document.getElementById("bill_msg");
+  if(STRIPE_PORTAL_URL){ window.location.href=STRIPE_PORTAL_URL; return; }
+  if(m)m.textContent="To manage or cancel, use the link in your Stripe receipt email, or contact support."; }
 async function redeemAccessCode(){ const el=document.getElementById("pw_code")||document.getElementById("bill_code");
   const m=document.getElementById("pw_msg")||document.getElementById("bill_msg");
   const code=((el&&el.value)||"").trim(); if(!code){ if(m)m.textContent="Enter a code."; return; }
