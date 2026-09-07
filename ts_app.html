@@ -165,6 +165,12 @@ input,select{background:#fff;border:1px solid var(--line);color:var(--txt);borde
 .stafftile:hover{border-color:var(--green);box-shadow:0 4px 14px rgba(0,0,0,.08)}
 .stafftile .sn{font-size:15px}.stafftile .sr{font-size:11px;color:var(--muted);font-weight:600;text-transform:capitalize}
 .stafftile .sstore{font-size:10px;color:var(--green);font-weight:700;margin-top:4px;text-align:center;line-height:1.2}
+.pager{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;align-items:center;margin:22px 0 8px}
+.pager button{min-width:38px;height:38px;padding:0 10px;border:1px solid var(--line);background:#fff;border-radius:8px;cursor:pointer;font-weight:700;color:var(--txt)}
+.pager button:hover:not(:disabled){border-color:var(--green)}
+.pager button.cur{background:var(--green);color:#fff;border-color:var(--green)}
+.pager button:disabled{opacity:.4;cursor:default}
+.pager .pgap{color:var(--muted);padding:0 2px}
 .pinbox{margin-top:12px}.pintitle{font-size:13px;color:var(--muted);margin-bottom:8px}
 .pinin{text-align:center;letter-spacing:10px;font-size:24px}
 .printbtn{flex:1;background:var(--green);color:#fff;border:none;border-radius:8px;padding:11px;font-weight:700;font-size:14px;cursor:pointer}.printbtn:hover{opacity:.92}
@@ -198,6 +204,7 @@ input,select{background:#fff;border:1px solid var(--line);color:var(--txt);borde
 <div class="filters" id="filters" style="display:none"></div>
 <div id="count" class="muted" style="font-size:12px;margin-bottom:8px"></div>
 <div class="list" id="list"></div>
+<div id="pager" class="pager"></div>
 </div>
 <div id="view-terpenes" style="display:none"><div class="list" id="terpList"></div></div>
 <div id="view-sir" style="display:none"><div id="sirHome"></div></div>
@@ -785,9 +792,31 @@ function sortDirLabel(){ const sku=sortEl.value==="sku"; sortDirEl.textContent=s
 sortDirEl.onclick=()=>{ SORT_ASC=!SORT_ASC; sortDirLabel(); search(); };
 sortEl.onchange=()=>{ sortDirLabel(); search(); };
 sortDirLabel();
-async function search(){ if(!sb) return; updateBadge();
+let PAGE=1; const PER=50;
+const pagerEl=document.getElementById("pager");
+function gotoPage(n){ PAGE=n; runSearch(); const v=document.getElementById("view-products"); if(v) v.scrollIntoView({behavior:"smooth",block:"start"}); }
+function renderPager(total){
+  if(!pagerEl) return;
+  const pages=Math.max(1,Math.ceil((total||0)/PER));
+  if(pages<=1){ pagerEl.innerHTML=""; return; }
+  const nums=[]; const add=n=>nums.push(n);
+  const win=2; // pages around current
+  add(1);
+  let lo=Math.max(2,PAGE-win), hi=Math.min(pages-1,PAGE+win);
+  if(lo>2) nums.push("...");
+  for(let i=lo;i<=hi;i++) add(i);
+  if(hi<pages-1) nums.push("...");
+  if(pages>1) add(pages);
+  let html=`<button ${PAGE<=1?"disabled":""} onclick="gotoPage(${PAGE-1})">‹ Prev</button>`;
+  nums.forEach(n=>{ if(n==="...") html+=`<span class="pgap">…</span>`; else html+=`<button class="${n===PAGE?"cur":""}" onclick="gotoPage(${n})">${n}</button>`; });
+  html+=`<button ${PAGE>=pages?"disabled":""} onclick="gotoPage(${PAGE+1})">Next ›</button>`;
+  pagerEl.innerHTML=html;
+}
+function search(){ PAGE=1; return runSearch(); }
+async function runSearch(){ if(!sb) return; updateBadge();
   const sortField=(sortEl&&sortEl.value)||"name";
-  let q=sb.from("products").select("*",{count:"exact"}).order(sortField,{ascending:SORT_ASC}).limit(60);
+  const from=(PAGE-1)*PER, to=from+PER-1;
+  let q=sb.from("products").select("*",{count:"exact"}).order(sortField,{ascending:SORT_ASC}).range(from,to);
   const term=qEl.value.trim(); if(term) q=q.or(`name.ilike.%${term}%,brand.ilike.%${term}%`);
   if(srcEl.value) q=q.eq("catalog_source",srcEl.value);
   for(const [k] of FILTERS){ const v=document.getElementById("f_"+k).value; if(v) q=q.eq(FIELDMAP[k],v); }
@@ -795,7 +824,9 @@ async function search(){ if(!sb) return; updateBadge();
   for(const t of AVOID) q=q.not("all_terpenes","ilike",`%${t.toLowerCase()}%`);
   const {data,error,count}=await q;
   if(error){ countEl.textContent="Error: "+error.message; return; }
-  countEl.textContent=`${data.length} shown${count?` of ${count} matching`:""}`;
+  const start=count?from+1:0, end=from+data.length;
+  countEl.textContent=count?`Showing ${start}–${end} of ${count} matching`:`${data.length} shown`;
+  renderPager(count);
   window._rows=data;
   listEl.innerHTML=data.map((p,i)=>{const sc=p.catalog_source==="Direct Delivery"?"dd":"bc";const lg=brandLogo(p.brand);
     return `<div class="pcard" data-i="${i}"><div class="lg">${lg?`<img src="${lg}">`:`<span class="logotext">${p.brand||"—"}</span>`}</div>
