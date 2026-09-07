@@ -702,8 +702,10 @@ async function refreshManage(){
       <select id="styleSel" style="max-width:240px"><option value="diagonal">Diagonal</option><option value="editorial">Editorial</option><option value="greenery">Greenery</option></select>
       <div class="pmsg" id="style_msg"></div></div>`;
     document.getElementById("styleSel").value=(STORE&&STORE.card_style)||"diagonal";
-    document.getElementById("styleSel").onchange=async(e)=>{ const v=e.target.value; const {error}=await sb.from("stores").update({card_style:v}).eq("id",ME.store_id);
-      if(error){ document.getElementById("style_msg").textContent="Error: "+error.message; return; } STORE.card_style=v; document.getElementById("style_msg").textContent="Saved."; };
+    document.getElementById("styleSel").onchange=async(e)=>{ const v=e.target.value; const {data,error}=await sb.from("stores").update({card_style:v}).eq("id",ME.store_id).select();
+      if(error){ document.getElementById("style_msg").textContent="Error: "+error.message; return; }
+      if(!data||!data.length){ document.getElementById("style_msg").textContent="Not saved — no permission to update the store."; return; }
+      STORE.card_style=v; document.getElementById("style_msg").textContent="Saved."; };
   } else sBox.innerHTML="";
   renderStaffCard(manager);
   const adminBox=document.getElementById("adminBox");
