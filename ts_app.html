@@ -113,6 +113,10 @@ input,select{background:#fff;border:1px solid var(--line);color:var(--txt);borde
 .cardsheet{background:#fff;border-radius:12px;width:100%;max-width:920px;height:92vh;position:relative;box-shadow:0 10px 40px rgba(0,0,0,.3);overflow:hidden}
 .cardsheet iframe{width:100%;height:100%;border:none;background:#fff}
 .cardsheet .close{position:absolute;top:10px;right:12px;z-index:2}
+.wmgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:6px}
+.wmcol .wmh{font-weight:700;font-size:13px;margin-bottom:8px}
+.wmf{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);margin-bottom:7px;gap:8px}
+.wmf input{width:90px}
 @media(max-width:560px){.focus{grid-template-columns:1fr}}
 </style></head><body><div class="wrap">
 <div id="authscreen" class="authwrap"></div>
@@ -134,6 +138,7 @@ input,select{background:#fff;border:1px solid var(--line);color:var(--txt);borde
 <div id="view-manage" style="display:none">
  <div id="acctBox"></div>
  <div id="styleBox"></div>
+ <div id="watermarkBox"></div>
  <div id="inviteBox"></div>
  <div id="adminBox" style="display:none"><div class="mcard"><h3>Store applications — review</h3><div class="sub">Approve or reject BC retailer registrations. Check the store number and Selling It Right certificate before approving.</div><div id="adminList"></div></div></div>
  <div id="syncWrap">
@@ -305,7 +310,7 @@ async function loadBrands(){ if(!sb) return; const {data}=await sb.from("brands"
 async function loadTerps(){ if(!sb) return; const {data}=await sb.from("terpenes").select("*"); if(data) data.forEach(t=>TERPS[t.name]=t); }
 function brandLogo(name){ return name?BRANDS[name.toLowerCase()]||"":""; }
 let STORE={};
-async function loadStore(){ STORE={}; if(!ME||!ME.store_id) return; const {data}=await sb.from("stores").select("name,store_number,card_style").eq("id",ME.store_id).maybeSingle(); if(data) STORE=data; }
+async function loadStore(){ STORE={}; if(!ME||!ME.store_id) return; const {data}=await sb.from("stores").select("*").eq("id",ME.store_id).maybeSingle(); if(data) STORE=data; }
 const CARDS_BASE="https://adriangcanada72-star.github.io/cards/";
 const STYLE_FILES={ greenery:{card:"card.html",tag:"card2.html"}, diagonal:{card:"card_style_diagonal.html",tag:"shelf_tag_diagonal.html"}, editorial:{card:"card_style_editorial.html",tag:"shelf_tag_editorial.html"} };
 function buildCardData(p,desc){ const nz=v=>(v===null||v===undefined)?"":String(v);
@@ -313,16 +318,53 @@ function buildCardData(p,desc){ const nz=v=>(v===null||v===undefined)?"":String(
     nz(p.thc_min), nz(p.thc_max), nz(p.cbd_min), nz(p.cbd_max),
     nz(p.terpene_1), nz(p.terpene_2), nz(p.terpene_3), nz(p.origin_region),
     nz(brandLogo(p.brand)), nz(desc),
-    "","","","","",            // watermark url,x,y,size,opacity
+    nz(wm&&wm.url), nz(wm&&wm.x), nz(wm&&wm.y), nz(wm&&wm.size), nz(wm&&wm.op),  // watermark url,x,y,size,opacity
     "","","","",               // per-piece thc/cbd
     "","",                     // thc/cbd override
     nz(p.num_consumer_items), nz(p.consumer_item_size), nz(p.consumer_item_size_uom) ];
   return t.join("~|~|~"); }
 function openCard(p,type){ const style=(STORE&&STORE.card_style)||"diagonal"; const f=(STYLE_FILES[style]||STYLE_FILES.diagonal)[type];
   const desc = style==="greenery" ? (p.long_description||p.short_description||"") : (p.short_description||p.long_description||"");
-  document.getElementById("cardFrame").src=CARDS_BASE+f+"?data="+encodeURIComponent(buildCardData(p,desc));
+  const s=STORE||{}, g=(x,d)=>{const n=parseFloat(x);return isNaN(n)?d:n;};
+  const wm = (type==="tag")
+    ? {url:s.watermark_url||"", x:g(s.tag_wm_x,0), y:g(s.tag_wm_y,0), size:g(s.tag_wm_size,75), op:g(s.tag_wm_opacity,8)}
+    : {url:s.watermark_url||"", x:g(s.card_wm_x,0), y:g(s.card_wm_y,0), size:g(s.card_wm_size,75), op:g(s.card_wm_opacity,8)};
+  document.getElementById("cardFrame").src=CARDS_BASE+f+"?data="+encodeURIComponent(buildCardData(p,desc,wm));
   document.getElementById("ovc").classList.add("on"); }
 function closeCard(){ document.getElementById("ovc").classList.remove("on"); document.getElementById("cardFrame").src="about:blank"; }
+function wmField(id,label,val){ return `<label class="wmf">${label}<input id="${id}" type="number" value="${val}"></label>`; }
+function renderWatermarkCard(manager){ const box=document.getElementById("watermarkBox"); if(!manager||!ME.store_id){ box.innerHTML=""; return; }
+  const s=STORE||{}, v=(x,d)=>(x===null||x===undefined||x==="")?d:x;
+  box.innerHTML=`<div class="mcard"><h3>Watermark</h3><div class="sub">Upload a store watermark shown behind every card &amp; tag style. Set position, size and opacity separately for cards and tags.</div>
+    <div class="mrow"><input type="file" id="wm_file" accept="image/*" style="flex:1;margin:0"><button class="syncbtn" id="wm_up">Upload image</button></div>
+    <div id="wm_prev" style="margin:10px 0">${s.watermark_url?`<img src="${s.watermark_url}" style="max-height:70px;background:#eef2f0;border-radius:8px;padding:4px">`:'<span class="pmeta muted">No watermark uploaded.</span>'}</div>
+    <div class="wmgrid">
+      <div class="wmcol"><div class="wmh">Cards</div>${wmField("cw_x","X (px)",v(s.card_wm_x,0))}${wmField("cw_y","Y (px)",v(s.card_wm_y,0))}${wmField("cw_size","Size %",v(s.card_wm_size,75))}${wmField("cw_op","Opacity %",v(s.card_wm_opacity,8))}</div>
+      <div class="wmcol"><div class="wmh">Tags</div>${wmField("tw_x","X (px)",v(s.tag_wm_x,0))}${wmField("tw_y","Y (px)",v(s.tag_wm_y,0))}${wmField("tw_size","Size %",v(s.tag_wm_size,75))}${wmField("tw_op","Opacity %",v(s.tag_wm_opacity,8))}</div>
+    </div>
+    <button class="syncbtn" id="wm_save" style="margin-top:10px">Save settings</button><div class="pmsg" id="wm_msg"></div></div>`;
+  document.getElementById("wm_up").onclick=uploadWatermark;
+  document.getElementById("wm_save").onclick=saveWatermark;
+}
+async function uploadWatermark(){ const f=document.getElementById("wm_file").files[0],m=document.getElementById("wm_msg"); if(!f){m.textContent="Choose an image.";return;}
+  m.textContent="Uploading…";
+  const path=`${ME.store_id}/wm_${Date.now()}_${f.name.replace(/[^a-zA-Z0-9._-]/g,"_")}`;
+  const up=await sb.storage.from("watermarks").upload(path,f,{upsert:true});
+  if(up.error){ m.textContent="Upload error: "+up.error.message; return; }
+  const {data:pub}=sb.storage.from("watermarks").getPublicUrl(path); const url=pub.publicUrl;
+  const {error}=await sb.from("stores").update({watermark_url:url}).eq("id",ME.store_id);
+  if(error){ m.textContent="Error: "+error.message; return; }
+  STORE.watermark_url=url; document.getElementById("wm_prev").innerHTML=`<img src="${url}" style="max-height:70px;background:#eef2f0;border-radius:8px;padding:4px">`; m.textContent="Uploaded.";
+}
+async function saveWatermark(){ const n=id=>{ const x=parseFloat(document.getElementById(id).value); return isNaN(x)?null:x; };
+  const patch={ card_wm_x:n("cw_x"),card_wm_y:n("cw_y"),card_wm_size:n("cw_size"),card_wm_opacity:n("cw_op"),
+    tag_wm_x:n("tw_x"),tag_wm_y:n("tw_y"),tag_wm_size:n("tw_size"),tag_wm_opacity:n("tw_op") };
+  const m=document.getElementById("wm_msg"); m.textContent="Saving…";
+  const {data,error}=await sb.from("stores").update(patch).eq("id",ME.store_id).select();
+  if(error){ m.textContent="Error: "+error.message; return; }
+  if(!data||!data.length){ m.textContent="Not saved — no permission."; return; }
+  Object.assign(STORE,patch); m.textContent="Saved.";
+}
 const ALIAS={Caryophyllene:"Beta-Caryophyllene",Myrcene:"Beta-Myrcene",Humulene:"Alpha-Humulene",Pinene:"Alpha-Pinene",Geranyl_Acetate:"Geranyl-Acetate",Germacrene_B:"Germacrene-B"};
 function terpMatch(raw){ if(!raw) return null; if(TERPS[raw]) return raw;
   const h=raw.replace(/_/g,"-"); if(TERPS[h]) return h;
@@ -707,6 +749,7 @@ async function refreshManage(){
       if(!data||!data.length){ document.getElementById("style_msg").textContent="Not saved — no permission to update the store."; return; }
       STORE.card_style=v; document.getElementById("style_msg").textContent="Saved."; };
   } else sBox.innerHTML="";
+  renderWatermarkCard(manager);
   renderStaffCard(manager);
   const adminBox=document.getElementById("adminBox");
   if(ME.role==="admin"){ adminBox.style.display="block"; loadApprovals(); } else adminBox.style.display="none";
