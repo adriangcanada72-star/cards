@@ -439,7 +439,8 @@ if(SUPABASE_URL.startsWith("http")){ sb=supabase.createClient(SUPABASE_URL,SUPAB
 else{ const w=document.getElementById("cfgwarn"); w.style.display="block"; w.textContent="Add Supabase URL + key in the CONFIG block."; }
 function closeDetail(){ document.getElementById("ov").classList.remove("on"); }
 function closeTerp(){ document.getElementById("ovt").classList.remove("on"); }
-function storeHasAccess(){ const s=STORE||{}; if(s.comped) return true;
+function storeHasAccess(){ if(ME && (ME.role==="admin" || !ME.store_id)) return true;
+  const s=STORE||{}; if(s.comped) return true;
   if(s.subscription_status==="active") return true;
   if(s.subscription_status==="trialing"){ return !s.trial_ends_at || new Date(s.trial_ends_at)>new Date(); }
   return false; }
