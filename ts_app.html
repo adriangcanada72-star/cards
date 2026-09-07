@@ -490,43 +490,62 @@ function initApp(){ if(APP_INITED) return; APP_INITED=true; (async()=>{ await Pr
 async function signOut(){ try{ await sb.auth.signOut(); }catch(e){} ME=null; location.reload(); }
 
 function loginScreen(){
-  showAuth(`<h2>Sign in</h2><p>Enter your email and we'll send you a secure sign-in link.</p>
+  showAuth(`<h2>Sign in</h2><p>Enter your email and password.</p>
     <input class="ainput" id="au_email" type="email" placeholder="you@store.com" autocomplete="email">
-    <button class="abtn" id="au_send">Send magic link</button><div class="amsg muted" id="au_msg"></div>
-    <button class="alink" id="au_signup">New here? Create an account</button>
-    <button class="alink" id="au_pwtoggle">Use a password instead</button>
-    <div id="au_pwbox" style="display:none;margin-top:10px;border-top:1px solid var(--line);padding-top:12px">
-      <input class="ainput" id="au_pw" type="password" placeholder="Password" autocomplete="current-password">
-      <button class="abtn" id="au_pwbtn" style="background:#3a4a42">Sign in with password</button></div>`);
-  au_send.onclick=async()=>{ const email=au_email.value.trim(); if(!email){au_msg.textContent="Enter your email.";return;}
-    au_send.disabled=true; au_msg.textContent="Sending…";
-    const {error}=await sb.auth.signInWithOtp({email,options:{emailRedirectTo:location.href.split("#")[0]}});
-    au_msg.textContent=error?("Error: "+error.message):"Check your email for the sign-in link."; au_send.disabled=false; };
-  au_signup.onclick=signupScreen;
-  au_pwtoggle.onclick=()=>{ const b=document.getElementById("au_pwbox"); b.style.display=b.style.display==="none"?"block":"none"; };
-  au_pwbtn.onclick=async()=>{ const email=au_email.value.trim(),pw=au_pw.value; if(!email||!pw){au_msg.textContent="Enter email and password.";return;}
-    au_pwbtn.disabled=true; au_msg.textContent="Signing in…";
+    <input class="ainput" id="au_pw" type="password" placeholder="Password" autocomplete="current-password">
+    <button class="abtn" id="au_go">Sign in</button><div class="amsg" id="au_msg"></div>
+    <button class="alink" id="au_forgot">Forgot password?</button>
+    <button class="alink" id="au_signup">New here? Create an account</button>`);
+  au_go.onclick=async()=>{ const email=au_email.value.trim(),pw=au_pw.value; if(!email||!pw){au_msg.textContent="Enter email and password.";return;}
+    au_go.disabled=true; au_msg.textContent="Signing in…";
     const {error}=await sb.auth.signInWithPassword({email,password:pw});
-    if(error){ au_msg.textContent="Error: "+error.message; au_pwbtn.disabled=false; } };
+    if(error){ au_msg.textContent="Error: "+error.message; au_go.disabled=false; } };
+  au_forgot.onclick=forgotScreen; au_signup.onclick=signupScreen;
+  document.getElementById("au_pw").addEventListener("keydown",e=>{ if(e.key==="Enter") au_go.click(); });
+}
+function forgotScreen(){
+  showAuth(`<h2>Reset password</h2><p>Enter your email and we'll send you a reset link.</p>
+    <input class="ainput" id="fp_email" type="email" placeholder="you@store.com">
+    <button class="abtn" id="fp_go">Send reset link</button>
+    <button class="alink" id="fp_back">Back to sign in</button><div class="amsg" id="fp_msg"></div>`);
+  fp_back.onclick=loginScreen;
+  fp_go.onclick=async()=>{ const email=fp_email.value.trim(); if(!email){fp_msg.textContent="Enter your email.";return;}
+    fp_go.disabled=true; fp_msg.textContent="Sending…";
+    const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.href.split("#")[0]});
+    fp_msg.textContent=error?("Error: "+error.message):"Check your email for the reset link."; fp_go.disabled=false; };
+}
+function recoveryScreen(){
+  showAuth(`<h2>Set a new password</h2><p>Choose a new password for your account.</p>
+    <input class="ainput" id="rp_pw" type="password" placeholder="New password (min 6 characters)">
+    <button class="abtn" id="rp_go">Update password</button><div class="amsg" id="rp_msg"></div>`);
+  rp_go.onclick=async()=>{ const pw=rp_pw.value; if(!pw||pw.length<6){rp_msg.textContent="At least 6 characters.";return;}
+    rp_go.disabled=true; rp_msg.textContent="Updating…";
+    const {error}=await sb.auth.updateUser({password:pw});
+    if(error){ rp_msg.textContent="Error: "+error.message; rp_go.disabled=false; return; }
+    rp_msg.textContent="Password updated."; route(); };
 }
 function signupScreen(){
-  showAuth(`<h2>Create your account</h2><p>For BC licensed retailers. We'll email you a secure sign-in link, then you'll upload your Selling It Right certificate to finish.</p>
+  showAuth(`<h2>Create your account</h2><p>For BC licensed retailers. After you create your account you'll upload your Selling It Right certificate to finish.</p>
     <div class="afield">First name</div><input class="ainput" id="su_first">
     <div class="afield">Last name</div><input class="ainput" id="su_last">
     <div class="afield">Store name</div><input class="ainput" id="su_store" placeholder="Greenery Cannabis Boutique">
     <div class="afield">BCLDB store number (6 digits)</div><input class="ainput" id="su_num" inputmode="numeric" maxlength="6" placeholder="e.g. 450121">
     <div class="afield">Email</div><input class="ainput" id="su_email" type="email" placeholder="you@store.com">
-    <button class="abtn" id="su_go">Create account &amp; send link</button>
+    <div class="afield">Password (min 6 characters)</div><input class="ainput" id="su_pw" type="password" autocomplete="new-password">
+    <button class="abtn" id="su_go">Create account</button>
     <button class="alink" id="su_back">Back to sign in</button><div class="amsg" id="su_msg"></div>`);
   su_back.onclick=loginScreen;
   su_go.onclick=async()=>{
-    const first=su_first.value.trim(),last=su_last.value.trim(),store=su_store.value.trim(),num=su_num.value.trim(),email=su_email.value.trim();
-    if(!first||!last||!store||!num||!email){ su_msg.textContent="Please fill in all fields."; return; }
+    const first=su_first.value.trim(),last=su_last.value.trim(),store=su_store.value.trim(),num=su_num.value.trim(),email=su_email.value.trim(),pw=su_pw.value;
+    if(!first||!last||!store||!num||!email||!pw){ su_msg.textContent="Please fill in all fields."; return; }
     if(!/^[0-9]{6}$/.test(num)){ su_msg.textContent="Store number must be exactly 6 digits."; return; }
+    if(pw.length<6){ su_msg.textContent="Password must be at least 6 characters."; return; }
     try{ localStorage.setItem("ts_signup",JSON.stringify({first,last,store,num,email})); }catch(e){}
-    su_go.disabled=true; su_msg.textContent="Sending link…";
-    const {error}=await sb.auth.signInWithOtp({email,options:{emailRedirectTo:location.href.split("#")[0]}});
-    su_msg.textContent=error?("Error: "+error.message):"Check your email for the sign-in link to finish setup."; su_go.disabled=false;
+    su_go.disabled=true; su_msg.textContent="Creating account…";
+    const {data,error}=await sb.auth.signUp({email,password:pw});
+    if(error){ su_msg.textContent="Error: "+error.message; su_go.disabled=false; return; }
+    if(!data.session){ su_msg.textContent="Account created. Please sign in."; setTimeout(loginScreen,1200); return; }
+    route();
   };
 }
 function applicationScreen(email){
@@ -651,6 +670,6 @@ async function reviewApp(btn,approve){ const id=btn.closest(".appitem").dataset.
   const {error}=await sb.rpc("admin_review",{app_id:id,approve:approve,notes:notes});
   if(error){ alert("Error: "+error.message); btn.disabled=false; return; } loadApprovals(); }
 
-if(sb){ sb.auth.onAuthStateChange(()=>route()); route(); }
+if(sb){ sb.auth.onAuthStateChange((event)=>{ if(event==="PASSWORD_RECOVERY"){ recoveryScreen(); } else { route(); } }); route(); }
 else { showAuth('<h2>Configuration needed</h2><p>Supabase keys are not set.</p>'); }
 </script></body></html>
