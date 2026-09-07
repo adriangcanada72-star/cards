@@ -164,6 +164,7 @@ input,select{background:#fff;border:1px solid var(--line);color:var(--txt);borde
 .stafftile{display:flex;flex-direction:column;gap:2px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 10px;cursor:pointer;font-weight:700}
 .stafftile:hover{border-color:var(--green);box-shadow:0 4px 14px rgba(0,0,0,.08)}
 .stafftile .sn{font-size:15px}.stafftile .sr{font-size:11px;color:var(--muted);font-weight:600;text-transform:capitalize}
+.stafftile .sstore{font-size:10px;color:var(--green);font-weight:700;margin-top:4px;text-align:center;line-height:1.2}
 .pinbox{margin-top:12px}.pintitle{font-size:13px;color:var(--muted);margin-bottom:8px}
 .pinin{text-align:center;letter-spacing:10px;font-size:24px}
 .printbtn{flex:1;background:var(--green);color:#fff;border:none;border-radius:8px;padding:11px;font-weight:700;font-size:14px;cursor:pointer}.printbtn:hover{opacity:.92}
@@ -1072,10 +1073,11 @@ function firstManagerSetup(){ ACTIVE=null; appMain.style.display="none";
     await loadStoreStaff(); showLock(); };
 }
 function showLock(){ ACTIVE=null; appMain.style.display="none";
-  const tiles=STAFF.map(s=>`<button class="stafftile" data-id="${s.id}"><span class="sn">${s.name}</span><span class="sr">${s.role}</span></button>`).join("")||'<div class="muted">No staff yet.</div>';
+  const sname=(STORE&&STORE.name)?STORE.name:"";
+  const tiles=STAFF.map(s=>`<button class="stafftile" data-id="${s.id}"><span class="sn">${s.name}</span><span class="sr">${s.role}</span>${sname?`<span class="sstore">${sname}</span>`:""}</button>`).join("")||'<div class="muted">No staff yet.</div>';
   authEl.innerHTML=`<div class="authcard">${logoTag()}<h2>Who's working?</h2><p>Tap your name and enter your 4-digit PIN.</p>
     <div class="stafftiles">${tiles}</div><div id="pinArea"></div>
-    <button class="alink" id="lk_owner">Manager / owner access</button><br><button class="alink" id="lk_out">Sign out store</button></div>`;
+    <button class="alink" id="lk_owner">Account owner access</button><br><button class="alink" id="lk_out">Sign out store</button></div>`;
   authEl.classList.add("on");
   document.getElementById("lk_out").onclick=signOut;
   document.getElementById("lk_owner").onclick=ownerAccess;
