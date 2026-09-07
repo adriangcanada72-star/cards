@@ -32,7 +32,7 @@ input,select{background:#fff;border:1px solid var(--line);color:var(--txt);borde
 .ftoggle{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:9px 13px;font-size:14px;font-weight:600;cursor:pointer}
 .ftoggle .badge{background:var(--green);color:#fff;border-radius:999px;font-size:11px;padding:1px 7px}
 .filters{display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:8px;margin-bottom:12px}
-.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--cardmin,250px),1fr));gap:12px}
 .pcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;cursor:pointer;transition:box-shadow .15s,border-color .15s;display:flex;flex-direction:column;gap:10px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
 .pcard:hover{border-color:var(--green);box-shadow:0 4px 14px rgba(0,0,0,.08)}
 .pcard .lg{width:100%;height:200px;background:#fff;border:1px solid var(--line);border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden}
@@ -240,7 +240,7 @@ input,select{background:#fff;border:1px solid var(--line);color:var(--txt);borde
  <div class="fcol fav"><div class="fhead"><span class="ficon fav"><svg viewBox="0 0 24 24" fill="#2f7d4f"><path d="M12 2.5l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.9 6.2 20.9l1.1-6.5L2.6 9.35l6.5-.95z"/></svg></span><span><div class="t">Favorite terpenes</div><div class="s">show products featuring these</div></span></div><div class="chips" id="favBox"></div><select id="addFav"></select></div>
  <div class="fcol avoid"><div class="fhead"><span class="ficon avoid"><svg viewBox="0 0 24 24" fill="none" stroke="#c14848" stroke-width="2.2"><circle cx="12" cy="12" r="8.5"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span><span><div class="t">Avoid terpenes</div><div class="s">hide products containing these</div></span></div><div class="chips" id="avoidBox"></div><select id="addAvoid"></select></div>
 </div>
-<div class="controls"><input id="q" placeholder="Search product or brand…"><select id="src"><option value="">All sources</option><option>BCLDB</option><option>Direct Delivery</option></select><select id="sortsel"><option value="name">Sort: Alphabetical</option><option value="sku" selected>Sort: SKU</option></select><button class="clearbtn" id="sortdir" title="Reverse sort order">A→Z ↓</button></div>
+<div class="controls"><input id="q" placeholder="Search product or brand…"><select id="src"><option value="">All sources</option><option>BCLDB</option><option>Direct Delivery</option></select><select id="sortsel"><option value="name">Sort: Alphabetical</option><option value="sku" selected>Sort: SKU</option></select><button class="clearbtn" id="sortdir" title="Reverse sort order">A→Z ↓</button><select id="gridsel" title="Card size"><option value="330">Grid: Large</option><option value="250">Grid: Medium</option><option value="185">Grid: Small</option><option value="150">Grid: X-Small</option></select></div>
 <div class="rowline"><button class="ftoggle" id="filterToggle">☰ Filters<span class="badge" id="fcount" style="display:none"></span></button><button class="clearbtn" id="clearAll">✕ Clear all</button></div>
 <div class="filters" id="filters" style="display:none"></div>
 <div id="count" class="muted" style="font-size:12px;margin-bottom:8px"></div>
@@ -890,6 +890,10 @@ function sortDirLabel(){ const sku=sortEl.value==="sku"; sortDirEl.textContent=s
 sortDirEl.onclick=()=>{ SORT_ASC=!SORT_ASC; sortDirLabel(); search(); };
 sortEl.onchange=()=>{ sortDirLabel(); search(); };
 sortDirLabel();
+const gridEl=document.getElementById("gridsel");
+function applyGrid(v){ if(listEl) listEl.style.setProperty("--cardmin",v+"px"); }
+(function initGrid(){ let v="250"; try{ v=localStorage.getItem("ts_gridmin")||"250"; }catch(e){} if(gridEl) gridEl.value=v; applyGrid(v); })();
+if(gridEl) gridEl.onchange=e=>{ const v=e.target.value; applyGrid(v); try{ localStorage.setItem("ts_gridmin",v); }catch(e){} };
 let PAGE=1; const PER=50;
 const pagerEl=document.getElementById("pager");
 function gotoPage(n){ PAGE=n; runSearch(); const v=document.getElementById("view-products"); if(v) v.scrollIntoView({behavior:"smooth",block:"start"}); }
