@@ -7,7 +7,7 @@
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;line-height:1.45}
 .wrap{max-width:1000px;margin:0 auto;padding:18px}
 .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px;border-bottom:1px solid var(--line);padding-bottom:12px}
-.topbar img.logo{height:88px}
+.topbar img.logo{height:120px}
 nav{display:flex;gap:6px}nav a{cursor:pointer;font-weight:700;color:var(--muted);padding:8px 14px;border-radius:8px;font-size:15px}
 nav a.active{color:var(--green);background:#eaf5ee}
 input,select{background:#fff;border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:9px 11px;font-size:14px}
@@ -83,7 +83,7 @@ input,select{background:#fff;border:1px solid var(--line);color:var(--txt);borde
 .certwrap{max-width:680px;margin:0 auto;padding:6px 0 40px}
 .certwrap h1{font-size:26px;margin:6px 0 2px;text-align:center}
 .certhead{text-align:center;margin-bottom:10px}
-.certhead .certlogo{max-width:300px;max-height:96px;margin:4px auto 8px;display:block}
+.certhead .certlogo{max-width:440px;width:80%;max-height:150px;margin:4px auto 10px;display:block}
 .certhead h1{font-size:24px;margin:0}
 .certprog{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;margin:14px 0 18px;text-align:center}
 .certbar{height:12px;background:#eef2f0;border-radius:999px;overflow:hidden;margin:10px 0}
@@ -120,6 +120,7 @@ input,select{background:#fff;border:1px solid var(--line);color:var(--txt);borde
 .chem{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:10px 0}.chem label{display:block;font-size:12px;color:var(--muted);margin-bottom:3px}.chem input{width:100%}
 .hint{font-size:11px;color:var(--muted);margin:2px 0 0}
 .sect{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin:16px 0 8px;border-top:1px solid var(--line);padding-top:12px}
+.teahead{font-size:20px;font-weight:800;color:var(--txt);margin:18px 0 10px;border-top:1px solid var(--line);padding-top:14px}
 .meter{margin:11px 0}.meter .head{display:flex;justify-content:space-between;margin-bottom:5px}.meter .name{font-weight:600;font-size:14px}
 .scale{display:grid;grid-template-columns:repeat(11,1fr);gap:3px}
 .seg{height:22px;border-radius:4px;background:#eef2f0;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:10px;color:#93a29a}
@@ -1033,7 +1034,7 @@ function openDetail(p){
     <div class="inrow"><span class="pos">3rd</span><select id="d_t3">${opts}</select><input id="d_p3" type="number" step="0.01" placeholder="%"></div>
     <div class="chem"><div><label>THC %</label><input id="d_thc" type="number" step="0.1"></div><div><label>CBD %</label><input id="d_cbd" type="number" step="0.1"></div><div><label>Total terpenes %</label><input id="d_tt" type="number" step="0.1" placeholder="auto: sum above"></div></div>
     <div class="hint">THC pre-filled from the catalog midpoint; Total terpenes defaults to the sum of the three above. Adjust for this batch.</div>
-    <div class="sect">Effect read-out</div>
+    <div class="teahead">Terpene Effect Analyzer</div>
     ${meterSkeleton("Cerebral","m_cer","cer")}${meterSkeleton("Somatic","m_som","som")}${meterSkeleton("Overall","m_ov","ov")}
     <div id="d_out"></div>
     <div class="sect">Product details</div>
