@@ -66,6 +66,15 @@ input,select{background:#fff;border:1px solid var(--line);color:var(--txt);borde
 .sirhist .hrow{display:flex;justify-content:space-between;gap:10px;font-size:13px;padding:7px 0;border-bottom:1px solid var(--line)}
 .sirhist .hp{color:#1f6b3f;font-weight:700}.sirhist .hf{color:var(--red);font-weight:700}
 .staffexp{cursor:pointer}
+.sirreport .rephdr{background:#14201a;color:#fff;border-radius:10px;padding:16px 18px;margin-bottom:16px}
+.sirreport .rept{font-size:19px;font-weight:800}.sirreport .reps{font-size:13px;opacity:.85}
+.sirreport .repcard{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:16px}
+.sirreport .repnm{font-size:17px;font-weight:800}.sirreport .repmeta{color:var(--muted);font-size:13px;margin-top:2px}
+.sirreport .repscore{text-align:right}.sirreport .repbig{font-size:28px;font-weight:800;line-height:1}
+.sirreport .rq{padding:10px 0;border-bottom:1px solid var(--line)}.sirreport .rqn{font-weight:700;margin-bottom:4px}
+.sirreport .rqa{font-size:13px}.sirreport .rqa.ok{color:#1f6b3f}.sirreport .rqa.no{color:var(--red)}
+.sirreport .hp{color:#1f6b3f}.sirreport .hf{color:var(--red)}
+.sirreport .repfoot{color:#8a978e;font-size:11px;margin-top:18px;text-align:center}
 .sheet{background:var(--panel);border:1px solid var(--line);border-radius:16px;max-width:680px;width:100%;padding:22px;position:relative;box-shadow:0 10px 40px rgba(0,0,0,.2)}
 .close{position:absolute;top:14px;right:16px;cursor:pointer;color:var(--txt);font-size:22px;background:#fff;border:1px solid var(--line);border-radius:8px;width:40px;height:40px}
 .phead{display:flex;flex-direction:column;align-items:center;gap:12px;margin:4px 0 6px}
@@ -370,14 +379,51 @@ async function renderSIRHome(){
   document.getElementById("sirCert").onclick=()=>window.open(SIR_CERT_URL,"_blank");
   renderMySIRHistory();
 }
+const SIR_ATTEMPT_CACHE={};
+function sirHistRow(a){ SIR_ATTEMPT_CACHE[a.id]=a;
+  const d=new Date(a.created_at).toLocaleString(undefined,{year:"numeric",month:"short",day:"numeric",hour:"numeric",minute:"2-digit"});
+  return `<div class="hrow"><span>${d} · Quiz ${a.quiz_number}</span><span style="display:flex;gap:10px;align-items:center"><span class="${a.passed?"hp":"hf"}">${a.score}% ${a.passed?"Pass":"Fail"}</span><button class="clearbtn" onclick="viewSIRAttempt('${a.id}')">View quiz</button></span></div>`;
+}
 async function renderMySIRHistory(){
   const el=document.getElementById("sirMyHist"); if(!el||!sb||!ACTIVE) return;
   const {data}=await sb.from("sir_attempts").select("*").eq("staff_id",ACTIVE.id).order("created_at",{ascending:false}).limit(12);
   if(!data||!data.length){ el.innerHTML='<div class="muted" style="font-size:12px">No SIR quiz attempts yet.</div>'; return; }
-  el.innerHTML='<div style="font-weight:800;margin-bottom:6px">Your recent SIR attempts</div>'+data.map(a=>{
-    const d=new Date(a.created_at).toLocaleDateString(undefined,{year:"numeric",month:"short",day:"numeric"});
-    return `<div class="hrow"><span>${d} · Quiz ${a.quiz_number}</span><span class="${a.passed?"hp":"hf"}">${a.score}% ${a.passed?"Pass":"Fail"}</span></div>`;
+  el.innerHTML='<div style="font-weight:800;margin-bottom:6px">Your recent SIR attempts</div>'+data.map(sirHistRow).join("");
+}
+function viewSIRAttempt(id){ const a=SIR_ATTEMPT_CACHE[id]; if(!a) return;
+  const quiz=SIR_QUIZZES.find(q=>q.quiz===a.quiz_number)||SIR_QUIZZES[0];
+  const sel=a.answers||{};
+  const dt=new Date(a.created_at).toLocaleString(undefined,{year:"numeric",month:"long",day:"numeric",hour:"numeric",minute:"2-digit"});
+  const store=(STORE&&STORE.name?STORE.name:"")+((STORE&&STORE.store_number)?(" (#"+STORE.store_number+")"):"");
+  const rows=quiz.questions.map((q,i)=>{ const my=sel[i]!==undefined?sel[i]:sel[String(i)]; const ok=my===q.correct;
+    const myIdx=my?"ABCD".indexOf(my):-1; const myText=myIdx>=0?q.a[myIdx]:"(no answer)";
+    return `<div class="rq"><div class="rqn">Q${i+1}. ${q.q}</div><div class="rqa ${ok?"ok":"no"}">[${ok?"Correct":"Incorrect"}] Your answer: ${my||"—"}. ${myText}${ok?"":` &nbsp;·&nbsp; Correct: ${q.correct}. ${q.a["ABCD".indexOf(q.correct)]}`}</div></div>`;
   }).join("");
+  const body=`<div class="rephdr"><div class="rept">Selling It Right — Monthly Compliance Report</div><div class="reps">The Terpene Sommelier</div></div>
+    <div class="repcard"><div><div class="repnm">${a.staff_name||(ACTIVE&&ACTIVE.name)||""}</div><div class="repmeta">${store} &nbsp;|&nbsp; ${dt}</div></div><div class="repscore"><div class="repbig">${a.score/10}/10</div><div class="${a.passed?"hp":"hf"}" style="font-weight:800">${a.passed?"Pass":"Fail"}</div></div></div>
+    ${rows}
+    <div class="repfoot">Generated ${new Date().toLocaleDateString('en-CA')} &nbsp;·&nbsp; Quiz ${a.quiz_number} &nbsp;·&nbsp; The Terpene Sommelier</div>`;
+  document.getElementById("sheets").innerHTML=`<button class="close" onclick="closeSIR()">✕</button>
+    <div style="display:flex;justify-content:flex-end;margin-bottom:10px"><button class="syncbtn" onclick="printSIRReport()">🖨 Print / Save as PDF</button></div>
+    <div id="sirReport" class="sirreport">${body}</div>`;
+  window._sirReportHTML=body;
+  document.getElementById("ovs").classList.add("on");
+  document.getElementById("ovs").scrollTop=0;
+}
+function printSIRReport(){ const w=window.open("","_blank","width=800,height=900"); if(!w){ alert("Allow pop-ups to print the report."); return; }
+  w.document.write(`<html><head><title>SIR Quiz Report</title><style>
+    body{font-family:-apple-system,Segoe UI,Arial,sans-serif;color:#14201a;margin:28px;max-width:720px}
+    .rephdr{background:#14201a;color:#fff;border-radius:10px;padding:16px 18px;margin-bottom:16px}
+    .rept{font-size:20px;font-weight:800}.reps{font-size:13px;opacity:.85}
+    .repcard{display:flex;justify-content:space-between;align-items:center;border:1px solid #e2e8e4;border-radius:10px;padding:14px 16px;margin-bottom:18px}
+    .repnm{font-size:18px;font-weight:800}.repmeta{color:#66756c;font-size:13px;margin-top:2px}
+    .repscore{text-align:right}.repbig{font-size:30px;font-weight:800;line-height:1}
+    .rq{padding:10px 0;border-bottom:1px solid #eee}.rqn{font-weight:700;margin-bottom:4px}
+    .rqa{font-size:13px}.rqa.ok{color:#1f6b3f}.rqa.no{color:#c14848}
+    .hp{color:#1f6b3f}.hf{color:#c14848}
+    .repfoot{color:#8a978e;font-size:11px;margin-top:20px;text-align:center}
+  </style></head><body>${window._sirReportHTML}</body></html>`);
+  w.document.close(); setTimeout(()=>{ w.focus(); w.print(); },250);
 }
 let SIR_ACTIVE=null;
 function openSIRQuiz(){
@@ -938,10 +984,7 @@ async function toggleStaffSIR(id){ const el=document.getElementById("sirh_"+id);
   el.style.display="block"; el.innerHTML='<div class="muted" style="font-size:12px">Loading…</div>';
   const {data}=await sb.from("sir_attempts").select("*").eq("staff_id",id).order("created_at",{ascending:false});
   if(!data||!data.length){ el.innerHTML='<div class="muted" style="font-size:12px">No SIR quiz attempts yet.</div>'; return; }
-  el.innerHTML='<div style="font-weight:700;font-size:12px;color:var(--muted);margin-bottom:2px">SIR QUIZ HISTORY</div>'+data.map(a=>{
-    const d=new Date(a.created_at).toLocaleString(undefined,{year:"numeric",month:"short",day:"numeric",hour:"numeric",minute:"2-digit"});
-    return `<div class="hrow"><span>${d} · Quiz ${a.quiz_number}</span><span class="${a.passed?"hp":"hf"}">${a.score}% ${a.passed?"Pass":"Fail"}</span></div>`;
-  }).join(""); }
+  el.innerHTML='<div style="font-weight:700;font-size:12px;color:var(--muted);margin-bottom:2px">SIR QUIZ HISTORY</div>'+data.map(sirHistRow).join(""); }
 async function addStaff(){ const name=st_name.value.trim(),role=st_role.value,pin=st_pin.value.trim(),m=st_msg;
   if(!name||!/^[0-9]{4}$/.test(pin)){ m.textContent="Enter a name and a 4-digit PIN."; return; }
   const {error}=await sb.from("staff").insert({store_id:ME.store_id,name:name,role:role,pin:pin});
