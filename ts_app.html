@@ -319,7 +319,7 @@ let STORE={};
 async function loadStore(){ STORE={}; if(!ME||!ME.store_id) return; const {data}=await sb.from("stores").select("*").eq("id",ME.store_id).maybeSingle(); if(data) STORE=data; }
 const CARDS_BASE="https://adriangcanada72-star.github.io/cards/";
 const STYLE_FILES={ greenery:{card:"card.html",tag:"card2.html"}, diagonal:{card:"card_style_diagonal.html",tag:"shelf_tag_diagonal.html"}, editorial:{card:"card_style_editorial.html",tag:"shelf_tag_editorial.html"} };
-function buildCardData(p,desc){ const nz=v=>(v===null||v===undefined)?"":String(v);
+function buildCardData(p,desc,wm){ const nz=v=>(v===null||v===undefined)?"":String(v);
   const t=[ nz(p.name), nz(p.brand), nz(p.species), nz(p.category),
     nz(p.thc_min), nz(p.thc_max), nz(p.cbd_min), nz(p.cbd_max),
     nz(p.terpene_1), nz(p.terpene_2), nz(p.terpene_3), nz(p.origin_region),
