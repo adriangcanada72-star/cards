@@ -603,10 +603,24 @@ async function route(){
 function showLock(){ ACTIVE=null; appMain.style.display="none";
   const tiles=STAFF.map(s=>`<button class="stafftile" data-id="${s.id}"><span class="sn">${s.name}</span><span class="sr">${s.role}</span></button>`).join("")||'<div class="muted">No staff yet.</div>';
   authEl.innerHTML=`<div class="authcard">${logoTag()}<h2>Who's working?</h2><p>Tap your name and enter your 4-digit PIN.</p>
-    <div class="stafftiles">${tiles}</div><div id="pinArea"></div><button class="alink" id="lk_out">Sign out store</button></div>`;
+    <div class="stafftiles">${tiles}</div><div id="pinArea"></div>
+    <button class="alink" id="lk_owner">Manager / owner access</button><br><button class="alink" id="lk_out">Sign out store</button></div>`;
   authEl.classList.add("on");
   document.getElementById("lk_out").onclick=signOut;
+  document.getElementById("lk_owner").onclick=ownerAccess;
   authEl.querySelectorAll(".stafftile").forEach(b=>b.onclick=()=>pinPrompt(STAFF.find(s=>String(s.id)===b.dataset.id)));
+}
+function ownerAccess(){ const area=document.getElementById("pinArea");
+  area.innerHTML=`<div class="pinbox"><div class="pintitle">Owner access — enter your account password</div>
+    <input class="ainput" id="ow_pw" type="password" placeholder="Account password">
+    <button class="abtn" id="ow_go">Enter as manager</button><div class="amsg" id="ow_msg"></div></div>`;
+  const inp=document.getElementById("ow_pw"); inp.focus();
+  const go=async()=>{ const pw=inp.value; if(!pw){document.getElementById("ow_msg").textContent="Enter your password.";return;}
+    const btn=document.getElementById("ow_go"); btn.disabled=true; document.getElementById("ow_msg").textContent="Verifying…";
+    const {error}=await sb.auth.signInWithPassword({email:ME.email,password:pw});
+    if(error){ document.getElementById("ow_msg").textContent="Incorrect password."; btn.disabled=false; return; }
+    enterApp({name:(ME.full_name||"Owner"),role:"manager",id:null},"manage"); };
+  document.getElementById("ow_go").onclick=go; inp.addEventListener("keydown",e=>{ if(e.key==="Enter") go(); });
 }
 function pinPrompt(staff){ if(!staff) return; const area=document.getElementById("pinArea");
   area.innerHTML=`<div class="pinbox"><div class="pintitle">${staff.name} — enter PIN</div>
@@ -648,8 +662,15 @@ function renderStaffCard(manager){ const box=document.getElementById("inviteBox"
   renderStaffList(); document.getElementById("st_add").onclick=addStaff;
 }
 function renderStaffList(){ const l=document.getElementById("staffList"); if(!l) return;
-  l.innerHTML=STAFF.map(s=>`<div class="mrow" style="justify-content:space-between;align-items:center"><span>${s.name} · ${s.role} · PIN ${s.pin?"****":"—"}</span><button class="clearbtn" data-id="${s.id}">Remove</button></div>`).join("")||'<div class="pmeta muted">No staff yet.</div>';
-  l.querySelectorAll("button[data-id]").forEach(b=>b.onclick=async()=>{ await sb.from("staff").delete().eq("id",b.dataset.id); await loadStoreStaff(); renderStaffList(); }); }
+  l.innerHTML=STAFF.map(s=>`<div class="mrow" style="justify-content:space-between;align-items:center;gap:8px">
+    <span>${s.name} · ${s.role} · PIN ${s.pin?"****":"—"}</span>
+    <span style="display:flex;gap:6px;flex-wrap:wrap">
+      <button class="clearbtn" data-role="${s.id}">${s.role==="manager"?"Make staff":"Make manager"}</button>
+      <button class="clearbtn" data-pin="${s.id}">Set PIN</button>
+      <button class="clearbtn" data-del="${s.id}">Remove</button></span></div>`).join("")||'<div class="pmeta muted">No staff yet.</div>';
+  l.querySelectorAll("button[data-del]").forEach(b=>b.onclick=async()=>{ await sb.from("staff").delete().eq("id",b.dataset.del); await loadStoreStaff(); renderStaffList(); });
+  l.querySelectorAll("button[data-role]").forEach(b=>b.onclick=async()=>{ const s=STAFF.find(x=>String(x.id)===b.dataset.role); if(!s)return; const nr=s.role==="manager"?"staff":"manager"; await sb.from("staff").update({role:nr}).eq("id",s.id); await loadStoreStaff(); renderStaffList(); });
+  l.querySelectorAll("button[data-pin]").forEach(b=>b.onclick=async()=>{ const p=prompt("New 4-digit PIN:"); if(p==null)return; if(!/^[0-9]{4}$/.test(p)){ alert("PIN must be 4 digits."); return; } await sb.from("staff").update({pin:p}).eq("id",b.dataset.pin); await loadStoreStaff(); renderStaffList(); }); }
 async function addStaff(){ const name=st_name.value.trim(),role=st_role.value,pin=st_pin.value.trim(),m=st_msg;
   if(!name||!/^[0-9]{4}$/.test(pin)){ m.textContent="Enter a name and a 4-digit PIN."; return; }
   const {error}=await sb.from("staff").insert({store_id:ME.store_id,name:name,role:role,pin:pin});
