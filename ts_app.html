@@ -108,6 +108,7 @@ input,select{background:#fff;border:1px solid var(--line);color:var(--txt);borde
 .stafftile .sn{font-size:15px}.stafftile .sr{font-size:11px;color:var(--muted);font-weight:600;text-transform:capitalize}
 .pinbox{margin-top:12px}.pintitle{font-size:13px;color:var(--muted);margin-bottom:8px}
 .pinin{text-align:center;letter-spacing:10px;font-size:24px}
+.printbtn{flex:1;background:var(--green);color:#fff;border:none;border-radius:8px;padding:11px;font-weight:700;font-size:14px;cursor:pointer}.printbtn:hover{opacity:.92}
 @media(max-width:560px){.focus{grid-template-columns:1fr}}
 </style></head><body><div class="wrap">
 <div id="authscreen" class="authwrap"></div>
@@ -128,6 +129,7 @@ input,select{background:#fff;border:1px solid var(--line);color:var(--txt);borde
 <div id="view-terpenes" style="display:none"><div class="list" id="terpList"></div></div>
 <div id="view-manage" style="display:none">
  <div id="acctBox"></div>
+ <div id="styleBox"></div>
  <div id="inviteBox"></div>
  <div id="adminBox" style="display:none"><div class="mcard"><h3>Store applications — review</h3><div class="sub">Approve or reject BC retailer registrations. Check the store number and Selling It Right certificate before approving.</div><div id="adminList"></div></div></div>
  <div id="syncWrap">
@@ -297,6 +299,22 @@ let BRANDS={}, TERPS={};
 async function loadBrands(){ if(!sb) return; const {data}=await sb.from("brands").select("name,logo_url"); if(data) data.forEach(b=>{ if(b.name) BRANDS[b.name.toLowerCase()]=b.logo_url; }); }
 async function loadTerps(){ if(!sb) return; const {data}=await sb.from("terpenes").select("*"); if(data) data.forEach(t=>TERPS[t.name]=t); }
 function brandLogo(name){ return name?BRANDS[name.toLowerCase()]||"":""; }
+let STORE={};
+async function loadStore(){ STORE={}; if(!ME||!ME.store_id) return; const {data}=await sb.from("stores").select("name,store_number,card_style").eq("id",ME.store_id).maybeSingle(); if(data) STORE=data; }
+const CARDS_BASE="https://adriangcanada72-star.github.io/cards/";
+const STYLE_FILES={ greenery:{card:"card.html",tag:"card2.html"}, diagonal:{card:"card_style_diagonal.html",tag:"shelf_tag_diagonal.html"}, editorial:{card:"card_style_editorial.html",tag:"shelf_tag_editorial.html"} };
+function buildCardData(p){ const nz=v=>(v===null||v===undefined)?"":String(v);
+  const t=[ nz(p.name), nz(p.brand), nz(p.species), nz(p.category),
+    nz(p.thc_min), nz(p.thc_max), nz(p.cbd_min), nz(p.cbd_max),
+    nz(p.terpene_1), nz(p.terpene_2), nz(p.terpene_3), nz(p.origin_region),
+    nz(brandLogo(p.brand)), nz(p.short_description),
+    "","","","","",            // watermark url,x,y,size,opacity
+    "","","","",               // per-piece thc/cbd
+    "","",                     // thc/cbd override
+    nz(p.num_consumer_items), nz(p.consumer_item_size), nz(p.consumer_item_size_uom) ];
+  return t.join("~|~|~"); }
+function openCard(p,type){ const style=(STORE&&STORE.card_style)||"diagonal"; const f=(STYLE_FILES[style]||STYLE_FILES.diagonal)[type];
+  window.open(CARDS_BASE+f+"?data="+encodeURIComponent(buildCardData(p)),"_blank"); }
 const ALIAS={Caryophyllene:"Beta-Caryophyllene",Myrcene:"Beta-Myrcene",Humulene:"Alpha-Humulene",Pinene:"Alpha-Pinene",Geranyl_Acetate:"Geranyl-Acetate",Germacrene_B:"Germacrene-B"};
 function terpMatch(raw){ if(!raw) return null; if(TERPS[raw]) return raw;
   const h=raw.replace(/_/g,"-"); if(TERPS[h]) return h;
@@ -384,6 +402,7 @@ function openDetail(p){
     <div class="phead"><div class="logobox">${lg?`<img src="${lg}">`:`<span class="logotext">${p.brand||"—"}</span>`}</div>
       <div class="ptitle"><h2>${p.name||"(no name)"}</h2><div class="muted">${p.brand||""} · ${p.category||""} · ${p.catalog_source}</div></div></div>
     ${shortD?`<div class="shortdesc">${shortD}</div>`:""}
+    <div style="display:flex;gap:8px;margin:10px 0 2px"><button class="printbtn" id="btnCard">🖨 Product Card</button><button class="printbtn" id="btnTag">🖨 Shelf Tag</button></div>
     <div class="sect">Terpene trio (catalog) — tap for detail</div>
     ${[p.terpene_1,p.terpene_2,p.terpene_3].map(terpCardRaw).join("")||'<div class="muted">No terpenes listed.</div>'}
     <div class="sect">This batch — enter from the package</div>
@@ -401,6 +420,8 @@ function openDetail(p){
   const _thcMid=cannabMid(p.thc_min,p.thc_max,raw.PER_RETAIL_UNIT_THC_UOM); if(_thcMid!=null) document.getElementById("d_thc").value=_thcMid;
   const _cbdMid=cannabMid(p.cbd_min,p.cbd_max,raw.PER_RETAIL_UNIT_CBD_UOM); if(_cbdMid!=null) document.getElementById("d_cbd").value=_cbdMid;
   ["d_t1","d_t2","d_t3","d_p1","d_p2","d_p3","d_thc","d_cbd","d_tt"].forEach(id=>document.getElementById(id).addEventListener("input",recompute));
+  document.getElementById("btnCard").onclick=()=>openCard(p,"card");
+  document.getElementById("btnTag").onclick=()=>openCard(p,"tag");
   document.getElementById("ov").classList.add("on");
   requestAnimationFrame(()=>requestAnimationFrame(recompute)); // animate meters in from center
 }
@@ -592,7 +613,7 @@ async function route(){
   if(!prof){ await sleep(700); ({data:prof}=await sb.from("profiles").select("*").eq("id",uid).maybeSingle()); }
   if(prof && prof.status==="approved"){ ME=prof; ME.email=email;
     if(ME.role==="admin" || !ME.store_id){ if(!ACTIVE) enterApp({name:(prof.full_name||"Admin"),role:"manager",id:null},"manage"); return; }
-    await loadStoreStaff();
+    await loadStoreStaff(); await loadStore();
     if(ACTIVE) return;                 // already switched in — don't clobber
     if(STAFF.length===0) firstManagerSetup();
     else showLock();
@@ -658,7 +679,7 @@ function renderStaffBar(){ const el=document.getElementById("staffBar"); if(!el)
   el.innerHTML= ACTIVE?`<span class="staffchip">${ACTIVE.name}${ACTIVE.role==="manager"?" · manager":""}</span><button class="lockbtn" id="lockBtn">Lock</button>`:"";
   const lb=document.getElementById("lockBtn"); if(lb) lb.onclick=lockStaff; }
 async function refreshManage(){
-  await loadStoreStaff();
+  await loadStoreStaff(); await loadStore();
   let storeName=""; if(ME.store_id){ const {data:st}=await sb.from("stores").select("name,store_number").eq("id",ME.store_id).maybeSingle(); if(st) storeName=`${st.name} (#${st.store_number})`; }
   document.getElementById("acctBox").innerHTML=`<div class="mcard"><h3>Account</h3>
     <div class="kv"><div><div class="k">Signed-in email</div><div class="v">${ME.email||""}</div></div><div><div class="k">Active staff</div><div class="v">${ACTIVE?ACTIVE.name+" · "+ACTIVE.role:"—"}</div></div>${storeName?`<div class="full"><div class="k">Store</div><div class="v">${storeName}</div></div>`:""}</div>
@@ -667,6 +688,15 @@ async function refreshManage(){
   document.getElementById("acctOut").onclick=signOut;
   const manager=(ACTIVE&&ACTIVE.role==="manager");
   document.getElementById("syncWrap").style.display=manager?"block":"none";
+  const sBox=document.getElementById("styleBox");
+  if(manager && ME.store_id){
+    sBox.innerHTML=`<div class="mcard"><h3>Card &amp; tag style</h3><div class="sub">Print style used for product cards and shelf tags.</div>
+      <select id="styleSel" style="max-width:240px"><option value="diagonal">Diagonal</option><option value="editorial">Editorial</option><option value="greenery">Greenery</option></select>
+      <div class="pmsg" id="style_msg"></div></div>`;
+    document.getElementById("styleSel").value=(STORE&&STORE.card_style)||"diagonal";
+    document.getElementById("styleSel").onchange=async(e)=>{ const v=e.target.value; const {error}=await sb.from("stores").update({card_style:v}).eq("id",ME.store_id);
+      if(error){ document.getElementById("style_msg").textContent="Error: "+error.message; return; } STORE.card_style=v; document.getElementById("style_msg").textContent="Saved."; };
+  } else sBox.innerHTML="";
   renderStaffCard(manager);
   const adminBox=document.getElementById("adminBox");
   if(ME.role==="admin"){ adminBox.style.display="block"; loadApprovals(); } else adminBox.style.display="none";
