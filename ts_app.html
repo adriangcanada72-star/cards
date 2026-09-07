@@ -647,7 +647,10 @@ function pinPrompt(staff){ if(!staff) return; const area=document.getElementById
   const go=()=>{ if(inp.value && String(staff.pin)===inp.value){ unlock(staff); } else { document.getElementById("pin_msg").textContent="Incorrect PIN."; inp.value=""; inp.focus(); } };
   document.getElementById("pin_go").onclick=go; inp.addEventListener("keydown",e=>{ if(e.key==="Enter") go(); });
 }
-function enterApp(staff,view){ ACTIVE=staff; hideAuth(); initApp(); applyGating(); renderStaffBar(); refreshManage(); showView(view||"products"); }
+let idleTimer=null; const IDLE_MS=5*60*1000;
+function resetIdle(){ clearTimeout(idleTimer); if(ACTIVE){ idleTimer=setTimeout(()=>{ if(ACTIVE) lockStaff(); }, IDLE_MS); } }
+["mousemove","mousedown","keydown","touchstart","scroll","click"].forEach(ev=>document.addEventListener(ev,resetIdle,{passive:true}));
+function enterApp(staff,view){ ACTIVE=staff; hideAuth(); initApp(); applyGating(); renderStaffBar(); refreshManage(); showView(view||"products"); resetIdle(); }
 function unlock(staff){ enterApp(staff,"products"); }
 function lockStaff(){ showLock(); }
 function applyGating(){ const nm=document.getElementById("navManage"); if(nm) nm.style.display=(ACTIVE&&ACTIVE.role==="manager")?"inline-block":"none"; }
