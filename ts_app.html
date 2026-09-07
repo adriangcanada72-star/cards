@@ -109,6 +109,10 @@ input,select{background:#fff;border:1px solid var(--line);color:var(--txt);borde
 .pinbox{margin-top:12px}.pintitle{font-size:13px;color:var(--muted);margin-bottom:8px}
 .pinin{text-align:center;letter-spacing:10px;font-size:24px}
 .printbtn{flex:1;background:var(--green);color:#fff;border:none;border-radius:8px;padding:11px;font-weight:700;font-size:14px;cursor:pointer}.printbtn:hover{opacity:.92}
+#ovc{position:fixed;inset:0;background:rgba(20,30,25,.6);display:none;align-items:center;justify-content:center;padding:16px;z-index:60}#ovc.on{display:flex}
+.cardsheet{background:#fff;border-radius:12px;width:100%;max-width:920px;height:92vh;position:relative;box-shadow:0 10px 40px rgba(0,0,0,.3);overflow:hidden}
+.cardsheet iframe{width:100%;height:100%;border:none;background:#fff}
+.cardsheet .close{position:absolute;top:10px;right:12px;z-index:2}
 @media(max-width:560px){.focus{grid-template-columns:1fr}}
 </style></head><body><div class="wrap">
 <div id="authscreen" class="authwrap"></div>
@@ -145,6 +149,7 @@ input,select{background:#fff;border:1px solid var(--line);color:var(--txt);borde
 </div>
 <div id="ov"><div class="sheet" id="sheet"></div></div>
 <div id="ovt"><div class="sheet" id="sheett"></div></div>
+<div id="ovc" onclick="if(event.target===this)closeCard()"><div class="cardsheet"><button class="close" onclick="closeCard()">✕</button><iframe id="cardFrame"></iframe></div></div>
 <script>
 // AUTO-GENERATED from TRIAX_v3_TwoAxis_Calculator_10.xlsx
 // Core engine + data. Usable in Node (require) and inlined in browser.
@@ -303,18 +308,21 @@ let STORE={};
 async function loadStore(){ STORE={}; if(!ME||!ME.store_id) return; const {data}=await sb.from("stores").select("name,store_number,card_style").eq("id",ME.store_id).maybeSingle(); if(data) STORE=data; }
 const CARDS_BASE="https://adriangcanada72-star.github.io/cards/";
 const STYLE_FILES={ greenery:{card:"card.html",tag:"card2.html"}, diagonal:{card:"card_style_diagonal.html",tag:"shelf_tag_diagonal.html"}, editorial:{card:"card_style_editorial.html",tag:"shelf_tag_editorial.html"} };
-function buildCardData(p){ const nz=v=>(v===null||v===undefined)?"":String(v);
+function buildCardData(p,desc){ const nz=v=>(v===null||v===undefined)?"":String(v);
   const t=[ nz(p.name), nz(p.brand), nz(p.species), nz(p.category),
     nz(p.thc_min), nz(p.thc_max), nz(p.cbd_min), nz(p.cbd_max),
     nz(p.terpene_1), nz(p.terpene_2), nz(p.terpene_3), nz(p.origin_region),
-    nz(brandLogo(p.brand)), nz(p.short_description),
+    nz(brandLogo(p.brand)), nz(desc),
     "","","","","",            // watermark url,x,y,size,opacity
     "","","","",               // per-piece thc/cbd
     "","",                     // thc/cbd override
     nz(p.num_consumer_items), nz(p.consumer_item_size), nz(p.consumer_item_size_uom) ];
   return t.join("~|~|~"); }
 function openCard(p,type){ const style=(STORE&&STORE.card_style)||"diagonal"; const f=(STYLE_FILES[style]||STYLE_FILES.diagonal)[type];
-  window.open(CARDS_BASE+f+"?data="+encodeURIComponent(buildCardData(p)),"_blank"); }
+  const desc = style==="greenery" ? (p.long_description||p.short_description||"") : (p.short_description||p.long_description||"");
+  document.getElementById("cardFrame").src=CARDS_BASE+f+"?data="+encodeURIComponent(buildCardData(p,desc));
+  document.getElementById("ovc").classList.add("on"); }
+function closeCard(){ document.getElementById("ovc").classList.remove("on"); document.getElementById("cardFrame").src="about:blank"; }
 const ALIAS={Caryophyllene:"Beta-Caryophyllene",Myrcene:"Beta-Myrcene",Humulene:"Alpha-Humulene",Pinene:"Alpha-Pinene",Geranyl_Acetate:"Geranyl-Acetate",Germacrene_B:"Germacrene-B"};
 function terpMatch(raw){ if(!raw) return null; if(TERPS[raw]) return raw;
   const h=raw.replace(/_/g,"-"); if(TERPS[h]) return h;
