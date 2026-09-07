@@ -483,11 +483,20 @@ async function signOut(){ try{ await sb.auth.signOut(); }catch(e){} ME=null; loc
 function loginScreen(){
   showAuth(`<h2>Sign in</h2><p>Enter your email and we'll send you a secure sign-in link.</p>
     <input class="ainput" id="au_email" type="email" placeholder="you@store.com" autocomplete="email">
-    <button class="abtn" id="au_send">Send magic link</button><div class="amsg muted" id="au_msg"></div>`);
+    <button class="abtn" id="au_send">Send magic link</button><div class="amsg muted" id="au_msg"></div>
+    <button class="alink" id="au_pwtoggle">Use a password instead</button>
+    <div id="au_pwbox" style="display:none;margin-top:10px;border-top:1px solid var(--line);padding-top:12px">
+      <input class="ainput" id="au_pw" type="password" placeholder="Password" autocomplete="current-password">
+      <button class="abtn" id="au_pwbtn" style="background:#3a4a42">Sign in with password</button></div>`);
   au_send.onclick=async()=>{ const email=au_email.value.trim(); if(!email){au_msg.textContent="Enter your email.";return;}
     au_send.disabled=true; au_msg.textContent="Sending…";
     const {error}=await sb.auth.signInWithOtp({email,options:{emailRedirectTo:location.href.split("#")[0]}});
     au_msg.textContent=error?("Error: "+error.message):"Check your email for the sign-in link."; au_send.disabled=false; };
+  au_pwtoggle.onclick=()=>{ const b=document.getElementById("au_pwbox"); b.style.display=b.style.display==="none"?"block":"none"; };
+  au_pwbtn.onclick=async()=>{ const email=au_email.value.trim(),pw=au_pw.value; if(!email||!pw){au_msg.textContent="Enter email and password.";return;}
+    au_pwbtn.disabled=true; au_msg.textContent="Signing in…";
+    const {error}=await sb.auth.signInWithPassword({email,password:pw});
+    if(error){ au_msg.textContent="Error: "+error.message; au_pwbtn.disabled=false; } };
 }
 function applicationScreen(email){
   showAuth(`<h2>Register your store</h2><p>BC licensed retailers only. We verify your store number and Selling It Right certificate before granting access.</p>
