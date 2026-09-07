@@ -38,6 +38,7 @@ input,select{background:#fff;border:1px solid var(--line);color:var(--txt);borde
 .pcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;cursor:pointer;transition:box-shadow .15s,border-color .15s;display:flex;flex-direction:column;gap:10px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
 .pcard:hover{border-color:var(--green);box-shadow:0 4px 14px rgba(0,0,0,.08)}
 .pcard .lg{width:100%;height:var(--cardimg,200px);background:#fff;border:1px solid var(--line);border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.trbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px}
 .gridpick{display:inline-flex;gap:4px}
 .gbtn{background:#fff;border:1px solid var(--line);border-radius:8px;padding:7px 9px;cursor:pointer;color:var(--muted);display:inline-flex;align-items:center;line-height:0}
 .gbtn:hover{border-color:var(--green);color:var(--green)}
@@ -270,7 +271,7 @@ input,select{background:#fff;border:1px solid var(--line);color:var(--txt);borde
 <div class="list" id="list"></div>
 <div id="pager" class="pager"></div>
 </div>
-<div id="view-terpenes" style="display:none"><button class="sirbtn alt" style="max-width:380px;margin:0 0 14px" onclick="openTerpResearch()">🔬 Research behind the ratings</button><div class="list" id="terpList"></div></div>
+<div id="view-terpenes" style="display:none"><div class="trbar"><button class="sirbtn alt" style="max-width:380px;margin:0" onclick="openTerpResearch()">🔬 Research behind the ratings</button><span class="gridpick" id="gridpick2"></span></div><div class="list" id="terpList"></div></div>
 <div id="view-sir" style="display:none"><div id="sirHome"></div></div>
 <div id="view-cert" style="display:none"><div id="certHome"></div></div>
 <div id="view-manage" style="display:none">
@@ -917,10 +918,10 @@ sortEl.onchange=()=>{ sortDirLabel(); search(); };
 sortDirLabel();
 const GRID_OPTS=[{k:"l",min:330,img:230,cols:2,label:"Large"},{k:"m",min:250,img:180,cols:3,label:"Medium"},{k:"s",min:185,img:120,cols:4,label:"Small"},{k:"xs",min:150,img:80,cols:5,label:"X-Small"}];
 function gridIcon(cols){ let r="";const w=(20-(cols-1)*1.6)/cols;for(let i=0;i<cols;i++){r+=`<rect x="${2+i*(w+1.6)}" y="3" width="${w}" height="14" rx="1.3"/>`;} return `<svg viewBox="0 0 24 20" width="20" height="16" fill="currentColor">${r}</svg>`; }
-function applyGrid(o){ if(!listEl)return; listEl.style.setProperty("--cardmin",o.min+"px"); listEl.style.setProperty("--cardimg",o.img+"px"); }
-function renderGridPick(cur){ const el=document.getElementById("gridpick"); if(!el)return;
+function applyGrid(o){ document.documentElement.style.setProperty("--cardmin",o.min+"px"); document.documentElement.style.setProperty("--cardimg",o.img+"px"); }
+function renderGridPick(cur){ document.querySelectorAll(".gridpick").forEach(el=>{
   el.innerHTML=GRID_OPTS.map(o=>`<button class="gbtn ${o.k===cur?"act":""}" data-g="${o.k}" title="Grid: ${o.label}">${gridIcon(o.cols)}</button>`).join("");
-  el.querySelectorAll("button").forEach(b=>b.onclick=()=>setGrid(b.dataset.g)); }
+  el.querySelectorAll("button").forEach(b=>b.onclick=()=>setGrid(b.dataset.g)); }); }
 function setGrid(k){ const o=GRID_OPTS.find(x=>x.k===k)||GRID_OPTS[1]; applyGrid(o); try{localStorage.setItem("ts_grid",o.k);}catch(e){} renderGridPick(o.k); }
 (function initGrid(){ let k="m"; try{k=localStorage.getItem("ts_grid")||"m";}catch(e){} if(!GRID_OPTS.find(x=>x.k===k))k="m"; setGrid(k); })();
 let PAGE=1; const PER=50;
