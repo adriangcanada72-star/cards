@@ -27,11 +27,12 @@ input,select{background:#fff;border:1px solid var(--line);color:var(--txt);borde
 .chip.fav{color:#1c6b3d;border:1px solid #bfe3cd}.chip.avoid{color:#a83a3a;border:1px solid #f0c3c3}
 .chip b{cursor:pointer;opacity:.6;padding-left:2px}.chip b:hover{opacity:1}
 .fcol select{width:100%;background:rgba(255,255,255,.75)}
-.clearbtn{background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:13px;font-weight:600;color:var(--txt);cursor:pointer}
-.clearbtn:hover{border-color:var(--btn);color:var(--btn-soft-txt)}
+.clearbtn{background:var(--btn);border:1px solid var(--btn);border-radius:8px;padding:8px 12px;font-size:13px;font-weight:600;color:#fff;cursor:pointer}
+.clearbtn:hover{background:var(--btn-h);border-color:var(--btn-h)}
 .rowline{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
-.ftoggle{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:9px 13px;font-size:14px;font-weight:600;cursor:pointer}
-.ftoggle .badge{background:var(--green);color:#fff;border-radius:999px;font-size:11px;padding:1px 7px}
+.ftoggle{display:inline-flex;align-items:center;gap:8px;background:var(--btn);color:#fff;border:1px solid var(--btn);border-radius:8px;padding:9px 13px;font-size:14px;font-weight:600;cursor:pointer}
+.ftoggle:hover{background:var(--btn-h);border-color:var(--btn-h)}
+.ftoggle .badge{background:#fff;color:var(--btn-soft-txt);border-radius:999px;font-size:11px;padding:1px 7px}
 .filters{display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:8px;margin-bottom:12px}
 .list{display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--cardmin,250px),1fr));gap:12px}
 .pcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;cursor:pointer;transition:box-shadow .15s,border-color .15s;display:flex;flex-direction:column;gap:10px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
@@ -55,8 +56,8 @@ input,select{background:#fff;border:1px solid var(--line);color:var(--txt);borde
 .sirwrap .who{color:var(--muted);margin-bottom:22px}
 .sirbtn{display:block;width:100%;max-width:520px;margin:12px auto;background:var(--btn);color:#fff;border:none;border-radius:12px;padding:16px;font-weight:600;font-size:16px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.08)}
 .sirbtn:hover{background:var(--btn-h)}
-.sirbtn.alt{background:var(--btn-soft);color:var(--btn-soft-txt);border:1px solid var(--btn-soft-line);box-shadow:none}
-.sirbtn.alt:hover{background:#e4f1ea}
+.sirbtn.alt{background:var(--btn);color:#fff;border:none}
+.sirbtn.alt:hover{background:var(--btn-h)}
 .sirsub{color:var(--muted);font-size:13px;margin:2px 0 20px}
 .sq{margin:0 0 18px;text-align:left;border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:#fff}
 .sq .qn{font-weight:800;margin-bottom:10px}
@@ -187,10 +188,10 @@ input,select{background:#fff;border:1px solid var(--line);color:var(--txt);borde
 .appitem .r{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
 .approve{background:var(--btn);color:#fff;border:none;border-radius:8px;padding:8px 14px;font-weight:600;cursor:pointer}.approve:hover{background:var(--btn-h)}
 .reject{background:#fff;color:var(--red);border:1px solid #f0c3c3;border-radius:8px;padding:8px 14px;font-weight:700;cursor:pointer}
-.viewcert{background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px 14px;font-weight:600;cursor:pointer;text-decoration:none;color:var(--txt)}
+.viewcert{background:var(--btn);border:1px solid var(--btn);border-radius:8px;padding:8px 14px;font-weight:600;cursor:pointer;text-decoration:none;color:#fff}.viewcert:hover{background:var(--btn-h);border-color:var(--btn-h)}
 .staffbar{margin-left:auto;display:flex;align-items:center;gap:10px}
 .staffchip{background:#eaf5ee;border:1px solid #cfe9d8;color:#1f6b3f;border-radius:999px;padding:5px 12px;font-weight:700;font-size:13px}
-.lockbtn{background:#fff;border:1px solid var(--line);border-radius:8px;padding:7px 12px;font-weight:600;font-size:13px;cursor:pointer}.lockbtn:hover{border-color:var(--btn)}
+.lockbtn{background:var(--btn);color:#fff;border:1px solid var(--btn);border-radius:8px;padding:7px 12px;font-weight:600;font-size:13px;cursor:pointer}.lockbtn:hover{background:var(--btn-h);border-color:var(--btn-h)}
 .stafftiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:6px 0 4px}
 .stafftile{display:flex;flex-direction:column;gap:2px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 10px;cursor:pointer;font-weight:700}
 .stafftile:hover{border-color:var(--green);box-shadow:0 4px 14px rgba(0,0,0,.08)}
