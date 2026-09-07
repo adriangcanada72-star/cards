@@ -94,6 +94,9 @@ input,select{background:#fff;border:1px solid var(--line);color:var(--txt);borde
 .lesson h1{font-size:22px;margin:14px 0 6px}.lesson h2{font-size:18px;margin:16px 0 6px}.lesson h3{font-size:15px;margin:14px 0 4px}
 .lesson p{margin:8px 0}.lesson ul{margin:8px 0 8px 20px}.lesson li{margin:4px 0}
 .lesson em{font-style:italic}.lesson strong{font-weight:800}
+.colmod{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px;background:#fff}
+.coltitle{font-weight:800;color:#1f6b3f;margin-bottom:6px}
+.collist{margin:0 0 0 18px}.collist li{margin:5px 0;font-size:14px;line-height:1.5}
 .sheet{background:var(--panel);border:1px solid var(--line);border-radius:16px;max-width:680px;width:100%;padding:22px;position:relative;box-shadow:0 10px 40px rgba(0,0,0,.2)}
 .close{position:absolute;top:14px;right:16px;cursor:pointer;color:var(--txt);font-size:22px;background:#fff;border:1px solid var(--line);border-radius:8px;width:40px;height:40px}
 .phead{display:flex;flex-direction:column;align-items:center;gap:12px;margin:4px 0 6px}
@@ -461,6 +464,27 @@ function printSIRReport(){ const w=window.open("","_blank","width=800,height=900
 // ---- Certification (modules + quizzes + final exam) ----
 const CERT_PASS=80, FINAL_NUM=11, CERT_BASE="https://adriangcanada72-star.github.io/cards/";
 let MODULES=[], QBYMOD={}, MY_ATTEMPTS=[];
+const COURSE_OUTLINE=[
+ {t:"The Myth We've Been Sold",p:["Why the Indica/Sativa/Hybrid framework fails as an effect predictor","Botanical origins: Linnaeus (1753), Lamarck (1785), Janischewsky (1924)","Key research: Sawler 2015, Mudge 2018, Watts 2021 — labels don't predict chemistry","How marketing repurposed plant-shape labels into consumer effect claims","Five reasons customers still believe it works (confirmation bias, selection effects, set/setting)","BCLDB lists terpene trios alphabetically, not by dominance — the two-stage reading concept"]},
+ {t:"How Cannabis Actually Affects You",p:["The endocannabinoid system (ECS): anandamide, 2-AG, homeostasis","CB1 receptors (brain — psychoactivity) vs. CB2 receptors (immune system — inflammation)","THC: partial CB1 agonist; why THC% alone is misleading","CBD: negative allosteric modulator, FAAH inhibitor, serotonin receptor activity","Minor cannabinoids: CBN, CBG, THCV, CBC","Consumption methods: inhalation, edibles (11-hydroxy-THC), sublingual, topical","Variables: tolerance, body chemistry, set/setting, food, other substances"]},
+ {t:"Meet the Terpenes",p:["What terpenes are and why plants produce them (defense, pollination, communication)","The plant-kingdom connection: same molecules in citrus, lavender, pine, pepper, mango","Pharmacology: direct receptor activity (GABA, serotonin, CB2), blood-brain barrier crossing","How terpenes modulate cannabinoid effects (the entourage effect foundation)","BCLDB reporting: top 3 terpenes listed alphabetically, not by concentration","Reading the trio vs. reading dominance — what each stage tells you"]},
+ {t:"The 15 Terpenes That Matter Most",p:["Top 5 (carry ~80% of conversations): Myrcene, Caryophyllene, Limonene, Pinene, Linalool","Supporting 5: Terpinolene, Humulene, Ocimene, Bisabolol, Nerolidol","Less common 5: Farnesene, Eucalyptol, Geraniol, Beta-Pinene, Camphene","Each profiled: aroma, plant-kingdom connection, character, mechanism, recommendation","Caryophyllene is unique — directly binds CB2 (functionally a cannabinoid + terpene)","Quick-read guidance for identifying each terpene's contribution in a trio"]},
+ {t:"Reading a Product Like a Sommelier",p:["Available data: SPECIES, THC/CBD ranges, terpene trio, format, price","Stage 1 reading: alphabetical trio → aligned (confident prediction) or mixed (tentative)","Stage 2 reading: package percentages reveal dominance → sharpened prediction","THC% interpretation (under 12% through 30%+) and CBD:THC ratio guidance","Handling variable/missing terpene data — SPECIES as fallback signal","Full worked example: reading a real product from raw data to recommendation"]},
+ {t:"The Terpene Effect Analyzer Framework",p:["Two independent axes: Cerebral (−5 to +5) and Somatic (−5 to +5)","Scoring: terpene vectors weighted by concentration, modulated by THC/CBD","SPECIES nudges for unmeasured terpenes (+1/−0.5 Cerebral, +0.5/−1 Somatic)","Threshold gating, 60/40 dampening blend, ±5 clamping","Overall: the directional composite (−5 to +5) that sets the Leaning","Three Leanings from Overall: Indica Leaning (−5 to −2), Hybrid Leaning (−1 to +1), Sativa Leaning (+2 to +5) — a derived output, not the crude input Module 1 rejects","Stage 1 vs. Stage 2 score reliability; when the analyzer gets it wrong (contrast products under Hybrid Leaning)"]},
+ {t:"Synergies and Combinations",p:["The entourage effect: synthetic THC vs. whole-plant, documented lab synergies","Key synergies: THC+Myrcene (sedation), THC+Pinene (clarity), THC+CBD (modulation)","46 unique terpene combinations across 270 permutations, each with character description","Sedating combos (Myrcene+Linalool+Caryophyllene), daytime combos (Limonene+Pinene+Caryophyllene)","When combinations surprise: opposing terpenes, caryophyllene as wild card","Think in blends, not sums — cannabis as cooking, not arithmetic"]},
+ {t:"Using the Platform",p:["Switch Staff: first action every shift — credits your ratings and quiz/certification progress to you (not an audit trail)","Products tab: browsing, searching, filtering (Profile Type, terpene, THC/CBD), sorting","Reading a product card: Profile Type → Terpene Effect Analyzer scores → trio → cannabinoids","Override system: entering package percentages, COA data, batch corrections","How overrides are shared and reset: store-wide, not attributed to any staff member, clear automatically each day","Common workflows: sleep, daytime energy, pain, new users, product substitution"]},
+ {t:"The Customer Conversation",p:["Four discovery questions: experience goal, timing, tolerance, specific issues","Translation skill: Leaning first, character description, plant-kingdom references, use case","Handling skepticism: \"I only buy Indicas\" → translate to myrcene without arguing","Customer types: first-timers, experienced users, medical patients, anxious, budget-conscious","\"I don't know, let me check\" builds trust faster than fake confidence","Common mistakes: over-recommending, lecturing, overclaiming dominance"]},
+ {t:"BC Compliance, Ethics & Edge Cases",p:["Regulatory layers: Cannabis Act (federal), CCLA (provincial), LCRB enforcement","Age verification: absolute rule, ID under 30, valid ID types, no second-party purchasing","Therapeutic claims: cannot say \"treats/cures/prevents\" — use hedged observational language","Medical questions: chemistry is yours, treatment is the doctor's","Refusing service: intoxication, suspicious ID, driving after consuming","Vulnerable populations: elderly, mental health, pregnancy, substance history","Sommelier Code of Ethics (7 principles): honesty, humility, customer-first, compliance, respect, tool not identity, continuous learning"]}
+];
+function openCourseOutline(){
+  const body=COURSE_OUTLINE.map((m,i)=>`<div class="colmod"><div class="coltitle">Module ${i+1} · ${escH(m.t)}</div><ul class="collist">${m.p.map(x=>`<li>${escH(x)}</li>`).join("")}</ul></div>`).join("");
+  document.getElementById("sheetm").innerHTML=`<button class="close" onclick="closeMod()">✕</button>
+    <h2 style="margin:0 0 2px">Course Outline</h2>
+    <div class="muted" style="font-size:13px;margin-bottom:14px">The full Terpene Sommelier certification — 10 modules and a final exam.</div>
+    ${body}
+    <div class="colmod"><div class="coltitle">Final Exam</div><ul class="collist"><li>25 questions drawn from all modules · ${CERT_PASS}% to certify</li></ul></div>`;
+  document.getElementById("ovm").classList.add("on"); document.getElementById("ovm").scrollTop=0;
+}
 function escH(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 function mdToHtml(md){
   const lines=String(md||"").replace(/\r/g,"").split("\n"); let out=[],inList=false;
@@ -501,6 +525,7 @@ async function renderCertHome(){
       <div class="certbar"><i style="width:${certified?100:pct}%"></i></div>
       <div class="muted" style="font-size:13px">${done} of ${tot} modules complete${certified?" · Final exam passed":""}</div>
       ${certified?'<div class="certbadge">✓ Certified Terpene Sommelier</div><div style="margin-top:10px"><button class="sirbtn" style="max-width:320px;margin:0 auto" onclick="openCertificate()">View Certificate</button></div>':""}
+      <div style="margin-top:10px"><button class="clearbtn" onclick="openCourseOutline()">📋 View course outline</button></div>
     </div>`;
   let prevDone=true;
   MODULES.forEach(m=>{ const p=modPassed(m.module_number); const locked=!prevDone && !p;
