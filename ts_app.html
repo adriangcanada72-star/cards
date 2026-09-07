@@ -484,6 +484,7 @@ function loginScreen(){
   showAuth(`<h2>Sign in</h2><p>Enter your email and we'll send you a secure sign-in link.</p>
     <input class="ainput" id="au_email" type="email" placeholder="you@store.com" autocomplete="email">
     <button class="abtn" id="au_send">Send magic link</button><div class="amsg muted" id="au_msg"></div>
+    <button class="alink" id="au_signup">New here? Create an account</button>
     <button class="alink" id="au_pwtoggle">Use a password instead</button>
     <div id="au_pwbox" style="display:none;margin-top:10px;border-top:1px solid var(--line);padding-top:12px">
       <input class="ainput" id="au_pw" type="password" placeholder="Password" autocomplete="current-password">
@@ -492,29 +493,54 @@ function loginScreen(){
     au_send.disabled=true; au_msg.textContent="Sending…";
     const {error}=await sb.auth.signInWithOtp({email,options:{emailRedirectTo:location.href.split("#")[0]}});
     au_msg.textContent=error?("Error: "+error.message):"Check your email for the sign-in link."; au_send.disabled=false; };
+  au_signup.onclick=signupScreen;
   au_pwtoggle.onclick=()=>{ const b=document.getElementById("au_pwbox"); b.style.display=b.style.display==="none"?"block":"none"; };
   au_pwbtn.onclick=async()=>{ const email=au_email.value.trim(),pw=au_pw.value; if(!email||!pw){au_msg.textContent="Enter email and password.";return;}
     au_pwbtn.disabled=true; au_msg.textContent="Signing in…";
     const {error}=await sb.auth.signInWithPassword({email,password:pw});
     if(error){ au_msg.textContent="Error: "+error.message; au_pwbtn.disabled=false; } };
 }
+function signupScreen(){
+  showAuth(`<h2>Create your account</h2><p>For BC licensed retailers. We'll email you a secure sign-in link, then you'll upload your Selling It Right certificate to finish.</p>
+    <div class="afield">First name</div><input class="ainput" id="su_first">
+    <div class="afield">Last name</div><input class="ainput" id="su_last">
+    <div class="afield">Store name</div><input class="ainput" id="su_store" placeholder="Greenery Cannabis Boutique">
+    <div class="afield">BCLDB store number (6 digits)</div><input class="ainput" id="su_num" inputmode="numeric" maxlength="6" placeholder="e.g. 450121">
+    <div class="afield">Email</div><input class="ainput" id="su_email" type="email" placeholder="you@store.com">
+    <button class="abtn" id="su_go">Create account &amp; send link</button>
+    <button class="alink" id="su_back">Back to sign in</button><div class="amsg" id="su_msg"></div>`);
+  su_back.onclick=loginScreen;
+  su_go.onclick=async()=>{
+    const first=su_first.value.trim(),last=su_last.value.trim(),store=su_store.value.trim(),num=su_num.value.trim(),email=su_email.value.trim();
+    if(!first||!last||!store||!num||!email){ su_msg.textContent="Please fill in all fields."; return; }
+    if(!/^[0-9]{6}$/.test(num)){ su_msg.textContent="Store number must be exactly 6 digits."; return; }
+    try{ localStorage.setItem("ts_signup",JSON.stringify({first,last,store,num,email})); }catch(e){}
+    su_go.disabled=true; su_msg.textContent="Sending link…";
+    const {error}=await sb.auth.signInWithOtp({email,options:{emailRedirectTo:location.href.split("#")[0]}});
+    su_msg.textContent=error?("Error: "+error.message):"Check your email for the sign-in link to finish setup."; su_go.disabled=false;
+  };
+}
 function applicationScreen(email){
-  showAuth(`<h2>Register your store</h2><p>BC licensed retailers only. We verify your store number and Selling It Right certificate before granting access.</p>
-    <div class="afield">Store name</div><input class="ainput" id="ap_name" placeholder="Greenery Cannabis Boutique">
-    <div class="afield">BCLDB store number</div><input class="ainput" id="ap_num" placeholder="e.g. 450121">
+  let s={}; try{ s=JSON.parse(localStorage.getItem("ts_signup")||"{}"); }catch(e){}
+  const esc=v=>(v||"").replace(/"/g,"&quot;");
+  showAuth(`<h2>Finish registration</h2><p>Upload your Selling It Right certificate to complete your BC retailer verification.</p>
+    <div class="afield">Store name</div><input class="ainput" id="ap_name" value="${esc(s.store)}" placeholder="Greenery Cannabis Boutique">
+    <div class="afield">BCLDB store number (6 digits)</div><input class="ainput" id="ap_num" inputmode="numeric" maxlength="6" value="${esc(s.num)}" placeholder="e.g. 450121">
     <div class="afield">Selling It Right certificate (image or PDF)</div><input class="ainput" id="ap_file" type="file" accept="image/*,.pdf">
     <button class="abtn" id="ap_submit">Submit for approval</button><button class="alink" id="ap_out">Sign out</button><div class="amsg" id="ap_msg"></div>`);
   ap_out.onclick=signOut;
   ap_submit.onclick=async()=>{ const name=ap_name.value.trim(),num=ap_num.value.trim(),file=ap_file.files[0];
     if(!name||!num||!file){ ap_msg.textContent="Fill in all fields and attach your certificate."; return; }
+    if(!/^[0-9]{6}$/.test(num)){ ap_msg.textContent="Store number must be exactly 6 digits."; return; }
     ap_submit.disabled=true; ap_msg.textContent="Uploading certificate…";
     const {data:{session}}=await sb.auth.getSession(); const uid=session.user.id;
     const path=`${uid}/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g,"_")}`;
     const up=await sb.storage.from("sir-certs").upload(path,file,{upsert:false});
     if(up.error){ ap_msg.textContent="Upload error: "+up.error.message; ap_submit.disabled=false; return; }
     ap_msg.textContent="Submitting…";
-    const {error}=await sb.from("store_applications").insert({applicant_id:uid,applicant_email:email,store_name:name,store_number:num,sir_cert_url:path});
+    const {error}=await sb.from("store_applications").insert({applicant_id:uid,applicant_email:email,store_name:name,store_number:num,sir_cert_url:path,first_name:s.first||null,last_name:s.last||null});
     if(error){ ap_msg.textContent="Error: "+error.message; ap_submit.disabled=false; return; }
+    try{ localStorage.removeItem("ts_signup"); }catch(e){}
     route(); };
 }
 function pendingScreen(email){
