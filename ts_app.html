@@ -827,14 +827,21 @@ let STORE={};
 async function loadStore(){ STORE={}; if(!ME||!ME.store_id) return; const {data}=await sb.from("stores").select("*").eq("id",ME.store_id).maybeSingle(); if(data) STORE=data; }
 const CARDS_BASE="https://adriangcanada72-star.github.io/cards/";
 const STYLE_FILES={ greenery:{card:"card.html",tag:"card2.html"}, diagonal:{card:"card_style_diagonal.html",tag:"shelf_tag_diagonal.html"}, editorial:{card:"card_style_editorial.html",tag:"shelf_tag_editorial.html"} };
+function cannaDisp(minv,maxv,uom,mode){
+  if(mode==="max"){ const s=cannab(maxv,maxv,uom); return s==="—"?"":s; }
+  if(mode==="mid"){ const m=cannabMid(minv,maxv,uom); if(m==null)return ""; return (Number.isInteger(m)?m:(+m.toFixed(1)))+"%"; }
+  return ""; }  // range = let the card format the min–max itself
 function buildCardData(p,desc,wm){ const nz=v=>(v===null||v===undefined)?"":String(v);
+  const cmode=(STORE&&STORE.cannabinoid_display)||"range"; const rp=p.raw||{};
+  const thcOv=cannaDisp(p.thc_min,p.thc_max,rp.PER_RETAIL_UNIT_THC_UOM,cmode);
+  const cbdOv=cannaDisp(p.cbd_min,p.cbd_max,rp.PER_RETAIL_UNIT_CBD_UOM,cmode);
   const t=[ nz(p.name), nz(p.brand), nz(p.species), nz(p.category),
     nz(p.thc_min), nz(p.thc_max), nz(p.cbd_min), nz(p.cbd_max),
     nz(p.terpene_1), nz(p.terpene_2), nz(p.terpene_3), nz(p.origin_region),
     nz(brandLogo(p.brand)), nz(desc),
     nz(wm&&wm.url), nz(wm&&wm.x), nz(wm&&wm.y), nz(wm&&wm.size), nz(wm&&wm.op),  // watermark url,x,y,size,opacity
     "","","","",               // per-piece thc/cbd
-    "","",                     // thc/cbd override
+    nz(thcOv), nz(cbdOv),      // thc/cbd display override (store setting)
     nz(p.num_consumer_items), nz(p.consumer_item_size), nz(p.consumer_item_size_uom) ];
   return t.join("~|~|~"); }
 function openCard(p,type){ const style=(STORE&&STORE.card_style)||"diagonal"; const f=(STYLE_FILES[style]||STYLE_FILES.diagonal)[type];
@@ -1096,9 +1103,9 @@ async function loadDescBlock(p){ const box=document.getElementById("d_descedit")
   const effLong=ov.long_desc||p.long_description||"";
   p.short_description=effShort; p.long_description=effLong;  // so printed cards/tags use them
   const disp=document.getElementById("d_short_disp"); if(disp){ disp.textContent=effShort; disp.style.display=effShort?"block":"none"; }
-  // Only offer the editor when a description is missing
-  if(effShort && effLong){ box.innerHTML=""; return; }
-  box.innerHTML=`<div class="mcard collapsed" style="margin:8px 0 0"><div class="mch" onclick="this.closest('.mcard').classList.toggle('collapsed')"><h3 style="font-size:14px">➕ Add descriptions <span class="muted" style="font-weight:400;font-size:12px">· shared with all stores</span></h3><span class="mswitch"></span></div><div class="mbody">
+  // Editor is manager-only; the merged description above still applies for everyone.
+  if(!(ACTIVE&&ACTIVE.role==="manager")){ box.innerHTML=""; return; }
+  box.innerHTML=`<div class="mcard collapsed" style="margin:8px 0 0"><div class="mch" onclick="this.closest('.mcard').classList.toggle('collapsed')"><h3 style="font-size:14px">Descriptions <span class="muted" style="font-weight:400;font-size:12px">· copy &amp; paste · saves for all stores</span></h3><span class="mswitch"></span></div><div class="mbody">
     <label class="afield">Short description</label><textarea class="ainput" id="dd_short" rows="2" maxlength="400">${escH(effShort)}</textarea>
     <label class="afield" style="margin-top:8px">Long description</label><textarea class="ainput" id="dd_long" rows="6">${escH(effLong)}</textarea>
     <div style="display:flex;gap:8px;align-items:center;margin-top:8px"><button class="syncbtn" id="dd_save">Save descriptions</button><span class="pmsg" id="dd_msg" style="margin:0"></span></div>
@@ -1484,12 +1491,21 @@ async function refreshManage(){
   if(manager && ME.store_id){
     sBox.innerHTML=`<div class="mcard collapsed"><div class="mch" onclick="this.closest('.mcard').classList.toggle('collapsed')"><h3>Card &amp; tag style</h3><span class="mswitch"></span></div><div class="mbody"><div class="sub">Print style used for product cards and shelf tags.</div>
       <select id="styleSel" style="max-width:240px"><option value="diagonal">Diagonal</option><option value="editorial">Editorial</option><option value="greenery">Greenery</option></select>
-      <div class="pmsg" id="style_msg"></div></div></div>`;
+      <div class="pmsg" id="style_msg"></div>
+      <div class="afield" style="margin-top:14px">THC / CBD display on cards &amp; tags</div>
+      <select id="cannaSel" style="max-width:280px"><option value="range">Range (e.g. 29–32%)</option><option value="max">Max only (e.g. 32%)</option><option value="mid">Average (e.g. 30%)</option></select>
+      <div class="hint">This setting applies to your store's cards &amp; tags only.</div>
+      <div class="pmsg" id="canna_msg"></div></div></div>`;
     document.getElementById("styleSel").value=(STORE&&STORE.card_style)||"diagonal";
     document.getElementById("styleSel").onchange=async(e)=>{ const v=e.target.value; const {data,error}=await sb.from("stores").update({card_style:v}).eq("id",ME.store_id).select();
       if(error){ document.getElementById("style_msg").textContent="Error: "+error.message; return; }
       if(!data||!data.length){ document.getElementById("style_msg").textContent="Not saved — no permission to update the store."; return; }
       STORE.card_style=v; document.getElementById("style_msg").textContent="Saved."; };
+    document.getElementById("cannaSel").value=(STORE&&STORE.cannabinoid_display)||"range";
+    document.getElementById("cannaSel").onchange=async(e)=>{ const v=e.target.value; const {data,error}=await sb.from("stores").update({cannabinoid_display:v}).eq("id",ME.store_id).select();
+      if(error){ document.getElementById("canna_msg").textContent="Error: "+error.message; return; }
+      if(!data||!data.length){ document.getElementById("canna_msg").textContent="Not saved — no permission."; return; }
+      STORE.cannabinoid_display=v; document.getElementById("canna_msg").textContent="Saved."; };
   } else sBox.innerHTML="";
   renderBillingCard(manager);
   renderWatermarkCard(manager);
