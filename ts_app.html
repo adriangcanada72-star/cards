@@ -357,7 +357,7 @@ function computeTriax(input){
            + (p2>=L2.threshold?L2[key]:0)*(p2/sumP)
            + (p3>=L3.threshold?L3[key]:0)*(p3/sumP);
     }
-    return (L1[key]+L2[key]+L3[key])/3;
+    {const _n=(t1?1:0)+(t2?1:0)+(t3?1:0)||1; return (L1[key]+L2[key]+L3[key])/_n;}
   }
   const base_cer=base("cerebral"), base_som=base("somatic");
 
