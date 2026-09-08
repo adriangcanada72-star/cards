@@ -1,5 +1,13 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>The Terpene Sommelier</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#2f7d4f">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Terpene Somm">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 <style>
@@ -1552,4 +1560,5 @@ async function reviewApp(btn,approve){ const id=btn.closest(".appitem").dataset.
 
 if(sb){ sb.auth.onAuthStateChange((event)=>{ if(event==="PASSWORD_RECOVERY"){ recoveryScreen(); return; } if(event==="SIGNED_IN" && ACTIVE){ return; } route(); }); route(); }
 else { showAuth('<h2>Configuration needed</h2><p>Supabase keys are not set.</p>'); }
+if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator.serviceWorker.register("sw.js").catch(()=>{}); }); }
 </script></body></html>
