@@ -154,6 +154,18 @@ nav a.navicon{font-size:20px;padding:6px 10px;line-height:1}
 .revtxt{margin:3px 0;color:#2c3a32}.revmeta{color:var(--muted);font-size:11px}
 .cardrate{display:flex;align-items:center;gap:6px;font-size:12px;margin-top:3px}
 .cardovrow{display:flex;gap:10px;margin:10px 0 2px}.cardovrow label{display:block;font-size:12px;color:var(--muted);margin-bottom:3px}.cardovrow input{width:100%}
+.dstats{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0 14px}
+.dstat{flex:1;min-width:90px;background:#f6f9f7;border:1px solid var(--line);border-radius:10px;padding:10px 12px;text-align:center}
+.dstat b{display:block;font-size:22px;color:var(--txt)}.dstat span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.dtablewrap{overflow-x:auto}
+.dtable{width:100%;border-collapse:collapse;font-size:13px}
+.dtable th{text-align:left;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.5px;padding:6px 10px;border-bottom:1px solid var(--line)}
+.dtable td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.dmeta{color:var(--muted);font-size:11px}
+.dpill{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.dpill.ok{background:#eaf7ef;color:#1f6b3f;border:1px solid #c3e2ce}
+.dpill.warn{background:#fbf1e2;color:#7a5a24;border:1px solid #e5c99a}
+.dpill.bad{background:#fbf1f1;color:var(--red);border:1px solid #f0c3c3}
 .tresearch .rtop{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}
 .rtier{display:inline-block;font-size:11px;font-weight:800;padding:2px 9px;border-radius:999px;border:1px solid}
 .rt-d{color:#1f6b3f;background:#eaf7ef;border-color:#c3e2ce}
@@ -300,6 +312,7 @@ nav a.navicon{font-size:20px;padding:6px 10px;line-height:1}
  <div id="inviteBox"></div>
  <div id="styleBox"></div>
  <div id="watermarkBox"></div>
+ <div id="adminDashBox" style="display:none"></div>
  <div id="adminBox" style="display:none"><div class="mcard"><h3>Store applications — review</h3><div class="sub">Approve or reject BC retailer registrations. Check the store number and Selling It Right certificate before approving.</div><div id="adminList"></div></div></div>
  <div id="adminCodesBox" style="display:none"></div>
  <div id="syncWrap">
@@ -1551,6 +1564,7 @@ async function refreshManage(){
   const adminBox=document.getElementById("adminBox");
   if(ME.role==="admin"){ adminBox.style.display="block"; loadApprovals(); } else adminBox.style.display="none";
   renderAccessCodes();
+  renderStoreDash();
 }
 function renderStaffCard(manager){ const box=document.getElementById("inviteBox");
   if(!manager || !ME.store_id){ box.innerHTML=""; return; }
@@ -1598,6 +1612,40 @@ async function addStaff(){ const name=st_name.value.trim(),role=st_role.value,pi
   const {error}=await sb.from("staff").insert({store_id:ME.store_id,name:name,role:role,pin:pin});
   if(error){ m.textContent="Error: "+error.message; return; }
   st_name.value="";st_pin.value=""; await loadStoreStaff(); renderStaffList(); m.textContent="Added "+name; }
+async function renderStoreDash(){ const box=document.getElementById("adminDashBox"); if(!box) return;
+  if(!ME||ME.role!=="admin"){ box.style.display="none"; box.innerHTML=""; return; }
+  box.style.display="block"; box.innerHTML='<div class="mcard"><h3>Store dashboard</h3><div class="muted" style="font-size:12px">Loading…</div></div>';
+  const monthKey=(new Date().getFullYear())+"-"+((new Date().getMonth())+1);
+  const [st,stf,sir]=await Promise.all([
+    sb.from("stores").select("*").order("name"),
+    sb.from("staff").select("id,store_id,is_certified"),
+    sb.from("sir_attempts").select("staff_id,store_id,passed,month_key").eq("month_key",monthKey).eq("passed",true)
+  ]);
+  const stores=st.data||[], staff=stf.data||[], sirRows=sir.data||[];
+  const byStore={}; stores.forEach(s=>byStore[s.id]={staff:0,cert:0,sir:new Set()});
+  staff.forEach(x=>{ const b=byStore[x.store_id]; if(b){ b.staff++; if(x.is_certified) b.cert++; } });
+  sirRows.forEach(r=>{ const b=byStore[r.store_id]; if(b) b.sir.add(r.staff_id); });
+  const now=new Date();
+  function access(s){
+    if(s.comped){ return {t:"Comp"+(s.comp_expires_at?(" → "+new Date(s.comp_expires_at).toLocaleDateString()):""),c:"ok"}; }
+    const st=s.subscription_status||"none";
+    if(st==="active") return {t:"Active"+(s.current_period_end?(" · renews "+new Date(s.current_period_end).toLocaleDateString()):""),c:"ok"};
+    if(st==="trialing"){ const ended=s.trial_ends_at&&new Date(s.trial_ends_at)<now; return {t:(ended?"Trial ended":"Trial → "+(s.trial_ends_at?new Date(s.trial_ends_at).toLocaleDateString():"?")),c:ended?"bad":"warn"}; }
+    if(st==="past_due") return {t:"Past due",c:"bad"};
+    if(st==="canceled") return {t:"Canceled",c:"bad"};
+    return {t:st,c:"warn"};
+  }
+  const paid=stores.filter(s=>{const a=access(s);return a.c==="ok";}).length;
+  const totStaff=staff.length, totCert=staff.filter(x=>x.is_certified).length;
+  const rows=stores.map(s=>{ const b=byStore[s.id]||{staff:0,cert:0,sir:new Set()}; const a=access(s);
+    return `<tr><td><b>${escH(s.name||"—")}</b><div class="dmeta">#${escH(s.store_number||"?")}</div></td>
+      <td><span class="dpill ${a.c}">${escH(a.t)}</span></td>
+      <td>${b.staff}</td><td>${b.cert}/${b.staff}</td><td>${b.sir.size}/${b.staff}</td></tr>`;
+  }).join("")||`<tr><td colspan="5" class="muted">No stores yet.</td></tr>`;
+  box.innerHTML=`<div class="mcard"><h3>Store dashboard</h3>
+    <div class="dstats"><div class="dstat"><b>${stores.length}</b><span>stores</span></div><div class="dstat"><b>${paid}</b><span>paid/comped</span></div><div class="dstat"><b>${totStaff}</b><span>staff</span></div><div class="dstat"><b>${totCert}</b><span>certified</span></div></div>
+    <div class="dtablewrap"><table class="dtable"><thead><tr><th>Store</th><th>Access</th><th>Staff</th><th>Certified</th><th>SIR this mo.</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+}
 async function renderAccessCodes(){ const box=document.getElementById("adminCodesBox"); if(!box) return;
   if(!ME||ME.role!=="admin"){ box.style.display="none"; box.innerHTML=""; return; }
   box.style.display="block";
