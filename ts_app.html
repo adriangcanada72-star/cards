@@ -1061,6 +1061,7 @@ function openTerpResearch(){
     <div class="rgrp">Bottom line</div><div class="rnote" style="margin-bottom:6px">${RESEARCH_BOTTOM}</div>`;
   document.getElementById("ovt").classList.add("on"); document.getElementById("ovt").scrollTop=0; }
 function openDetail(p){
+  CUR_SPECIES=p.species||"";
   const raw=p.raw||{}; const shortD=p.short_description||raw.ECOMM_SHORT_DESCRIPTION||raw.Short_Desc_Final||"";
   const seed=[normTerp(p.terpene_1),normTerp(p.terpene_2),normTerp(p.terpene_3)];
   const opts='<option value="">(none)</option>'+terpeneNames.map(n=>`<option>${n}</option>`).join("");
@@ -1164,12 +1165,25 @@ async function submitRating(p){ const m=document.getElementById("rate_msg");
 async function deleteRating(p){ if(!ACTIVE)return; const m=document.getElementById("rate_msg"); if(m)m.textContent="Removing…";
   const {error}=await sb.from("product_ratings").delete().eq("sku",p.sku).eq("catalog_source",p.catalog_source).eq("staff_id",ACTIVE.id);
   if(error){ m.textContent="Error: "+error.message; return; } loadRatingBlock(p); }
+function _speciesNudge(species){ const s=(species||"").toUpperCase();
+  if(s.indexOf("SATIVA")>=0) return {c:1,s:0.5,label:"Sativa"};
+  if(s.indexOf("INDICA")>=0) return {c:-0.5,s:-1,label:"Indica"};
+  return {c:0,s:0,label:""}; }  // hybrid / blend / none → no nudge
+function applySpecies(r,species){ const n=_speciesNudge(species); if(!n.c&&!n.s) return r;
+  const cl=x=>Math.max(-5,Math.min(5,x)); const xr=v=>v>=0?Math.round(v):-Math.round(-v);
+  const cer=cl(xr(r.cerebral+n.c)), som=cl(xr(r.somatic+n.s));
+  const ovRaw=(Math.abs(cer)+Math.abs(som)===0)?0:(Math.abs(cer)*cer+Math.abs(som)*som)/(Math.abs(cer)+Math.abs(som));
+  const ov=cl(xr(ovRaw));
+  const profile=ov>=2?"Sativa Leaning":(ov<=-2?"Indica Leaning":"Hybrid Leaning");
+  return Object.assign({},r,{cerebral:cer,somatic:som,overall:ov,profile:profile,
+    strength:(r.strength||"")+" "+n.label+" species nudge applied to compensate for missing terpene data."}); }
+let CUR_SPECIES="";
 function recompute(){
   const p1=parseFloat(d_p1.value)||0,p2=parseFloat(d_p2.value)||0,p3=parseFloat(d_p3.value)||0;
   const tt = d_tt.value.trim()===""? (p1+p2+p3) : parseFloat(d_tt.value);
   const thc = d_thc.value.trim()===""? 20 : parseFloat(d_thc.value);
   const i={t1:d_t1.value,t2:d_t2.value,t3:d_t3.value,p1:d_p1.value,p2:d_p2.value,p3:d_p3.value,thc:thc,cbd:d_cbd.value,totalTerp:tt};
-  const r=computeTriax(i);
+  let r=computeTriax(i); r=applySpecies(r,CUR_SPECIES);
   setMeter("m_cer",r.cerebral);setMeter("m_som",r.somatic);setMeter("m_ov",r.overall);
   document.getElementById("d_out").innerHTML=`<div style="margin-top:14px">Profile: <span class="badge">${r.profile}</span></div><div class="strength">${r.strength||"Enter this batch's percentages to sharpen the prediction."}</div>`;}
 function openAnalyzer(){
@@ -1181,22 +1195,25 @@ function openAnalyzer(){
     <div class="inrow"><span class="pos">2nd</span><select id="a_t2">${opts}</select><input id="a_p2" type="number" step="0.01" placeholder="%"></div>
     <div class="inrow"><span class="pos">3rd</span><select id="a_t3">${opts}</select><input id="a_p3" type="number" step="0.01" placeholder="%"></div>
     <div class="chem"><div><label>THC %</label><input id="a_thc" type="number" step="0.1"></div><div><label>CBD %</label><input id="a_cbd" type="number" step="0.1"></div><div><label>Total terpenes %</label><input id="a_tt" type="number" step="0.1" placeholder="auto: sum above"></div></div>
+    <div style="margin-top:10px"><label class="afield">Species (nudges the result for missing terpene data)</label>
+      <select id="a_species" style="max-width:240px"><option value="">Hybrid — no nudge</option><option value="SATIVA">Sativa — nudge up</option><option value="INDICA">Indica — nudge down</option></select></div>
     <div class="teahead">Predicted effect</div>
     ${meterSkeleton("Cerebral","a_cer","cer")}${meterSkeleton("Somatic","a_som","som")}${meterSkeleton("Overall","a_ov","ov")}
     <div id="a_out"></div>
     <button class="sirbtn alt" style="margin-top:14px" onclick="clearAnalyzer()">Clear</button>`;
-  ["a_t1","a_t2","a_t3","a_p1","a_p2","a_p3","a_thc","a_cbd","a_tt"].forEach(id=>document.getElementById(id).addEventListener("input",acompute));
+  ["a_t1","a_t2","a_t3","a_p1","a_p2","a_p3","a_thc","a_cbd","a_tt","a_species"].forEach(id=>document.getElementById(id).addEventListener("input",acompute));
+  document.getElementById("a_species").addEventListener("change",acompute);
   document.getElementById("ova").classList.add("on"); document.getElementById("ova").scrollTop=0;
   requestAnimationFrame(()=>requestAnimationFrame(acompute)); }
 function closeAnalyzer(){ document.getElementById("ova").classList.remove("on"); }
-function clearAnalyzer(){ ["a_t1","a_t2","a_t3","a_p1","a_p2","a_p3","a_thc","a_cbd","a_tt"].forEach(id=>document.getElementById(id).value=""); acompute(); }
+function clearAnalyzer(){ ["a_t1","a_t2","a_t3","a_p1","a_p2","a_p3","a_thc","a_cbd","a_tt","a_species"].forEach(id=>document.getElementById(id).value=""); acompute(); }
 function acompute(){
   const g=id=>document.getElementById(id);
   const p1=parseFloat(g("a_p1").value)||0,p2=parseFloat(g("a_p2").value)||0,p3=parseFloat(g("a_p3").value)||0;
   const tt=g("a_tt").value.trim()===""?(p1+p2+p3):parseFloat(g("a_tt").value);
   const thc=g("a_thc").value.trim()===""?20:parseFloat(g("a_thc").value);
   const i={t1:g("a_t1").value,t2:g("a_t2").value,t3:g("a_t3").value,p1:g("a_p1").value,p2:g("a_p2").value,p3:g("a_p3").value,thc:thc,cbd:g("a_cbd").value,totalTerp:tt};
-  const r=computeTriax(i);
+  let r=computeTriax(i); r=applySpecies(r,g("a_species").value);
   setMeter("a_cer",r.cerebral);setMeter("a_som",r.somatic);setMeter("a_ov",r.overall);
   g("a_out").innerHTML=`<div style="margin-top:14px">Profile: <span class="badge">${r.profile}</span></div><div class="strength">${r.strength||"Pick terpenes (and optional percentages) to see the prediction."}</div>`; }
 FILTERS.forEach(([k])=>document.getElementById("f_"+k).addEventListener("change",search));
