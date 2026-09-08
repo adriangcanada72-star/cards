@@ -466,7 +466,8 @@ else{ const w=document.getElementById("cfgwarn"); w.style.display="block"; w.tex
 function closeDetail(){ document.getElementById("ov").classList.remove("on"); }
 function closeTerp(){ document.getElementById("ovt").classList.remove("on"); }
 function storeHasAccess(){ if(ME && (ME.role==="admin" || !ME.store_id)) return true;
-  const s=STORE||{}; if(s.comped) return true;
+  const s=STORE||{};
+  if(s.comped && (!s.comp_expires_at || new Date(s.comp_expires_at)>new Date())) return true;
   if(s.subscription_status==="active") return true;
   if(s.subscription_status==="trialing"){ return !s.trial_ends_at || new Date(s.trial_ends_at)>new Date(); }
   return false; }
@@ -1490,7 +1491,7 @@ async function redeemAccessCode(){ const el=document.getElementById("pw_code")||
   else { renderBillingCard(ACTIVE&&ACTIVE.role==="manager"); const bm=document.getElementById("bill_msg"); if(bm)bm.textContent="Access unlocked."; } }
 function renderBillingCard(manager){ const box=document.getElementById("billingBox"); if(!box) return; if(!manager){ box.innerHTML=""; return; }
   const s=STORE||{};
-  const label = s.comped ? "Comped — free access" : (s.subscription_status||"none");
+  const label = s.comped ? ("Comped — free access"+(s.comp_expires_at?(" until "+new Date(s.comp_expires_at).toLocaleDateString()):"")) : (s.subscription_status||"none");
   const trial = (s.subscription_status==="trialing"&&s.trial_ends_at) ? (" · trial ends "+new Date(s.trial_ends_at).toLocaleDateString()) : "";
   const renew = (s.subscription_status==="active"&&s.current_period_end) ? (" · renews "+new Date(s.current_period_end).toLocaleDateString()) : "";
   box.innerHTML=`<div class="mcard"><h3>Billing &amp; subscription</h3>
@@ -1584,11 +1585,13 @@ async function renderAccessCodes(){ const box=document.getElementById("adminCode
   if(!ME||ME.role!=="admin"){ box.style.display="none"; box.innerHTML=""; return; }
   box.style.display="block";
   const {data}=await sb.from("access_codes").select("*").order("created_at",{ascending:false});
+  const durTxt=m=>m?(m+" mo access"):"no expiry";
   const rows=(data||[]).map(c=>`<div class="mrow" style="justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding:6px 0;gap:8px">
-    <span><b>${escH(c.code)}</b>${c.note?` · <span class="muted">${escH(c.note)}</span>`:""} · ${c.uses||0}${c.max_uses!=null?("/"+c.max_uses):""} used${c.active?"":` · <span class="hf">inactive</span>`}</span>
+    <span><b>${escH(c.code)}</b>${c.note?` · <span class="muted">${escH(c.note)}</span>`:""} · ${durTxt(c.duration_months)} · ${c.uses||0}${c.max_uses!=null?("/"+c.max_uses):""} used${c.active?"":` · <span class="hf">inactive</span>`}</span>
     <button class="clearbtn" data-tog="${c.id}" data-a="${c.active?1:0}">${c.active?"Disable":"Enable"}</button></div>`).join("")||'<div class="pmeta muted">No codes yet.</div>';
-  box.innerHTML=`<div class="mcard"><h3>Access codes</h3><div class="sub">Create codes that unlock the app for a store (free / comped access).</div>
-    <div class="mrow"><input id="ac_code" placeholder="CODE" style="flex:1;min-width:150px"><input id="ac_note" placeholder="Note (optional)" style="flex:1;min-width:130px"><input id="ac_max" type="number" min="1" placeholder="Max uses (blank = ∞)" style="width:170px"><button class="syncbtn" id="ac_add">Create</button></div>
+  box.innerHTML=`<div class="mcard"><h3>Access codes</h3><div class="sub">Create codes that unlock the app for a store (free / comped access), optionally for a set period.</div>
+    <div class="mrow"><input id="ac_code" placeholder="CODE" style="flex:1;min-width:150px"><input id="ac_note" placeholder="Note (optional)" style="flex:1;min-width:130px"></div>
+    <div class="mrow" style="margin-top:8px"><select id="ac_dur" style="width:170px"><option value="">No expiry</option><option value="1">1 month</option><option value="3">3 months</option><option value="6">6 months</option><option value="12">12 months</option></select><input id="ac_max" type="number" min="1" placeholder="Max uses (blank = ∞)" style="width:170px"><button class="syncbtn" id="ac_add">Create</button></div>
     <div class="pmsg" id="ac_msg"></div>
     <div style="margin-top:10px">${rows}</div></div>`;
   document.getElementById("ac_add").onclick=addAccessCode;
@@ -1597,9 +1600,10 @@ async function addAccessCode(){ const m=document.getElementById("ac_msg");
   const code=(document.getElementById("ac_code").value||"").trim();
   const note=(document.getElementById("ac_note").value||"").trim();
   const maxv=(document.getElementById("ac_max").value||"").trim();
+  const durv=(document.getElementById("ac_dur").value||"").trim();
   if(!code){ if(m)m.textContent="Enter a code."; return; }
   if(m)m.textContent="Creating…";
-  const {error}=await sb.from("access_codes").insert({code:code,note:note||null,max_uses:maxv===""?null:parseInt(maxv),active:true});
+  const {error}=await sb.from("access_codes").insert({code:code,note:note||null,max_uses:maxv===""?null:parseInt(maxv),duration_months:durv===""?null:parseInt(durv),active:true});
   if(error){ m.textContent="Error: "+error.message; return; }
   m.textContent="Created."; renderAccessCodes(); }
 async function loadApprovals(){ const box=document.getElementById("adminList"); if(!box)return;
