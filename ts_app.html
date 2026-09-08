@@ -1055,8 +1055,6 @@ function openDetail(p){
     <div class="phead"><div class="logobox">${lg?`<img src="${lg}">`:`<span class="logotext">${p.brand||"—"}</span>`}</div>
       <div class="ptitle"><h2>${p.name||"(no name)"}</h2><div class="muted">${p.brand||""} · ${p.category||""} · ${p.catalog_source}</div></div></div>
     <div class="shortdesc" id="d_short_disp" style="${shortD?"":"display:none"}">${shortD||""}</div>
-    <div id="d_descedit"></div>
-    <div id="d_rating"></div>
     <div style="display:flex;gap:8px;margin:10px 0 2px"><button class="printbtn" id="btnCard">🖨 Product Card</button><button class="printbtn" id="btnTag">🖨 Shelf Tag</button></div>
     <div class="sect">Terpene trio (catalog) — tap for detail</div>
     ${[p.terpene_1,p.terpene_2,p.terpene_3].map(terpCardRaw).join("")||'<div class="muted">No terpenes listed.</div>'}
@@ -1070,7 +1068,9 @@ function openDetail(p){
     ${meterSkeleton("Cerebral","m_cer","cer")}${meterSkeleton("Somatic","m_som","som")}${meterSkeleton("Overall","m_ov","ov")}
     <div id="d_out"></div>
     <div class="sect">Product details</div>
-    <div class="kv">${kv("SKU",p.sku)}${kv("Catalog",p.catalog_source)}${kv("Category",p.category)}${kv("Strain type",p.species)}${kv("Extraction",p.extraction_process)}${kv("Growing",p.growing_method)}${kv("Harvesting",p.harvesting_method||raw.HARVESTING_METHOD)}${kv("Consumption",p.consumption_method)}${kv("Unit count",p.num_consumer_items)}${kv("Size / unit",sizeU||"—")}${kv("Province",p.origin_region)}${kv("Subregion",raw.ORIGIN_SUBREGION)}${kv("THC",thc)}${kv("CBD",cbd)}${kv("Lifecycle",p.lifecycle_status)}${shortD?`<div class="full">${kv("Short description",shortD)}</div>`:""}${p.long_description?`<div class="full">${kv("Description",p.long_description)}</div>`:""}</div>`;
+    <div class="kv">${kv("SKU",p.sku)}${kv("Catalog",p.catalog_source)}${kv("Category",p.category)}${kv("Strain type",p.species)}${kv("Extraction",p.extraction_process)}${kv("Growing",p.growing_method)}${kv("Harvesting",p.harvesting_method||raw.HARVESTING_METHOD)}${kv("Consumption",p.consumption_method)}${kv("Unit count",p.num_consumer_items)}${kv("Size / unit",sizeU||"—")}${kv("Province",p.origin_region)}${kv("Subregion",raw.ORIGIN_SUBREGION)}${kv("THC",thc)}${kv("CBD",cbd)}${kv("Lifecycle",p.lifecycle_status)}${shortD?`<div class="full">${kv("Short description",shortD)}</div>`:""}${p.long_description?`<div class="full">${kv("Description",p.long_description)}</div>`:""}</div>
+    <div id="d_rating"></div>
+    <div id="d_descedit"></div>`;
   document.getElementById("d_t1").value=seed[0];document.getElementById("d_t2").value=seed[1];document.getElementById("d_t3").value=seed[2];
   const _thcMid=cannabMid(p.thc_min,p.thc_max,raw.PER_RETAIL_UNIT_THC_UOM); if(_thcMid!=null) document.getElementById("d_thc").value=_thcMid;
   const _cbdMid=cannabMid(p.cbd_min,p.cbd_max,raw.PER_RETAIL_UNIT_CBD_UOM); if(_cbdMid!=null) document.getElementById("d_cbd").value=_cbdMid;
