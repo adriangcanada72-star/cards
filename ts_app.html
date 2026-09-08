@@ -134,6 +134,16 @@ input,select{background:#fff;border:1px solid var(--line);color:var(--txt);borde
 .kv{display:grid;grid-template-columns:1fr 1fr;gap:10px 18px;font-size:13px;margin-top:6px}.kv .k{color:var(--muted);font-size:11px}.kv .v{font-weight:600}.kv .full{grid-column:1 / -1}
 .tdhead{display:flex;gap:16px;align-items:center;margin-bottom:8px}.tdhead img{width:120px;height:120px;object-fit:cover;border-radius:14px}.tdhead h2{margin:0;font-size:24px}
 .tdetails{font-size:13px;color:#2c3a32;line-height:1.65}
+.stars{display:inline-flex;gap:1px;vertical-align:middle}
+.star{color:#d3dbd6;font-size:15px;line-height:1}.star.on{color:var(--gold)}.star.sm{font-size:12px}
+.ratesum{display:flex;align-items:center;gap:8px;margin:12px 0 8px;font-size:15px}
+.ratebox{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:#fafcfb;margin-bottom:4px}
+.ratelbl{font-weight:700;font-size:13px;margin-bottom:6px}
+.ratestars{display:flex;gap:6px}
+.rstar{font-size:30px;color:#d3dbd6;cursor:pointer;line-height:1;transition:color .1s}.rstar.on{color:var(--gold)}.rstar:hover{color:#e6b53a}
+.revrow{border-top:1px solid var(--line);padding:8px 0;font-size:13px}
+.revtxt{margin:3px 0;color:#2c3a32}.revmeta{color:var(--muted);font-size:11px}
+.cardrate{display:flex;align-items:center;gap:6px;font-size:12px;margin-top:3px}
 .tresearch .rtop{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}
 .rtier{display:inline-block;font-size:11px;font-weight:800;padding:2px 9px;border-radius:999px;border:1px solid}
 .rt-d{color:#1f6b3f;background:#eaf7ef;border-color:#c3e2ce}
@@ -264,7 +274,7 @@ input,select{background:#fff;border:1px solid var(--line);color:var(--txt);borde
  <div class="fcol fav"><div class="fhead"><span class="ficon fav"><svg viewBox="0 0 24 24" fill="#2f7d4f"><path d="M12 2.5l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.9 6.2 20.9l1.1-6.5L2.6 9.35l6.5-.95z"/></svg></span><span><div class="t">Favorite terpenes</div><div class="s">show products featuring these</div></span></div><div class="chips" id="favBox"></div><select id="addFav"></select></div>
  <div class="fcol avoid"><div class="fhead"><span class="ficon avoid"><svg viewBox="0 0 24 24" fill="none" stroke="#c14848" stroke-width="2.2"><circle cx="12" cy="12" r="8.5"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span><span><div class="t">Avoid terpenes</div><div class="s">hide products containing these</div></span></div><div class="chips" id="avoidBox"></div><select id="addAvoid"></select></div>
 </div>
-<div class="controls"><input id="q" placeholder="Search product or brand…"><select id="src"><option value="">All sources</option><option>BCLDB</option><option>Direct Delivery</option></select><select id="sortsel"><option value="name">Sort: Alphabetical</option><option value="sku" selected>Sort: SKU</option></select><button class="clearbtn" id="sortdir" title="Reverse sort order">A→Z ↓</button><span class="gridpick" id="gridpick"></span></div>
+<div class="controls"><input id="q" placeholder="Search product or brand…"><select id="src"><option value="">All sources</option><option>BCLDB</option><option>Direct Delivery</option></select><select id="sortsel"><option value="name">Sort: Alphabetical</option><option value="sku" selected>Sort: SKU</option><option value="rating_avg">Sort: Rating</option></select><button class="clearbtn" id="sortdir" title="Reverse sort order">A→Z ↓</button><span class="gridpick" id="gridpick"></span></div>
 <div class="rowline"><button class="ftoggle" id="filterToggle">☰ Filters<span class="badge" id="fcount" style="display:none"></span></button><button class="clearbtn" id="clearAll">✕ Clear all</button></div>
 <div class="filters" id="filters" style="display:none"></div>
 <div id="count" class="muted" style="font-size:12px;margin-bottom:8px"></div>
@@ -923,7 +933,10 @@ const listEl=document.getElementById("list"),countEl=document.getElementById("co
 const qEl=document.getElementById("q"),srcEl=document.getElementById("src");let timer=null;
 const sortEl=document.getElementById("sortsel"),sortDirEl=document.getElementById("sortdir");
 let SORT_ASC=false;
-function sortDirLabel(){ const sku=sortEl.value==="sku"; sortDirEl.textContent=sku?(SORT_ASC?"0→9 ↓":"9→0 ↑"):(SORT_ASC?"A→Z ↓":"Z→A ↑"); }
+function sortDirLabel(){ const v=sortEl.value;
+  sortDirEl.textContent = v==="sku" ? (SORT_ASC?"0→9 ↓":"9→0 ↑")
+    : v==="rating_avg" ? (SORT_ASC?"★ Low→High":"★ High→Low")
+    : (SORT_ASC?"A→Z ↓":"Z→A ↑"); }
 sortDirEl.onclick=()=>{ SORT_ASC=!SORT_ASC; sortDirLabel(); search(); };
 sortEl.onchange=()=>{ sortDirLabel(); search(); };
 sortDirLabel();
@@ -975,6 +988,7 @@ async function runSearch(){ if(!sb) return; updateBadge();
     return `<div class="pcard" data-i="${i}"><div class="lg">${lg?`<img src="${lg}">`:`<span class="logotext">${p.brand||"—"}</span>`}</div>
       <div><div class="pname">${p.name||"(no name)"}</div><div class="pmeta">${p.brand||""} ${p.category?("· "+p.category):""}</div>
       <div class="pmeta">${[p.terpene_1,p.terpene_2,p.terpene_3].filter(Boolean).join(", ")}</div>
+      ${p.rating_count?`<div class="cardrate">${starsHTML(p.rating_avg)} <span class="muted">${Number(p.rating_avg).toFixed(1)} · ${p.rating_count}</span></div>`:""}
       <span class="src ${sc}">${p.catalog_source}</span></div></div>`;}).join("")||'<div class="muted">No products match these filters.</div>';
   document.querySelectorAll(".pcard").forEach(el=>el.onclick=()=>openDetail(window._rows[+el.dataset.i]));
 }
@@ -1041,6 +1055,7 @@ function openDetail(p){
     <div class="phead"><div class="logobox">${lg?`<img src="${lg}">`:`<span class="logotext">${p.brand||"—"}</span>`}</div>
       <div class="ptitle"><h2>${p.name||"(no name)"}</h2><div class="muted">${p.brand||""} · ${p.category||""} · ${p.catalog_source}</div></div></div>
     ${shortD?`<div class="shortdesc">${shortD}</div>`:""}
+    <div id="d_rating"></div>
     <div style="display:flex;gap:8px;margin:10px 0 2px"><button class="printbtn" id="btnCard">🖨 Product Card</button><button class="printbtn" id="btnTag">🖨 Shelf Tag</button></div>
     <div class="sect">Terpene trio (catalog) — tap for detail</div>
     ${[p.terpene_1,p.terpene_2,p.terpene_3].map(terpCardRaw).join("")||'<div class="muted">No terpenes listed.</div>'}
@@ -1062,8 +1077,46 @@ function openDetail(p){
   document.getElementById("btnCard").onclick=()=>openCard(p,"card");
   document.getElementById("btnTag").onclick=()=>openCard(p,"tag");
   document.getElementById("ov").classList.add("on");
+  loadRatingBlock(p);
   requestAnimationFrame(()=>requestAnimationFrame(recompute)); // animate meters in from center
 }
+function starsHTML(v,small){ const r=Math.round(Number(v)||0); let h="";
+  for(let i=1;i<=5;i++) h+=`<span class="star${small?" sm":""}${i<=r?" on":""}">★</span>`;
+  return `<span class="stars">${h}</span>`; }
+function escA(s){ return escH(s).replace(/"/g,"&quot;"); }
+let RATE_STATE={};
+async function loadRatingBlock(p){ const box=document.getElementById("d_rating"); if(!box||!sb) return;
+  const {data}=await sb.from("product_ratings").select("*").eq("sku",p.sku).eq("catalog_source",p.catalog_source).order("updated_at",{ascending:false});
+  const arr=data||[], cnt=arr.length, avg=cnt?arr.reduce((s,r)=>s+r.stars,0)/cnt:0;
+  const mine=ACTIVE?arr.find(r=>String(r.staff_id)===String(ACTIVE.id)):null;
+  RATE_STATE={sku:p.sku,src:p.catalog_source,my:mine?mine.stars:0};
+  const reviews=arr.filter(r=>r.review);
+  box.innerHTML=`<div class="ratesum">${starsHTML(avg)} <b>${cnt?avg.toFixed(1):"—"}</b> <span class="muted">(${cnt} rating${cnt===1?"":"s"})</span></div>
+    <div class="ratebox"><div class="ratelbl">${mine?"Your rating":"Rate this product"}</div>
+      <div class="ratestars" id="rate_stars"></div>
+      <input class="ainput" id="rate_note" style="margin:8px 0 0" maxlength="140" placeholder="Optional note (e.g. great for sleep)" value="${mine&&mine.review?escA(mine.review):""}">
+      <div style="display:flex;gap:8px;align-items:center;margin-top:8px"><button class="syncbtn" id="rate_save">${mine?"Update rating":"Submit rating"}</button>${mine?`<button class="clearbtn" id="rate_del">Remove</button>`:""}<span class="pmsg" id="rate_msg" style="margin:0"></span></div>
+    </div>
+    ${reviews.length?`<div class="sect">Reviews · all stores</div>${reviews.map(r=>`<div class="revrow"><div>${starsHTML(r.stars,true)} <b>${escH(r.staff_name||"Staff")}</b></div><div class="revtxt">${escH(r.review)}</div><div class="revmeta">${new Date(r.updated_at||r.created_at).toLocaleDateString()}</div></div>`).join("")}`:""}`;
+  renderRateStars();
+  document.getElementById("rate_save").onclick=()=>submitRating(p);
+  const del=document.getElementById("rate_del"); if(del) del.onclick=()=>deleteRating(p);
+}
+function renderRateStars(){ const el=document.getElementById("rate_stars"); if(!el)return;
+  el.innerHTML=[1,2,3,4,5].map(n=>`<span class="rstar${n<=RATE_STATE.my?" on":""}" data-n="${n}">★</span>`).join("");
+  el.querySelectorAll(".rstar").forEach(s=>s.onclick=()=>{ RATE_STATE.my=+s.dataset.n; renderRateStars(); }); }
+async function submitRating(p){ const m=document.getElementById("rate_msg");
+  if(!ACTIVE||!ACTIVE.id){ if(m)m.textContent="Switch to a staff profile to rate."; return; }
+  if(!RATE_STATE.my){ if(m)m.textContent="Pick 1–5 stars first."; return; }
+  const note=(document.getElementById("rate_note").value||"").trim();
+  const rec={sku:p.sku,catalog_source:p.catalog_source,store_id:ME.store_id,staff_id:ACTIVE.id,staff_name:(ACTIVE.name||"Staff").split(" ")[0],stars:RATE_STATE.my,review:note||null,updated_at:new Date().toISOString()};
+  if(m)m.textContent="Saving…";
+  const {error}=await sb.from("product_ratings").upsert(rec,{onConflict:"sku,catalog_source,staff_id"});
+  if(error){ m.textContent="Error: "+error.message; return; }
+  m.textContent="Saved!"; loadRatingBlock(p); }
+async function deleteRating(p){ if(!ACTIVE)return; const m=document.getElementById("rate_msg"); if(m)m.textContent="Removing…";
+  const {error}=await sb.from("product_ratings").delete().eq("sku",p.sku).eq("catalog_source",p.catalog_source).eq("staff_id",ACTIVE.id);
+  if(error){ m.textContent="Error: "+error.message; return; } loadRatingBlock(p); }
 function recompute(){
   const p1=parseFloat(d_p1.value)||0,p2=parseFloat(d_p2.value)||0,p3=parseFloat(d_p3.value)||0;
   const tt = d_tt.value.trim()===""? (p1+p2+p3) : parseFloat(d_tt.value);
