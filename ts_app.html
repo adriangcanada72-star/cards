@@ -1054,7 +1054,8 @@ function openDetail(p){
   document.getElementById("sheet").innerHTML=`<button class="close" onclick="closeDetail()">✕</button>
     <div class="phead"><div class="logobox">${lg?`<img src="${lg}">`:`<span class="logotext">${p.brand||"—"}</span>`}</div>
       <div class="ptitle"><h2>${p.name||"(no name)"}</h2><div class="muted">${p.brand||""} · ${p.category||""} · ${p.catalog_source}</div></div></div>
-    ${shortD?`<div class="shortdesc">${shortD}</div>`:""}
+    <div class="shortdesc" id="d_short_disp" style="${shortD?"":"display:none"}">${shortD||""}</div>
+    <div id="d_descedit"></div>
     <div id="d_rating"></div>
     <div style="display:flex;gap:8px;margin:10px 0 2px"><button class="printbtn" id="btnCard">🖨 Product Card</button><button class="printbtn" id="btnTag">🖨 Shelf Tag</button></div>
     <div class="sect">Terpene trio (catalog) — tap for detail</div>
@@ -1078,8 +1079,35 @@ function openDetail(p){
   document.getElementById("btnTag").onclick=()=>openCard(p,"tag");
   document.getElementById("ov").classList.add("on");
   loadRatingBlock(p);
+  loadDescBlock(p);
   requestAnimationFrame(()=>requestAnimationFrame(recompute)); // animate meters in from center
 }
+async function loadDescBlock(p){ const box=document.getElementById("d_descedit"); if(!box||!sb) return;
+  let ov={}; try{ const {data}=await sb.from("product_descriptions").select("*").eq("sku",p.sku).eq("catalog_source",p.catalog_source).maybeSingle(); ov=data||{}; }catch(e){}
+  const effShort=ov.short_desc||p.short_description||"";
+  const effLong=ov.long_desc||p.long_description||"";
+  p.short_description=effShort; p.long_description=effLong;  // so printed cards/tags use them
+  const disp=document.getElementById("d_short_disp"); if(disp){ disp.textContent=effShort; disp.style.display=effShort?"block":"none"; }
+  const has=effShort||effLong;
+  box.innerHTML=`<div class="mcard collapsed" style="margin:8px 0 0"><div class="mch" onclick="this.closest('.mcard').classList.toggle('collapsed')"><h3 style="font-size:14px">${has?"Edit descriptions":"➕ Add descriptions"} <span class="muted" style="font-weight:400;font-size:12px">· shared with all stores</span></h3><span class="mswitch"></span></div><div class="mbody">
+    <label class="afield">Short description</label><textarea class="ainput" id="dd_short" rows="2" maxlength="400">${escH(effShort)}</textarea>
+    <label class="afield" style="margin-top:8px">Long description</label><textarea class="ainput" id="dd_long" rows="6">${escH(effLong)}</textarea>
+    <div style="display:flex;gap:8px;align-items:center;margin-top:8px"><button class="syncbtn" id="dd_save">Save descriptions</button><span class="pmsg" id="dd_msg" style="margin:0"></span></div>
+    ${ov.updated_at?`<div class="revmeta" style="margin-top:6px">Last edited by ${escH(ov.edited_by_name||"staff")} · ${new Date(ov.updated_at).toLocaleDateString()}</div>`:""}
+  </div></div>`;
+  document.getElementById("dd_save").onclick=()=>saveDesc(p);
+}
+async function saveDesc(p){ const m=document.getElementById("dd_msg");
+  if(!ACTIVE||!ACTIVE.id){ if(m)m.textContent="Switch to a staff profile to edit."; return; }
+  const short=(document.getElementById("dd_short").value||"").trim();
+  const long=(document.getElementById("dd_long").value||"").trim();
+  const rec={sku:p.sku,catalog_source:p.catalog_source,store_id:ME.store_id,short_desc:short||null,long_desc:long||null,edited_by_name:(ACTIVE.name||"Staff").split(" ")[0],updated_at:new Date().toISOString()};
+  if(m)m.textContent="Saving…";
+  const {error}=await sb.from("product_descriptions").upsert(rec,{onConflict:"sku,catalog_source"});
+  if(error){ m.textContent="Error: "+error.message; return; }
+  m.textContent="Saved for all stores.";
+  p.short_description=short; p.long_description=long;
+  const disp=document.getElementById("d_short_disp"); if(disp){ disp.textContent=short; disp.style.display=short?"block":"none"; } }
 function starsHTML(v,small){ const r=Math.round(Number(v)||0); let h="";
   for(let i=1;i<=5;i++) h+=`<span class="star${small?" sm":""}${i<=r?" on":""}">★</span>`;
   return `<span class="stars">${h}</span>`; }
