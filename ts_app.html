@@ -1088,8 +1088,9 @@ async function loadDescBlock(p){ const box=document.getElementById("d_descedit")
   const effLong=ov.long_desc||p.long_description||"";
   p.short_description=effShort; p.long_description=effLong;  // so printed cards/tags use them
   const disp=document.getElementById("d_short_disp"); if(disp){ disp.textContent=effShort; disp.style.display=effShort?"block":"none"; }
-  const has=effShort||effLong;
-  box.innerHTML=`<div class="mcard collapsed" style="margin:8px 0 0"><div class="mch" onclick="this.closest('.mcard').classList.toggle('collapsed')"><h3 style="font-size:14px">${has?"Edit descriptions":"➕ Add descriptions"} <span class="muted" style="font-weight:400;font-size:12px">· shared with all stores</span></h3><span class="mswitch"></span></div><div class="mbody">
+  // Only offer the editor when a description is missing
+  if(effShort && effLong){ box.innerHTML=""; return; }
+  box.innerHTML=`<div class="mcard collapsed" style="margin:8px 0 0"><div class="mch" onclick="this.closest('.mcard').classList.toggle('collapsed')"><h3 style="font-size:14px">➕ Add descriptions <span class="muted" style="font-weight:400;font-size:12px">· shared with all stores</span></h3><span class="mswitch"></span></div><div class="mbody">
     <label class="afield">Short description</label><textarea class="ainput" id="dd_short" rows="2" maxlength="400">${escH(effShort)}</textarea>
     <label class="afield" style="margin-top:8px">Long description</label><textarea class="ainput" id="dd_long" rows="6">${escH(effLong)}</textarea>
     <div style="display:flex;gap:8px;align-items:center;margin-top:8px"><button class="syncbtn" id="dd_save">Save descriptions</button><span class="pmsg" id="dd_msg" style="margin:0"></span></div>
