@@ -868,7 +868,15 @@ function normTerp(n){ if(!n) return ""; if(_names.has(n)) return n;
   const s=h.replace(/^Alpha-/,"").replace(/^Beta-/,""); if(_names.has(s)) return s; return ""; }
 let BRANDS={}, TERPS={};
 async function loadBrands(){ if(!sb) return; const {data}=await sb.from("brands").select("name,logo_url"); if(data) data.forEach(b=>{ if(b.name) BRANDS[b.name.toLowerCase()]=b.logo_url; }); }
-async function loadTerps(){ if(!sb) return; const {data}=await sb.from("terpenes").select("*"); if(data) data.forEach(t=>TERPS[t.name]=t); }
+async function loadTerps(){ if(!sb) return; const {data}=await sb.from("terpenes").select("*"); if(data) data.forEach(t=>TERPS[t.name]=t); syncEngineFromTerps(); }
+// Make the analyzer engine use the Terpenes-table values (single source of truth)
+function syncEngineFromTerps(){ if(typeof _DBMAP==="undefined") return;
+  const num=(v,d)=>{ const n=parseFloat(v); return isNaN(n)?d:n; };
+  Object.values(TERPS).forEach(t=>{ const e=engName(t.name); const base=_DBMAP[e]||{threshold:0.05,volatility:0,density:0,clarity:0,aroma:""};
+    _DBMAP[e]={ cerebral:num(t.cerebral,0), somatic:num(t.somatic,0),
+      threshold:num(t.threshold_pct,base.threshold), volatility:num(t.volatility,base.volatility),
+      density:num(t.density,base.density), clarity:num(t.clarity,base.clarity),
+      aroma:(t.aroma_notes||base.aroma||"") }; }); }
 function brandLogo(name){ return name?BRANDS[name.toLowerCase()]||"":""; }
 let STORE={};
 async function loadStore(){ STORE={}; if(!ME||!ME.store_id) return; const {data}=await sb.from("stores").select("*").eq("id",ME.store_id).maybeSingle(); if(data) STORE=data; }
