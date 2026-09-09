@@ -1227,7 +1227,8 @@ function applySpecies(r,species){ const n=_speciesNudge(species); if(!n.c&&!n.s)
 let CUR_SPECIES="";
 function recompute(){
   const p1=parseFloat(d_p1.value)||0,p2=parseFloat(d_p2.value)||0,p3=parseFloat(d_p3.value)||0;
-  const tt = d_tt.value.trim()===""? (p1+p2+p3) : parseFloat(d_tt.value);
+  const _sp=p1+p2+p3;
+  const tt = d_tt.value.trim()!=="" ? parseFloat(d_tt.value) : (_sp>0?_sp:1.5);
   const thc = d_thc.value.trim()===""? 20 : parseFloat(d_thc.value);
   const i={t1:d_t1.value,t2:d_t2.value,t3:d_t3.value,p1:d_p1.value,p2:d_p2.value,p3:d_p3.value,thc:thc,cbd:d_cbd.value,totalTerp:tt};
   let r=computeTriax(i); r=applySpecies(r,CUR_SPECIES);
@@ -1266,12 +1267,19 @@ function openAnalyzer(){
   requestAnimationFrame(()=>requestAnimationFrame(acompute)); }
 function closeAnalyzer(){ document.getElementById("ova").classList.remove("on"); }
 function clearAnalyzer(){ ["a_t1","a_t2","a_t3","a_p1","a_p2","a_p3","a_thc","a_cbd","a_tt","a_species"].forEach(id=>document.getElementById(id).value=""); acompute(); }
+function engName(d){ if(!d) return d; const names=terpeneNames;
+  const cand=[d, d.replace(/_/g,"-"), d.replace(/-/g,"_"),
+    d.replace(/^(Alpha|Beta|Gamma|Delta)[-_]/i,""),
+    d.replace(/^(Alpha|Beta|Gamma|Delta)[-_]/i,"").replace(/_/g,"-"),
+    d.replace(/^(Alpha|Beta|Gamma|Delta)[-_]/i,"").replace(/-/g,"_")];
+  for(const c of cand){ if(names.includes(c)) return c; } return d; }
 function acompute(){
   const g=id=>document.getElementById(id);
   const p1=parseFloat(g("a_p1").value)||0,p2=parseFloat(g("a_p2").value)||0,p3=parseFloat(g("a_p3").value)||0;
-  const tt=g("a_tt").value.trim()===""?(p1+p2+p3):parseFloat(g("a_tt").value);
+  const sump=p1+p2+p3;
+  const tt=g("a_tt").value.trim()!==""?parseFloat(g("a_tt").value):(sump>0?sump:1.5);
   const thc=g("a_thc").value.trim()===""?20:parseFloat(g("a_thc").value);
-  const i={t1:g("a_t1").value,t2:g("a_t2").value,t3:g("a_t3").value,p1:g("a_p1").value,p2:g("a_p2").value,p3:g("a_p3").value,thc:thc,cbd:g("a_cbd").value,totalTerp:tt};
+  const i={t1:engName(g("a_t1").value),t2:engName(g("a_t2").value),t3:engName(g("a_t3").value),p1:g("a_p1").value,p2:g("a_p2").value,p3:g("a_p3").value,thc:thc,cbd:g("a_cbd").value,totalTerp:tt};
   let r=computeTriax(i); r=applySpecies(r,g("a_species").value);
   setMeter("a_cer",r.cerebral);setMeter("a_som",r.somatic);setMeter("a_ov",r.overall);
   aTerpImg("a_t1","a_img1");aTerpImg("a_t2","a_img2");aTerpImg("a_t3","a_img3");
