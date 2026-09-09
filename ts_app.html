@@ -1212,15 +1212,14 @@ function openAnalyzer(){
   document.getElementById("sheeta").innerHTML=`<button class="close" onclick="closeAnalyzer()">✕</button>
     <h2 style="margin:0 0 2px">Terpene Effect Analyzer</h2>
     <div class="muted" style="font-size:13px;margin-bottom:14px">Enter a terpene profile and cannabinoids to see the predicted effect. Nothing is saved.</div>
+    ${meterSkeleton("Cerebral","a_cer","cer")}${meterSkeleton("Somatic","a_som","som")}${meterSkeleton("Overall","a_ov","ov")}
+    <div id="a_out" style="margin-bottom:14px"></div>
     <div class="inrow"><span class="pos">1st</span><select id="a_t1">${opts}</select><input id="a_p1" type="number" step="0.01" placeholder="%"></div>
     <div class="inrow"><span class="pos">2nd</span><select id="a_t2">${opts}</select><input id="a_p2" type="number" step="0.01" placeholder="%"></div>
     <div class="inrow"><span class="pos">3rd</span><select id="a_t3">${opts}</select><input id="a_p3" type="number" step="0.01" placeholder="%"></div>
     <div class="chem"><div><label>THC %</label><input id="a_thc" type="number" step="0.1"></div><div><label>CBD %</label><input id="a_cbd" type="number" step="0.1"></div><div><label>Total terpenes %</label><input id="a_tt" type="number" step="0.1" placeholder="auto: sum above"></div></div>
     <div style="margin-top:10px"><label class="afield">Species (nudges the result for missing terpene data)</label>
       <select id="a_species" style="max-width:240px"><option value="">Hybrid — no nudge</option><option value="SATIVA">Sativa — nudge up</option><option value="INDICA">Indica — nudge down</option></select></div>
-    <div class="teahead">Predicted effect</div>
-    ${meterSkeleton("Cerebral","a_cer","cer")}${meterSkeleton("Somatic","a_som","som")}${meterSkeleton("Overall","a_ov","ov")}
-    <div id="a_out"></div>
     <button class="sirbtn alt" style="margin-top:14px" onclick="clearAnalyzer()">Clear</button>`;
   ["a_t1","a_t2","a_t3","a_p1","a_p2","a_p3","a_thc","a_cbd","a_tt","a_species"].forEach(id=>document.getElementById(id).addEventListener("input",acompute));
   document.getElementById("a_species").addEventListener("change",acompute);
