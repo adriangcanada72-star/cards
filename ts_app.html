@@ -157,6 +157,28 @@ nav a.navicon{font-size:26px;padding:10px 14px;line-height:1}
 .revtxt{margin:3px 0;color:#2c3a32}.revmeta{color:var(--muted);font-size:11px}
 .cardrate{display:flex;align-items:center;gap:6px;font-size:12px;margin-top:3px}
 .cardovrow{display:flex;gap:10px;margin:10px 0 2px}.cardovrow label{display:block;font-size:12px;color:var(--muted);margin-bottom:3px}.cardovrow input{width:100%}
+/* --- standalone analyzer --- */
+.amhead{display:flex;align-items:center;gap:14px;margin-bottom:6px}
+.amhead img{height:56px;flex:none}
+.amhead h2{margin:0;font-size:24px}.amhead .amsubtitle{color:var(--muted);font-size:13px}
+.amtag{margin-left:auto;text-align:right;color:var(--green);font-style:italic;font-weight:700;line-height:1.1;font-size:15px;opacity:.85}
+.amcard{background:linear-gradient(180deg,#f1f9f4,#e9f5ee);border:1px solid #d5e8dc;border-radius:16px;padding:14px 16px;margin:10px 0 14px}
+.amrow{display:flex;align-items:center;gap:14px;margin:12px 0}
+.amicon{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;color:#fff;flex:none;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+.amlabel{width:150px;flex:none}
+.amlabel .amname{font-weight:800;font-size:16px}.amlabel .amsub{font-size:12px;color:var(--muted)}
+.amtrack{flex:1;min-width:120px}
+.amval{width:64px;height:50px;flex:none;display:flex;align-items:center;justify-content:center;background:#fff;border:1px solid var(--line);border-radius:12px;font-size:24px;font-weight:800}
+.aprofile{display:flex;align-items:center;gap:10px;margin-top:8px}
+.potleaf{width:26px;height:26px;color:var(--green);flex:none;vertical-align:middle}
+.trow{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.trow select{flex:1;min-width:80px}.trow .tp{width:84px;flex:none}
+.tnum{width:34px;height:34px;border-radius:50%;color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none}
+.timg{width:46px;height:46px;border-radius:9px;object-fit:cover;background:#eef2f0;border:1px solid var(--line);flex:none}
+.timg.ph{background:#eef2f0}
+.chemcell{display:flex;align-items:center;gap:8px}
+.cbadge{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:11px;flex:none;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.speciesrow{display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap}
 .dstats{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0 14px}
 .dstat{flex:1;min-width:90px;background:#f6f9f7;border:1px solid var(--line);border-radius:10px;padding:10px 12px;text-align:center}
 .dstat b{display:block;font-size:22px;color:var(--txt)}.dstat span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
@@ -1207,22 +1229,38 @@ function recompute(){
   let r=computeTriax(i); r=applySpecies(r,CUR_SPECIES);
   setMeter("m_cer",r.cerebral);setMeter("m_som",r.somatic);setMeter("m_ov",r.overall);
   document.getElementById("d_out").innerHTML=`<div style="margin-top:14px">Profile: <span class="badge">${r.profile}</span></div><div class="strength">${r.strength||"Enter this batch's percentages to sharpen the prediction."}</div>`;}
+const POTLEAF='<svg class="potleaf" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c.6 1.9.7 3.9.3 5.8 1.2-1.4 2.7-2.5 4.4-3.2-.6 1.9-1.6 3.6-3 5 2-.6 4-.8 6-.6-1.6 1.3-3.5 2.2-5.5 2.7 1.9.4 3.7 1.2 5.3 2.4-2 .3-4 .2-5.9-.4 1.2 1.2 2.1 2.7 2.7 4.3-1.7-.7-3.2-1.8-4.4-3.2.1 1.1.1 2.2-.1 3.3H11.7c-.2-1.1-.2-2.2-.1-3.3-1.2 1.4-2.7 2.5-4.4 3.2.6-1.6 1.5-3.1 2.7-4.3-1.9.6-3.9.7-5.9.4 1.6-1.2 3.4-2 5.3-2.4-2-.5-3.9-1.4-5.5-2.7 2-.2 4 0 6 .6-1.4-1.4-2.4-3.1-3-5 1.7.7 3.2 1.8 4.4 3.2C11.3 5.9 11.4 3.9 12 2z"/></svg>';
+function aMeter(name,sub,id,emoji,bg){return `<div class="amrow"><div class="amicon" style="background:${bg}">${emoji}</div>
+  <div class="amlabel"><div class="amname">${name}</div><div class="amsub">${sub}</div></div>
+  <div class="amtrack"><div class="track"><div class="zero"></div><div class="fill" id="${id}_f"></div><div class="knob" id="${id}_k"></div></div><div class="ticks"><span>−5</span><span>0</span><span>+5</span></div></div>
+  <div class="amval" id="${id}_v">0</div></div>`;}
+function aTerpImg(sel,imgId){ const t=TERPS[(document.getElementById(sel)||{}).value]; const img=document.getElementById(imgId); if(!img)return;
+  if(t&&t.image_url){ img.src=t.image_url; img.classList.remove("ph"); } else { img.removeAttribute("src"); img.classList.add("ph"); } }
 function openAnalyzer(){
   const opts='<option value="">(none)</option>'+terpeneNames.map(n=>`<option>${n}</option>`).join("");
+  const logo=certLogoSrc();
   document.getElementById("sheeta").innerHTML=`<button class="close" onclick="closeAnalyzer()">✕</button>
-    <h2 style="margin:0 0 2px">Terpene Effect Analyzer</h2>
-    <div class="muted" style="font-size:13px;margin-bottom:14px">Enter a terpene profile and cannabinoids to see the predicted effect. Nothing is saved.</div>
-    ${meterSkeleton("Cerebral","a_cer","cer")}${meterSkeleton("Somatic","a_som","som")}${meterSkeleton("Overall","a_ov","ov")}
-    <div id="a_out" style="margin-bottom:14px"></div>
-    <div class="inrow"><span class="pos">1st</span><select id="a_t1">${opts}</select><input id="a_p1" type="number" step="0.01" placeholder="%"></div>
-    <div class="inrow"><span class="pos">2nd</span><select id="a_t2">${opts}</select><input id="a_p2" type="number" step="0.01" placeholder="%"></div>
-    <div class="inrow"><span class="pos">3rd</span><select id="a_t3">${opts}</select><input id="a_p3" type="number" step="0.01" placeholder="%"></div>
-    <div class="chem"><div><label>THC %</label><input id="a_thc" type="number" step="0.1"></div><div><label>CBD %</label><input id="a_cbd" type="number" step="0.1"></div><div><label>Total terpenes %</label><input id="a_tt" type="number" step="0.1" placeholder="auto: sum above"></div></div>
-    <div style="margin-top:10px"><label class="afield">Species (nudges the result for missing terpene data)</label>
-      <select id="a_species" style="max-width:240px"><option value="">Hybrid — no nudge</option><option value="SATIVA">Sativa — nudge up</option><option value="INDICA">Indica — nudge down</option></select></div>
-    <button class="sirbtn alt" style="margin-top:14px" onclick="clearAnalyzer()">Clear</button>`;
+    <div class="amhead">${logo?`<img src="${logo}">`:""}<div><h2>Terpene Effect Analyzer</h2><div class="amsubtitle">Enter a terpene profile and cannabinoids to see the predicted effect. Nothing is saved.</div></div><div class="amtag">Small Molecules<br>Big Effects</div></div>
+    <div class="amcard">
+      ${aMeter("Cerebral","Mental activity, focus, uplift","a_cer","🧠","#F58A34")}
+      ${aMeter("Somatic","Body relaxation, calm","a_som","🧘","#2b93cf")}
+      ${aMeter("Overall","Combined effect","a_ov","⚖️","#3a9d5f")}
+      <div id="a_out"></div>
+    </div>
+    <div class="trow"><span class="tnum" style="background:#3a9d5f">1</span><select id="a_t1">${opts}</select><input class="tp" id="a_p1" type="number" step="0.01" placeholder="%"><img class="timg ph" id="a_img1" alt=""></div>
+    <div class="trow"><span class="tnum" style="background:#2b93cf">2</span><select id="a_t2">${opts}</select><input class="tp" id="a_p2" type="number" step="0.01" placeholder="%"><img class="timg ph" id="a_img2" alt=""></div>
+    <div class="trow"><span class="tnum" style="background:#7a4fbf">3</span><select id="a_t3">${opts}</select><input class="tp" id="a_p3" type="number" step="0.01" placeholder="%"><img class="timg ph" id="a_img3" alt=""></div>
+    <div class="chem">
+      <div class="chemcell"><span class="cbadge" style="background:var(--red)">THC</span><div style="flex:1"><label>THC %</label><input id="a_thc" type="number" step="0.1"></div></div>
+      <div class="chemcell"><span class="cbadge" style="background:var(--green)">CBD</span><div style="flex:1"><label>CBD %</label><input id="a_cbd" type="number" step="0.1"></div></div>
+      <div class="chemcell"><span class="cbadge" style="background:#2b93cf">TERP</span><div style="flex:1"><label>Total terpenes %</label><input id="a_tt" type="number" step="0.1" placeholder="auto: sum above"></div></div>
+    </div>
+    <div class="speciesrow">${POTLEAF}<label class="afield" style="margin:0">Species <span class="muted" style="font-weight:400">(nudges for missing terpene data)</span></label>
+      <select id="a_species" style="max-width:220px"><option value="">Hybrid — no nudge</option><option value="SATIVA">Sativa — nudge up</option><option value="INDICA">Indica — nudge down</option></select></div>
+    <button class="sirbtn alt" style="margin-top:16px" onclick="clearAnalyzer()">Clear</button>`;
   ["a_t1","a_t2","a_t3","a_p1","a_p2","a_p3","a_thc","a_cbd","a_tt","a_species"].forEach(id=>document.getElementById(id).addEventListener("input",acompute));
   document.getElementById("a_species").addEventListener("change",acompute);
+  ["a_t1","a_t2","a_t3"].forEach(id=>document.getElementById(id).addEventListener("change",acompute));
   document.getElementById("ova").classList.add("on"); document.getElementById("ova").scrollTop=0;
   requestAnimationFrame(()=>requestAnimationFrame(acompute)); }
 function closeAnalyzer(){ document.getElementById("ova").classList.remove("on"); }
@@ -1235,7 +1273,8 @@ function acompute(){
   const i={t1:g("a_t1").value,t2:g("a_t2").value,t3:g("a_t3").value,p1:g("a_p1").value,p2:g("a_p2").value,p3:g("a_p3").value,thc:thc,cbd:g("a_cbd").value,totalTerp:tt};
   let r=computeTriax(i); r=applySpecies(r,g("a_species").value);
   setMeter("a_cer",r.cerebral);setMeter("a_som",r.somatic);setMeter("a_ov",r.overall);
-  g("a_out").innerHTML=`<div style="margin-top:14px">Profile: <span class="badge">${r.profile}</span></div><div class="strength">${r.strength||"Pick terpenes (and optional percentages) to see the prediction."}</div>`; }
+  aTerpImg("a_t1","a_img1");aTerpImg("a_t2","a_img2");aTerpImg("a_t3","a_img3");
+  g("a_out").innerHTML=`<div class="aprofile">${POTLEAF}<span style="font-weight:700">Profile:</span> <span class="badge" style="margin:0">${r.profile}</span></div><div class="strength">${r.strength||"Pick terpenes (and optional percentages) to see the prediction."}</div>`; }
 FILTERS.forEach(([k])=>document.getElementById("f_"+k).addEventListener("change",search));
 qEl.addEventListener("input",()=>{clearTimeout(timer);timer=setTimeout(search,250);});
 srcEl.addEventListener("change",search);
