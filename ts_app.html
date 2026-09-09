@@ -1014,11 +1014,14 @@ async function runSearch(){ if(!sb) return; updateBadge();
   renderPager(count);
   window._rows=data;
   listEl.innerHTML=data.map((p,i)=>{const sc=p.catalog_source==="Direct Delivery"?"dd":"bc";const lg=brandLogo(p.brand);
+    const sz=(p.consumer_item_size!=null&&p.consumer_item_size!=="")?(p.consumer_item_size+(p.consumer_item_size_uom?(" "+p.consumer_item_size_uom):"")):"";
+    const size=sz?((p.num_consumer_items&&p.num_consumer_items>1)?(p.num_consumer_items+" × "+sz):sz):"";
+    const srcLabel=p.catalog_source==="Direct Delivery"?"Direct":"BCLDB";
     return `<div class="pcard" data-i="${i}"><div class="lg">${lg?`<img src="${lg}">`:`<span class="logotext">${p.brand||"—"}</span>`}</div>
-      <div><div class="pname">${p.name||"(no name)"}</div><div class="pmeta">${p.brand||""} ${p.category?("· "+p.category):""}</div>
-      <div class="pmeta">${[p.terpene_1,p.terpene_2,p.terpene_3].filter(Boolean).join(", ")}</div>
+      <div><div class="pname">${p.name||"(no name)"}</div>
+      <div class="pmeta">${[p.category,size].filter(Boolean).join(" · ")||"&nbsp;"}</div>
       ${p.rating_count?`<div class="cardrate">${starsHTML(p.rating_avg)} <span class="muted">${Number(p.rating_avg).toFixed(1)} · ${p.rating_count}</span></div>`:""}
-      <span class="src ${sc}">${p.catalog_source}</span></div></div>`;}).join("")||'<div class="muted">No products match these filters.</div>';
+      <span class="src ${sc}">${srcLabel}</span></div></div>`;}).join("")||'<div class="muted">No products match these filters.</div>';
   document.querySelectorAll(".pcard").forEach(el=>el.onclick=()=>openDetail(window._rows[+el.dataset.i]));
 }
 function seg(a,c){let h="";for(let s=-5;s<=5;s++){const on=s===a?" "+c:"";h+=`<div class="seg${on}">${(s>0?"+":"")+s}</div>`;}return `<div class="scale">${h}</div>`;}
