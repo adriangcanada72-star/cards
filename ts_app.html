@@ -1093,15 +1093,15 @@ function openDetail(p){
     <div style="display:flex;gap:8px;margin:10px 0 2px"><button class="printbtn" id="btnCard">🖨 Product Card</button><button class="printbtn" id="btnTag">🖨 Shelf Tag</button></div>
     <div class="sect">Terpene trio (catalog) — tap for detail</div>
     ${[p.terpene_1,p.terpene_2,p.terpene_3].map(terpCardRaw).join("")||'<div class="muted">No terpenes listed.</div>'}
+    <div class="teahead">Terpene Effect Analyzer</div>
+    ${meterSkeleton("Cerebral","m_cer","cer")}${meterSkeleton("Somatic","m_som","som")}${meterSkeleton("Overall","m_ov","ov")}
+    <div id="d_out"></div>
     <div class="sect">This batch — enter from the package</div>
     <div class="inrow"><span class="pos">1st</span><select id="d_t1">${opts}</select><input id="d_p1" type="number" step="0.01" placeholder="%"></div>
     <div class="inrow"><span class="pos">2nd</span><select id="d_t2">${opts}</select><input id="d_p2" type="number" step="0.01" placeholder="%"></div>
     <div class="inrow"><span class="pos">3rd</span><select id="d_t3">${opts}</select><input id="d_p3" type="number" step="0.01" placeholder="%"></div>
     <div class="chem"><div><label>THC %</label><input id="d_thc" type="number" step="0.1"></div><div><label>CBD %</label><input id="d_cbd" type="number" step="0.1"></div><div><label>Total terpenes %</label><input id="d_tt" type="number" step="0.1" placeholder="auto: sum above"></div></div>
-    <div class="hint">THC pre-filled from the catalog midpoint; Total terpenes defaults to the sum of the three above. Adjust for this batch.</div>
-    <div class="teahead">Terpene Effect Analyzer</div>
-    ${meterSkeleton("Cerebral","m_cer","cer")}${meterSkeleton("Somatic","m_som","som")}${meterSkeleton("Overall","m_ov","ov")}
-    <div id="d_out"></div>
+    <div class="hint">THC pre-filled from the catalog midpoint; Total terpenes defaults to the sum of the three above. Adjust for this batch — the analyzer above updates live.</div>
     <div class="sect">Product details</div>
     <div class="kv">${kv("SKU",p.sku)}${kv("Catalog",p.catalog_source)}${kv("Category",p.category)}${kv("Strain type",p.species)}${kv("Extraction",p.extraction_process)}${kv("Growing",p.growing_method)}${kv("Harvesting",p.harvesting_method||raw.HARVESTING_METHOD)}${kv("Consumption",p.consumption_method)}${kv("Unit count",p.num_consumer_items)}${kv("Size / unit",sizeU||"—")}${kv("Province",p.origin_region)}${kv("Subregion",raw.ORIGIN_SUBREGION)}${kv("THC",thc)}${kv("CBD",cbd)}${kv("Lifecycle",p.lifecycle_status)}${shortD?`<div class="full">${kv("Short description",shortD)}</div>`:""}${p.long_description?`<div class="full">${kv("Description",p.long_description)}</div>`:""}</div>
     <div id="d_rating"></div>
