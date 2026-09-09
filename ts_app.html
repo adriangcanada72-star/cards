@@ -252,6 +252,9 @@ nav a.navicon svg{width:32px;height:32px}
 .staffbar{margin-left:auto;display:flex;align-items:center;gap:10px}
 .staffchip{background:#eaf5ee;border:1px solid #cfe9d8;color:#1f6b3f;border-radius:999px;padding:9px 18px;font-weight:700;font-size:17px}
 .lockbtn{background:#fff;color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:10px 18px;font-weight:600;font-size:17px;cursor:pointer}.lockbtn:hover{border-color:var(--btn);color:var(--btn-soft-txt)}
+.sirflag{display:inline-block;background:#fdecec;color:var(--red);border:1px solid #f2c3c3;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:800;cursor:pointer;animation:sirpulse 2s infinite}
+.sirflag:hover{background:#f8dede}
+@keyframes sirpulse{0%,100%{opacity:1}50%{opacity:.6}}
 .stafftiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:6px 0 4px}
 .stafftile{display:flex;flex-direction:column;gap:2px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 10px;cursor:pointer;font-weight:700}
 .stafftile:hover{border-color:var(--green);box-shadow:0 4px 14px rgba(0,0,0,.08)}
@@ -846,6 +849,7 @@ async function submitSIRQuiz(){
     const rec={store_id:ME.store_id, staff_id:ACTIVE.id, staff_name:ACTIVE.name, quiz_number:quiz.quiz, month_key:sirMonthKey(), score:score, passed:passed, answers:sel};
     const {error}=await sb.from("sir_attempts").insert(rec);
     if(error){ msg.textContent="Save error: "+error.message; return; }
+    checkSIRDue();
   }
   // build reviewed result
   const rev=quiz.questions.map((q,i)=>{
@@ -1599,8 +1603,13 @@ function renderBillingCard(manager){ const box=document.getElementById("billingB
 function lockStaff(){ showLock(); }
 function applyGating(){ const nm=document.getElementById("navManage"); if(nm) nm.style.display=(ACTIVE&&ACTIVE.role==="manager")?"inline-block":"none"; }
 function renderStaffBar(){ const el=document.getElementById("staffBar"); if(!el) return;
-  el.innerHTML= ACTIVE?`<span class="staffchip">${ACTIVE.name}${ACTIVE.role==="manager"?" · manager":""}</span><button class="lockbtn" id="lockBtn">Lock</button>`:"";
-  const lb=document.getElementById("lockBtn"); if(lb) lb.onclick=lockStaff; }
+  el.innerHTML= ACTIVE?`<span class="staffchip">${ACTIVE.name}${ACTIVE.role==="manager"?" · manager":""}</span><span id="sirFlag"></span><button class="lockbtn" id="lockBtn">Lock</button>`:"";
+  const lb=document.getElementById("lockBtn"); if(lb) lb.onclick=lockStaff;
+  checkSIRDue(); }
+async function checkSIRDue(){ const f=document.getElementById("sirFlag"); if(!f||!sb||!ACTIVE||!ACTIVE.id) return;
+  const {data}=await sb.from("sir_attempts").select("id").eq("staff_id",ACTIVE.id).eq("month_key",sirMonthKey()).limit(1);
+  if(!data||!data.length){ f.innerHTML=`<span class="sirflag" title="Monthly Selling It Right quiz not done yet — tap to take it" onclick="showView('sir')">⚑ SIR due</span>`; }
+  else { f.innerHTML=""; } }
 async function refreshManage(){
   await loadStoreStaff(); await loadStore();
   let storeName=""; if(ME.store_id){ const {data:st}=await sb.from("stores").select("name,store_number").eq("id",ME.store_id).maybeSingle(); if(st) storeName=`${st.name} (#${st.store_number})`; }
