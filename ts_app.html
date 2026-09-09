@@ -193,7 +193,7 @@ nav a.navicon{font-size:20px;padding:6px 10px;line-height:1}
 @keyframes pulse{0%{box-shadow:0 0 0 0 var(--gl)}70%{box-shadow:0 0 0 11px rgba(0,0,0,0)}100%{box-shadow:0 0 0 0 rgba(0,0,0,0)}}
 .ticks{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin:3px 4px 0}
 .mcard{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
-.mcard h3{margin:0 0 4px;font-size:16px}.mcard .sub{color:var(--muted);font-size:12px;margin-bottom:12px}
+.mcard h3{margin:0 0 4px;font-size:16px;text-transform:capitalize}.mcard .sub{color:var(--muted);font-size:12px;margin-bottom:12px}
 .mch{display:flex;justify-content:space-between;align-items:center;gap:10px;cursor:pointer}
 .mch h3{margin:0}
 .mcard.collapsed .mbody{display:none}
@@ -313,7 +313,7 @@ nav a.navicon{font-size:20px;padding:6px 10px;line-height:1}
  <div id="styleBox"></div>
  <div id="watermarkBox"></div>
  <div id="adminDashBox" style="display:none"></div>
- <div id="adminBox" style="display:none"><div class="mcard"><h3>Store applications — review</h3><div class="sub">Approve or reject BC retailer registrations. Check the store number and Selling It Right certificate before approving.</div><div id="adminList"></div></div></div>
+ <div id="adminBox" style="display:none"><div class="mcard"><div class="mch" onclick="this.closest('.mcard').classList.toggle('collapsed')"><h3>Store applications — review</h3><span class="mswitch"></span></div><div class="mbody"><div class="sub">Approve or reject BC retailer registrations. Check the store number and Selling It Right certificate before approving.</div><div id="adminList"></div></div></div></div>
  <div id="adminCodesBox" style="display:none"></div>
  <div id="syncWrap">
  <div class="mcard collapsed"><div class="mch" onclick="this.closest('.mcard').classList.toggle('collapsed')"><h3>BCLDB — Central Delivery catalog</h3><span class="mswitch"></span></div><div class="mbody"><div class="sub">Upload the weekly BCLDB Central Delivery export (.csv). Adds &amp; updates products and removes SKUs no longer in the file. Direct Delivery products are untouched.</div>
@@ -1524,12 +1524,12 @@ function renderBillingCard(manager){ const box=document.getElementById("billingB
   const label = s.comped ? ("Comped — free access"+(s.comp_expires_at?(" until "+new Date(s.comp_expires_at).toLocaleDateString()):"")) : (s.subscription_status||"none");
   const trial = (s.subscription_status==="trialing"&&s.trial_ends_at) ? (" · trial ends "+new Date(s.trial_ends_at).toLocaleDateString()) : "";
   const renew = (s.subscription_status==="active"&&s.current_period_end) ? (" · renews "+new Date(s.current_period_end).toLocaleDateString()) : "";
-  box.innerHTML=`<div class="mcard"><h3>Billing &amp; subscription</h3>
+  box.innerHTML=`<div class="mcard"><div class="mch" onclick="this.closest('.mcard').classList.toggle('collapsed')"><h3>Billing &amp; subscription</h3><span class="mswitch"></span></div><div class="mbody">
     <div class="sub">Status: <b>${label}${trial}${renew}</b></div>
     ${s.comped?"":`<div class="mrow"><button class="syncbtn" id="bl_sub">${s.stripe_subscription_id?"Manage subscription":"Subscribe"}</button></div>`}
     <div class="afield" style="margin-top:12px">Access code</div>
     <div class="mrow"><input id="bill_code" placeholder="Enter access code" style="flex:1;min-width:160px"><button class="syncbtn" id="bl_code">Apply</button></div>
-    <div class="pmsg" id="bill_msg"></div></div>`;
+    <div class="pmsg" id="bill_msg"></div></div></div>`;
   const bs=document.getElementById("bl_sub"); if(bs) bs.onclick=()=> s.stripe_subscription_id?startPortal():startCheckout();
   document.getElementById("bl_code").onclick=redeemAccessCode; }
 function lockStaff(){ showLock(); }
@@ -1540,9 +1540,9 @@ function renderStaffBar(){ const el=document.getElementById("staffBar"); if(!el)
 async function refreshManage(){
   await loadStoreStaff(); await loadStore();
   let storeName=""; if(ME.store_id){ const {data:st}=await sb.from("stores").select("name,store_number").eq("id",ME.store_id).maybeSingle(); if(st) storeName=`${st.name} (#${st.store_number})`; }
-  document.getElementById("acctBox").innerHTML=`<div class="mcard"><h3>Account</h3>
+  document.getElementById("acctBox").innerHTML=`<div class="mcard"><div class="mch" onclick="this.closest('.mcard').classList.toggle('collapsed')"><h3>Account</h3><span class="mswitch"></span></div><div class="mbody">
     <div class="kv"><div><div class="k">Signed-in email</div><div class="v">${ME.email||""}</div></div><div><div class="k">Active staff</div><div class="v">${ACTIVE?ACTIVE.name+" · "+ACTIVE.role:"—"}</div></div>${storeName?`<div class="full"><div class="k">Store</div><div class="v">${storeName}</div></div>`:""}</div>
-    <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="clearbtn" id="acctLock">Lock / switch staff</button><button class="clearbtn" id="acctOut">Sign out store</button></div></div>`;
+    <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="clearbtn" id="acctLock">Lock / switch staff</button><button class="clearbtn" id="acctOut">Sign out store</button></div></div></div>`;
   document.getElementById("acctLock").onclick=lockStaff;
   document.getElementById("acctOut").onclick=signOut;
   const manager=(ACTIVE&&ACTIVE.role==="manager");
@@ -1568,13 +1568,13 @@ async function refreshManage(){
 }
 function renderStaffCard(manager){ const box=document.getElementById("inviteBox");
   if(!manager || !ME.store_id){ box.innerHTML=""; return; }
-  box.innerHTML=`<div class="mcard"><h3>Staff</h3><div class="sub">Add team members with a 4-digit PIN — they switch by PIN on this device. Add yourself as a Manager first so you can always get back in.</div>
+  box.innerHTML=`<div class="mcard"><div class="mch" onclick="this.closest('.mcard').classList.toggle('collapsed')"><h3>Staff</h3><span class="mswitch"></span></div><div class="mbody"><div class="sub">Add team members with a 4-digit PIN — they switch by PIN on this device. Add yourself as a Manager first so you can always get back in.</div>
     <div id="staffList"></div>
     <div class="afield" style="margin-top:10px">Add staff</div>
     <div class="mrow"><input class="ainput" id="st_name" placeholder="Name" style="flex:2;margin:0">
       <select id="st_role" class="ainput" style="flex:1;margin:0"><option value="staff">Staff</option><option value="manager">Manager</option></select>
       <input class="ainput" id="st_pin" inputmode="numeric" maxlength="4" placeholder="PIN" style="flex:1;margin:0">
-      <button class="syncbtn" id="st_add">Add</button></div><div class="pmsg" id="st_msg"></div></div>`;
+      <button class="syncbtn" id="st_add">Add</button></div><div class="pmsg" id="st_msg"></div></div></div>`;
   renderStaffList(); document.getElementById("st_add").onclick=addStaff;
 }
 function renderStaffList(){ const l=document.getElementById("staffList"); if(!l) return;
@@ -1642,9 +1642,9 @@ async function renderStoreDash(){ const box=document.getElementById("adminDashBo
       <td><span class="dpill ${a.c}">${escH(a.t)}</span></td>
       <td>${b.staff}</td><td>${b.cert}/${b.staff}</td><td>${b.sir.size}/${b.staff}</td></tr>`;
   }).join("")||`<tr><td colspan="5" class="muted">No stores yet.</td></tr>`;
-  box.innerHTML=`<div class="mcard"><h3>Store dashboard</h3>
+  box.innerHTML=`<div class="mcard"><div class="mch" onclick="this.closest('.mcard').classList.toggle('collapsed')"><h3>Store dashboard</h3><span class="mswitch"></span></div><div class="mbody">
     <div class="dstats"><div class="dstat"><b>${stores.length}</b><span>stores</span></div><div class="dstat"><b>${paid}</b><span>paid/comped</span></div><div class="dstat"><b>${totStaff}</b><span>staff</span></div><div class="dstat"><b>${totCert}</b><span>certified</span></div></div>
-    <div class="dtablewrap"><table class="dtable"><thead><tr><th>Store</th><th>Access</th><th>Staff</th><th>Certified</th><th>SIR this mo.</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+    <div class="dtablewrap"><table class="dtable"><thead><tr><th>Store</th><th>Access</th><th>Staff</th><th>Certified</th><th>SIR this mo.</th></tr></thead><tbody>${rows}</tbody></table></div></div></div>`;
 }
 async function renderAccessCodes(){ const box=document.getElementById("adminCodesBox"); if(!box) return;
   if(!ME||ME.role!=="admin"){ box.style.display="none"; box.innerHTML=""; return; }
@@ -1654,11 +1654,11 @@ async function renderAccessCodes(){ const box=document.getElementById("adminCode
   const rows=(data||[]).map(c=>`<div class="mrow" style="justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding:6px 0;gap:8px">
     <span><b>${escH(c.code)}</b>${c.note?` · <span class="muted">${escH(c.note)}</span>`:""} · ${durTxt(c.duration_months)} · ${c.uses||0}${c.max_uses!=null?("/"+c.max_uses):""} used${c.active?"":` · <span class="hf">inactive</span>`}</span>
     <button class="clearbtn" data-tog="${c.id}" data-a="${c.active?1:0}">${c.active?"Disable":"Enable"}</button></div>`).join("")||'<div class="pmeta muted">No codes yet.</div>';
-  box.innerHTML=`<div class="mcard"><h3>Access codes</h3><div class="sub">Create codes that unlock the app for a store (free / comped access), optionally for a set period.</div>
+  box.innerHTML=`<div class="mcard"><div class="mch" onclick="this.closest('.mcard').classList.toggle('collapsed')"><h3>Access codes</h3><span class="mswitch"></span></div><div class="mbody"><div class="sub">Create codes that unlock the app for a store (free / comped access), optionally for a set period.</div>
     <div class="mrow"><input id="ac_code" placeholder="CODE" style="flex:1;min-width:150px"><input id="ac_note" placeholder="Note (optional)" style="flex:1;min-width:130px"></div>
     <div class="mrow" style="margin-top:8px"><select id="ac_dur" style="width:170px"><option value="">No expiry</option><option value="1">1 month</option><option value="3">3 months</option><option value="6">6 months</option><option value="12">12 months</option></select><input id="ac_max" type="number" min="1" placeholder="Max uses (blank = ∞)" style="width:170px"><button class="syncbtn" id="ac_add">Create</button></div>
     <div class="pmsg" id="ac_msg"></div>
-    <div style="margin-top:10px">${rows}</div></div>`;
+    <div style="margin-top:10px">${rows}</div></div></div>`;
   document.getElementById("ac_add").onclick=addAccessCode;
   box.querySelectorAll("button[data-tog]").forEach(b=>b.onclick=async()=>{ const {error}=await sb.from("access_codes").update({active:b.dataset.a!=="1"}).eq("id",b.dataset.tog); if(!error) renderAccessCodes(); }); }
 async function addAccessCode(){ const m=document.getElementById("ac_msg");
