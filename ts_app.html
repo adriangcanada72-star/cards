@@ -1062,7 +1062,8 @@ async function runSearch(){ if(!sb) return; updateBadge();
   window._rows=data;
   listEl.innerHTML=data.map((p,i)=>{const sc=p.catalog_source==="Direct Delivery"?"dd":"bc";const lg=brandLogo(p.brand);
     const sz=(p.consumer_item_size!=null&&p.consumer_item_size!=="")?(p.consumer_item_size+(p.consumer_item_size_uom?(" "+p.consumer_item_size_uom):"")):"";
-    const size=sz?((p.num_consumer_items&&p.num_consumer_items>1)?(p.num_consumer_items+" × "+sz):sz):"";
+    let size=sz?((p.num_consumer_items&&p.num_consumer_items>1)?(p.num_consumer_items+" × "+sz):sz):"";
+    if(p.catalog_source==="Direct Delivery"){ const _m=((p.short_description||"")+"").match(/(\d+)\s*[xX×]\s*([\d.]+)\s*G\b/); if(_m) size=_m[1]+" × "+_m[2]+" GRAM"; }
     const srcLabel=p.catalog_source==="Direct Delivery"?"Direct":"BCLDB";
     return `<div class="pcard" data-i="${i}"><div class="lg">${lg?`<img src="${lg}">`:`<span class="logotext">${p.brand||"—"}</span>`}</div>
       <div><div class="pname">${p.name||"(no name)"}</div>
