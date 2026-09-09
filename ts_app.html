@@ -1109,7 +1109,7 @@ function openTerpResearch(){
 function openDetail(p){
   CUR_SPECIES=p.species||"";
   const raw=p.raw||{}; const shortD=p.short_description||raw.ECOMM_SHORT_DESCRIPTION||raw.Short_Desc_Final||"";
-  const seed=[normTerp(p.terpene_1),normTerp(p.terpene_2),normTerp(p.terpene_3)];
+  const seed=[normTerp(p.terpene_1)||engName(p.terpene_1),normTerp(p.terpene_2)||engName(p.terpene_2),normTerp(p.terpene_3)||engName(p.terpene_3)].map(x=>terpeneNames.includes(x)?x:"");
   const opts='<option value="">(none)</option>'+terpeneNames.map(n=>`<option>${n}</option>`).join("");
   const lg=brandLogo(p.brand);
   const thc=cannab(p.thc_min,p.thc_max,raw.PER_RETAIL_UNIT_THC_UOM); const cbd=cannab(p.cbd_min,p.cbd_max,raw.PER_RETAIL_UNIT_CBD_UOM);
