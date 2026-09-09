@@ -296,7 +296,7 @@ nav a.navicon{font-size:20px;padding:6px 10px;line-height:1}
  <div class="fcol fav"><div class="fhead"><span class="ficon fav"><svg viewBox="0 0 24 24" fill="#2f7d4f"><path d="M12 2.5l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.9 6.2 20.9l1.1-6.5L2.6 9.35l6.5-.95z"/></svg></span><span><div class="t">Favorite terpenes</div><div class="s">show products featuring these</div></span></div><div class="chips" id="favBox"></div><select id="addFav"></select></div>
  <div class="fcol avoid"><div class="fhead"><span class="ficon avoid"><svg viewBox="0 0 24 24" fill="none" stroke="#c14848" stroke-width="2.2"><circle cx="12" cy="12" r="8.5"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span><span><div class="t">Avoid terpenes</div><div class="s">hide products containing these</div></span></div><div class="chips" id="avoidBox"></div><select id="addAvoid"></select></div>
 </div>
-<div class="controls"><input id="q" placeholder="Search product or brand…"><select id="src"><option value="">All sources</option><option>BCLDB</option><option>Direct Delivery</option></select><select id="sortsel"><option value="name">Sort: Alphabetical</option><option value="sku" selected>Sort: SKU</option><option value="rating_avg">Sort: Rating</option></select><button class="clearbtn" id="sortdir" title="Reverse sort order">A→Z ↓</button><span class="gridpick" id="gridpick"></span></div>
+<div class="controls"><input id="q" placeholder="Search product or brand…"><select id="src"><option value="">All sources</option><option>BCLDB</option><option>Direct Delivery</option><option value="__removed__">Removed SKUs</option></select><select id="sortsel"><option value="name">Sort: Alphabetical</option><option value="sku" selected>Sort: SKU</option><option value="rating_avg">Sort: Rating</option></select><button class="clearbtn" id="sortdir" title="Reverse sort order">A→Z ↓</button><span class="gridpick" id="gridpick"></span></div>
 <div class="rowline"><button class="ftoggle" id="filterToggle">☰ Filters<span class="badge" id="fcount" style="display:none"></span></button><button class="clearbtn" id="clearAll">✕ Clear all</button></div>
 <div class="filters" id="filters" style="display:none"></div>
 <div id="count" class="muted" style="font-size:12px;margin-bottom:8px"></div>
@@ -1003,7 +1003,8 @@ async function runSearch(){ if(!sb) return; updateBadge();
   const from=(PAGE-1)*PER, to=from+PER-1;
   let q=sb.from("products").select("*",{count:"exact"}).order(sortField,{ascending:SORT_ASC}).range(from,to);
   const term=qEl.value.trim(); if(term) q=q.or(`name.ilike.%${term}%,brand.ilike.%${term}%`);
-  if(srcEl.value) q=q.eq("catalog_source",srcEl.value);
+  if(srcEl.value==="__removed__"){ q=q.not("removed_at","is",null); }
+  else { q=q.is("removed_at",null); if(srcEl.value) q=q.eq("catalog_source",srcEl.value); }
   for(const [k] of FILTERS){ const v=document.getElementById("f_"+k).value; if(v) q=q.eq(FIELDMAP[k],v); }
   if(FAV.length) q=q.or(FAV.map(t=>`all_terpenes.ilike.%${t.toLowerCase()}%`).join(","));
   for(const t of AVOID) q=q.not("all_terpenes","ilike",`%${t.toLowerCase()}%`);
@@ -1262,7 +1263,7 @@ function mapRow(r,source,batch){
     harvesting_method:r.HARVESTING_METHOD||null, consumption_method:r.CONSUMPTION_METHOD||null,
     packaging_material:r.PACKAGING_MATERIAL||null, strain:r.STRAIN||null,
     all_terpenes:[t1,t2,t3].filter(Boolean).join("|").toLowerCase(),
-    raw:r, import_batch:batch };
+    raw:r, import_batch:batch, removed_at:null };
 }
 async function runSync(source, fileId, barId, msgId, btnId){
   const fileEl=document.getElementById(fileId), bar=document.getElementById(barId), msg=document.getElementById(msgId), btn=document.getElementById(btnId);
@@ -1288,10 +1289,10 @@ async function runSync(source, fileId, barId, msgId, btnId){
       if(error){ setP(0,"Error: "+error.message); btn.disabled=false; return; }
       done+=chunk.length; setP(Math.round(done/mapped.length*86)+8, `Updating products… ${done} / ${mapped.length}`);
     }
-    setP(95,"Removing products no longer in the file…");
-    const {data:del,error:e2}=await sb.from("products").delete().eq("catalog_source",source).neq("import_batch",batch).select("sku");
-    if(e2){ setP(0,"Error removing old: "+e2.message); btn.disabled=false; return; }
-    setP(100, `Done — ${mapped.length} products synced${del?`, ${del.length} removed`:""}.`);
+    setP(95,"Flagging products no longer in the file…");
+    const {data:del,error:e2}=await sb.from("products").update({removed_at:new Date().toISOString()}).eq("catalog_source",source).neq("import_batch",batch).is("removed_at",null).select("sku");
+    if(e2){ setP(0,"Error flagging removed: "+e2.message); btn.disabled=false; return; }
+    setP(100, `Done — ${mapped.length} products synced${del&&del.length?`, ${del.length} moved to Removed SKUs`:""}.`);
     if(typeof search==="function") search();
   }catch(err){ setP(0,"Error: "+(err&&err.message||err)); }
   btn.disabled=false;
