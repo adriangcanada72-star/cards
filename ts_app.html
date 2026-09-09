@@ -1123,10 +1123,11 @@ function openTerpResearch(){
       <div class="rnote">${escH(r.note)}</div>${rLinks(r.links)}</div>`;
   }
   document.getElementById("sheett").innerHTML=`<button class="close" onclick="closeTerp()">✕</button>
-    <h2 style="margin:0 0 8px">Terpene Effect Analyzer — Research Behind the Ratings</h2>
+    <h2 style="margin:0 0 8px;padding-right:48px">Terpene Effect Analyzer — Research Behind the Ratings</h2>
     <div class="rintro">${RESEARCH_INTRO}</div>
     ${body}
-    <div class="rgrp">Bottom line</div><div class="rnote" style="margin-bottom:6px">${RESEARCH_BOTTOM}</div>`;
+    <div class="rgrp">Bottom line</div><div class="rnote" style="margin-bottom:6px">${RESEARCH_BOTTOM}</div>
+    <button class="sirbtn alt" style="margin-top:16px" onclick="closeTerp()">Close</button>`;
   document.getElementById("ovt").classList.add("on"); document.getElementById("ovt").scrollTop=0; }
 function openDetail(p){
   CUR_SPECIES=p.species||"";
