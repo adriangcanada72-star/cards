@@ -203,8 +203,12 @@ nav a.navicon svg{width:32px;height:32px}
 .rlinks{margin:8px 0 0 18px;padding:0}.rlinks li{font-size:13px;margin:4px 0}
 .rlinks a{color:var(--green);word-break:break-word}
 .rtag{font-weight:800;color:var(--muted);font-size:11px}
-.rintro{font-size:13px;color:#44514a;line-height:1.6;background:#f6f9f7;border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:14px}
-.rintro a{color:var(--green)}
+.rintro{font-size:13.5px;color:#3a463f;line-height:1.6;background:#f6f9f7;border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:16px}
+.rintro p{margin:0 0 10px}.rintro a{color:var(--green);font-weight:600}
+.rintro .tierkey{display:flex;flex-direction:column;gap:8px;margin:12px 0;padding:12px 14px;background:#fff;border:1px solid var(--line);border-radius:10px}
+.rintro .tierrow{display:flex;align-items:center;gap:10px}
+.rintro .tierrow .rtier{flex:none;min-width:78px;text-align:center}
+.rintro .rfootnote{margin:0;font-size:12px;color:var(--muted)}
 .rgrp{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--green);margin:18px 0 8px;border-top:1px solid var(--line);padding-top:12px}
 .rentry{border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px;background:#fff}
 .rehead{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:5px}
@@ -1103,7 +1107,12 @@ function terpResearchHTML(name){ const r=TERP_RESEARCH[name]; if(!r) return "";
   return `<div class="sect">Research behind the rating</div>
     <div class="tresearch"><div class="rtop">${tierBadge(r.tier)}<span class="rscore">Cerebral ${rSign(r.cer)} · Somatic ${rSign(r.som)}</span></div>
     <div class="rnote">${escH(r.note)}</div>${rLinks(r.links)}</div>`; }
-const RESEARCH_INTRO=`For each terpene: the current Cerebral / Somatic score, a one-line rationale, and the strongest supporting research. Human clinical data on isolated terpenes is thin — most is animal or in-vitro work at doses far above a joint — so these are directional, evidence-informed calls, not settled clinical fact. Evidence tiers: <b>[Direct]</b> a study on that terpene showing the effect; <b>[Mechanism]</b> a receptor/binding study explaining the direction; <b>[Inferred]</b> little direct research, rated by chemical family, structure or aroma. Foundational review throughout: Russo EB (2011), <i>Taming THC</i>, Br J Pharmacol — <a href="https://bpspubs.onlinelibrary.wiley.com/doi/full/10.1111/j.1476-5381.2011.01238.x" target="_blank" rel="noopener">link</a>.`;
+const RESEARCH_INTRO=`<p>For each terpene: its current <b>Cerebral / Somatic</b> score, a one-line rationale, and the strongest supporting research.</p>
+<p>Human clinical data on isolated terpenes is thin — most is animal or in-vitro work at doses far above a joint — so these are <b>directional, evidence-informed calls</b>, not settled clinical fact.</p>
+<div class="tierkey"><div class="tierrow"><span class="rtier rt-d">Direct</span> a study on that terpene showing the effect</div>
+<div class="tierrow"><span class="rtier rt-m">Mechanism</span> a receptor / binding study explaining the direction</div>
+<div class="tierrow"><span class="rtier rt-i">Inferred</span> little direct research — rated by chemical family, structure, or aroma</div></div>
+<p class="rfootnote">Foundational review throughout: Russo EB (2011), <i>Taming THC</i>, Br J Pharmacol — <a href="https://bpspubs.onlinelibrary.wiley.com/doi/full/10.1111/j.1476-5381.2011.01238.x" target="_blank" rel="noopener">link</a>.</p>`;
 const RESEARCH_BOTTOM=`The terpenes with <b>[Direct]</b> studies — limonene, α-pinene, eucalyptol, terpinolene, myrcene, linalool, nerolidol, caryophyllene, bisabolol, humulene, borneol, menthol/geraniol, terpineol — are the best-defensible ratings. The <b>[Inferred]</b> ones (mostly the rarer mono- and sesquiterpenes) rest on family/aroma analogy and broad review papers, so they're the first place to soften a claim if a customer or regulator pushes back.`;
 function openTerpResearch(){
   const groups={up:"Uplifting / alerting (Cerebral-positive)",nuanced:"The nuanced one",calm:"Relaxing / body / sedating (Somatic-negative)",neutral:"Neutral (no clear directional signal)"};
