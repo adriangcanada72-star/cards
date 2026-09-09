@@ -14,7 +14,7 @@
 :root{--bg:#f5f7f6;--panel:#ffffff;--line:#e2e8e4;--txt:#14201a;--muted:#66756c;--green:#2f7d4f;--btn:#43a66d;--btn-h:#3a915e;--btn-soft:#eef7f1;--btn-soft-line:#c4e3d1;--btn-soft-txt:#2c7a4f;--red:#c14848;--cer:#2b93cf;--som:#e07a1c;--gold:#c99a2f;}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;line-height:1.45}
 button,input,select,textarea{font-family:inherit}
-.wrap{max-width:none;margin:0;padding:18px 48px}
+.wrap{max-width:none;margin:0;padding:0 48px 18px}
 .topbar{position:sticky;top:0;z-index:40;background:var(--bg);display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin:0 -48px 16px;padding:10px 48px 12px;border-bottom:1px solid var(--line)}
 .topbar img.logo{height:96px;justify-self:start}
 .topbar .staffbar{margin-left:0;justify-self:end}
@@ -1108,7 +1108,8 @@ function openDetail(p){
     <div class="sect">Product details</div>
     <div class="kv">${kv("SKU",p.sku)}${kv("Catalog",p.catalog_source)}${kv("Category",p.category)}${kv("Strain type",p.species)}${kv("Extraction",p.extraction_process)}${kv("Growing",p.growing_method)}${kv("Harvesting",p.harvesting_method||raw.HARVESTING_METHOD)}${kv("Consumption",p.consumption_method)}${kv("Unit count",p.num_consumer_items)}${kv("Size / unit",sizeU||"—")}${kv("Province",p.origin_region)}${kv("Subregion",raw.ORIGIN_SUBREGION)}${kv("THC",thc)}${kv("CBD",cbd)}${kv("Lifecycle",p.lifecycle_status)}${shortD?`<div class="full">${kv("Short description",shortD)}</div>`:""}${p.long_description?`<div class="full">${kv("Description",p.long_description)}</div>`:""}</div>
     <div id="d_rating"></div>
-    <div id="d_descedit"></div>`;
+    <div id="d_descedit"></div>
+    <button class="sirbtn alt" style="margin-top:16px" onclick="closeDetail()">Close</button>`;
   document.getElementById("d_t1").value=seed[0];document.getElementById("d_t2").value=seed[1];document.getElementById("d_t3").value=seed[2];
   const _thcMid=cannabMid(p.thc_min,p.thc_max,raw.PER_RETAIL_UNIT_THC_UOM); if(_thcMid!=null) document.getElementById("d_thc").value=_thcMid;
   const _cbdMid=cannabMid(p.cbd_min,p.cbd_max,raw.PER_RETAIL_UNIT_CBD_UOM); if(_cbdMid!=null) document.getElementById("d_cbd").value=_cbdMid;
