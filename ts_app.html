@@ -1257,7 +1257,7 @@ function openAnalyzer(){
     <div class="trow"><select id="a_t2">${opts}</select><input class="tp" id="a_p2" type="number" step="0.01" placeholder="%"><img class="timg ph" id="a_img2" alt=""></div>
     <div class="trow"><select id="a_t3">${opts}</select><input class="tp" id="a_p3" type="number" step="0.01" placeholder="%"><img class="timg ph" id="a_img3" alt=""></div>
     <div class="chem"><div><label>THC %</label><input id="a_thc" type="number" step="0.1"></div><div><label>CBD %</label><input id="a_cbd" type="number" step="0.1"></div><div><label>Total terpenes %</label><input id="a_tt" type="number" step="0.1" placeholder="auto: sum above"></div></div>
-    <div class="speciesrow">${POTLEAF}<label class="afield" style="margin:0">Species <span class="muted" style="font-weight:400">(nudges for missing terpene data)</span></label>
+    <div class="speciesrow"><label class="afield" style="margin:0">Species <span class="muted" style="font-weight:400">(nudges for missing terpene data)</span></label>
       <select id="a_species" style="max-width:220px"><option value="">Hybrid — no nudge</option><option value="SATIVA">Sativa — nudge up</option><option value="INDICA">Indica — nudge down</option></select></div>
     <button class="sirbtn alt" style="margin-top:16px" onclick="clearAnalyzer()">Clear</button>`;
   ["a_t1","a_t2","a_t3","a_p1","a_p2","a_p3","a_thc","a_cbd","a_tt","a_species"].forEach(id=>document.getElementById(id).addEventListener("input",acompute));
@@ -1283,7 +1283,7 @@ function acompute(){
   let r=computeTriax(i); r=applySpecies(r,g("a_species").value);
   setMeter("a_cer",r.cerebral);setMeter("a_som",r.somatic);setMeter("a_ov",r.overall);
   aTerpImg("a_t1","a_img1");aTerpImg("a_t2","a_img2");aTerpImg("a_t3","a_img3");
-  g("a_out").innerHTML=`<div class="aprofile">${POTLEAF}<span style="font-weight:700">Profile:</span> <span class="badge" style="margin:0">${r.profile}</span></div><div class="strength">${r.strength||"Pick terpenes (and optional percentages) to see the prediction."}</div>`; }
+  g("a_out").innerHTML=`<div class="aprofile"><span style="font-weight:700">Profile:</span> <span class="badge" style="margin:0">${r.profile}</span></div><div class="strength">${r.strength||"Pick terpenes (and optional percentages) to see the prediction."}</div>`; }
 FILTERS.forEach(([k])=>document.getElementById("f_"+k).addEventListener("change",search));
 qEl.addEventListener("input",()=>{clearTimeout(timer);timer=setTimeout(search,250);});
 srcEl.addEventListener("change",search);
