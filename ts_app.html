@@ -1091,7 +1091,6 @@ function openDetail(p){
   document.getElementById("sheet").innerHTML=`<button class="close" onclick="closeDetail()">✕</button>
     <div class="phead"><div class="logobox">${lg?`<img src="${lg}">`:`<span class="logotext">${p.brand||"—"}</span>`}</div>
       <div class="ptitle"><h2>${p.name||"(no name)"}</h2><div class="muted">${[p.brand,p.category,sizeU,p.catalog_source].filter(Boolean).join(" · ")}</div></div></div>
-    <div class="shortdesc" id="d_short_disp" style="${shortD?"":"display:none"}">${shortD||""}</div>
     <div class="mcard collapsed" style="margin:10px 0 2px"><div class="mch" onclick="this.closest('.mcard').classList.toggle('collapsed')"><h3 style="font-size:14px">THC / CBD On Card &amp; Tag</h3><span class="mswitch"></span></div><div class="mbody">
       <div class="cardovrow"><div style="flex:1"><label>THC on card/tag</label><input id="cardov_thc" placeholder="auto (${thc})"></div><div style="flex:1"><label>CBD on card/tag</label><input id="cardov_cbd" placeholder="auto (${cbd})"></div></div>
       <div class="hint">Optional — overrides THC/CBD text on this card/tag only (leave blank for the catalog range).</div></div></div>
