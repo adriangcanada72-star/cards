@@ -125,6 +125,7 @@ nav a.navicon svg{width:32px;height:32px}
 .collist{margin:0 0 0 18px}.collist li{margin:5px 0;font-size:14px;line-height:1.5}
 .sheet{background:var(--panel);border:1px solid var(--line);border-radius:16px;max-width:680px;width:100%;padding:22px;position:relative;box-shadow:0 10px 40px rgba(0,0,0,.2)}
 .close{position:absolute;top:14px;right:16px;cursor:pointer;color:var(--txt);font-size:22px;background:#fff;border:1px solid var(--line);border-radius:8px;width:40px;height:40px}
+.tclose-b{display:block;width:100%;max-width:520px;margin:18px auto 2px;background:var(--btn-soft);color:var(--btn-soft-txt);border:1px solid var(--btn-soft-line);border-radius:12px;padding:14px;font-weight:600;font-size:16px;cursor:pointer}
 .phead{display:flex;flex-direction:column;align-items:center;gap:12px;margin:4px 0 6px}
 .logobox{width:100%;background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;align-items:center;justify-content:center;min-height:240px}
 .logobox img{max-width:100%;max-height:320px;object-fit:contain}
@@ -1101,7 +1102,7 @@ function openTerp(name){ const t=TERPS[name]; if(!t) return;
     <div class="sect">Effect metrics</div>
     <div class="kv">${kv("Cerebral",t.cerebral)}${kv("Somatic",t.somatic)}${kv("Threshold %",t.threshold_pct)}${kv("Volatility",t.volatility)}${kv("Density",t.density)}${kv("Clarity",t.clarity)}</div>
     ${t.details?`<div class="sect">Details</div><div class="tdetails">${mdlite(t.details)}</div>`:""}
-    ${terpResearchHTML(t.name)}`;
+    ${terpResearchHTML(t.name)}<button class="tclose-b" onclick="closeTerp()">Close</button>`;
   document.getElementById("ovt").classList.add("on"); }
 function rSign(n){ return (n>0?"+":"")+n; }
 function tierBadge(t){ const s=(t||"").toLowerCase(); const c=s.indexOf("direct")>=0?"rt-d":(s.indexOf("mechanism")>=0?"rt-m":"rt-i"); return `<span class="rtier ${c}">${escH(t)}</span>`; }
