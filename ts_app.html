@@ -552,7 +552,6 @@ async function renderSIRHome(){
   const box=document.getElementById("sirHome");
   const who=ACTIVE?ACTIVE.name:"";
   box.innerHTML=`<div class="sirwrap">
-    <img class="sirlogo" src="${SIR_LOGO}" alt="Selling It Right">
     <div class="who">${who?("Welcome, "+who):""}</div>
     <button class="sirbtn" id="sirTake">Take Monthly SIR Quiz</button>
     <div class="sirsub">${sirMonthLabel()} · Quiz ${sirQuizNumForMonth()} of 3</div>
@@ -745,7 +744,7 @@ async function certifyStaff(){ if(!sb||!ACTIVE) return;
   ACTIVE.is_certified=true; ACTIVE.certificate_url=url;
 }
 function certLogoSrc(){ const b=document.getElementById("brandLogo"); return b?b.src:""; }
-function certHeader(){ const s=certLogoSrc(); return `<div class="certhead">${s?`<img class="certlogo" src="${s}">`:""}<h1>Terpene Sommelier Level 1 Certification</h1></div>`; }
+function certHeader(){ const s=certLogoSrc(); return `<div class="certhead"><h1>Terpene Sommelier Level 1 Certification</h1></div>`; }
 function openCertificate(){ printCertificate(ACTIVE?ACTIVE.name:"", (ACTIVE&&ACTIVE.certification_date)||null, (STORE&&STORE.name)||""); }
 function printCertificate(name,dateISO,store){
   const dateStr = dateISO ? new Date(dateISO).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}) : new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
