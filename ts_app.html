@@ -1168,10 +1168,10 @@ function openDetail(p){
     <div class="phead"><div class="logobox">${lg?`<img src="${lg}">`:`<span class="logotext">${p.brand||"—"}</span>`}</div>
       <div class="ptitle"><h2>${p.name||"(no name)"}</h2><div class="muted">${[p.brand,p.category,sizeDisp,p.catalog_source].filter(Boolean).join(" · ")}</div></div></div>
     <div class="mcard collapsed" style="margin:10px 0 2px"><div class="mch" onclick="this.closest('.mcard').classList.toggle('collapsed')"><h3 style="font-size:14px">THC / CBD On Card &amp; Tag</h3><span class="mswitch"></span></div><div class="mbody">
-      <div class="cardovrow"><div style="flex:1"><label>THC on card/tag</label><input id="cardov_thc" placeholder="auto (${thc})"></div><div style="flex:1"><label>CBD on card/tag</label><input id="cardov_cbd" placeholder="auto (${cbd})"></div></div>
+      <div class="cardovrow"><div style="flex:1"><label>THC Override for Card/Tag</label><input id="cardov_thc" placeholder="auto (${thc})"></div><div style="flex:1"><label>CBD Override for Card/Tag</label><input id="cardov_cbd" placeholder="auto (${cbd})"></div></div>
       <div class="hint">Optional — overrides THC/CBD text on this card/tag only (leave blank for the catalog range).</div></div></div>
     <div style="display:flex;gap:8px;margin:10px 0 2px"><button class="printbtn" id="btnCard">🖨 Product Card</button><button class="printbtn" id="btnTag">🖨 Shelf Tag</button></div>
-    <div class="sect">Terpene trio (catalog) — tap for detail</div>
+    <div class="sect">Dominant Terpenes</div>
     ${[p.terpene_1,p.terpene_2,p.terpene_3].map(terpCardRaw).join("")||'<div class="muted">No terpenes listed.</div>'}
     <div class="amhead" style="margin-top:16px"><div><h2>Terpene Effect Analyzer</h2><div class="amsubtitle">Predicted effect from this product’s terpene profile.</div></div></div>
     <div class="amcard">${aMeter("Cerebral","Mental activity, focus, uplift","m_cer",ICON_CER)}${aMeter("Somatic","Body relaxation, calm","m_som",ICON_SOM)}${aMeter("Overall","Combined effect","m_ov",ICON_OV)}<div id="d_out"></div></div>
