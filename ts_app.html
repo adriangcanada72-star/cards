@@ -639,7 +639,7 @@ function openCourseOutline(){
     <h2 style="margin:0 0 2px">Course Outline</h2>
     <div class="muted" style="font-size:13px;margin-bottom:14px">The full Terpene Sommelier certification — 10 modules and a final exam.</div>
     ${body}
-    <div class="colmod"><div class="coltitle">Final Exam</div><ul class="collist"><li>25 questions drawn from all modules · ${CERT_PASS}% to certify</li></ul></div>`;
+    <div class="colmod"><div class="coltitle">Final Exam</div><ul class="collist"><li>25 questions drawn from all modules · ${CERT_PASS}% to certify</li></ul></div><button class="tclose-b" onclick="closeMod()">Close</button>`;
   document.getElementById("ovm").classList.add("on"); document.getElementById("ovm").scrollTop=0;
 }
 function escH(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
