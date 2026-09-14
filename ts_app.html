@@ -538,7 +538,7 @@ function storeHasAccess(){ if(ME && (ME.role==="admin" || !ME.store_id)) return 
 function lockCardHTML(what){ return `<div class="lockcard"><div class="lkico">\ud83d\udd12</div><h2>Subscribe to unlock</h2><p>Your account is approved. Subscribe or enter an access code to unlock ${what||"this section"}.</p><button class="cgbtn" onclick="showView('manage')">Go to Billing &amp; Subscription</button></div>`; }
 function renderLockCard(view){ const vw=document.getElementById("view-"+view); if(!vw) return; const lw=vw.querySelector(".lockwrap"); if(lw) lw.innerHTML=lockCardHTML(); }
 function gateManageCards(){ if(storeHasAccess()) return; ["inviteBox","styleBox","watermarkBox","syncWrap"].forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display="none"; }); }
-function showView(v){ const _acc=storeHasAccess(); ["products","sir","cert"].forEach(x=>{ const vw=document.getElementById("view-"+x); if(vw){ vw.classList.toggle("vlocked",!_acc); if(!_acc) renderLockCard(x); } }); if(v==="manage"){ refreshManage(); gateManageCards(); } if(v==="products" && _acc && !catalogActivated()){ showView("manage"); return; } if(v==="products" && _acc){ const vp=document.getElementById("view-products"); if(vp) vp.classList.remove("gated"); }
+function showView(v){ const _acc=storeHasAccess(); ["products","sir","cert"].forEach(x=>{ const vw=document.getElementById("view-"+x); if(vw){ vw.classList.toggle("vlocked",!_acc); if(!_acc) renderLockCard(x); } }); if(v==="manage"){ refreshManage(); gateManageCards(); } if(v==="products" && _acc){ const vp=document.getElementById("view-products"); if(vp){ if(!catalogActivated()){ vp.classList.add("gated"); renderCatalogNotice(); } else vp.classList.remove("gated"); } }
   document.getElementById("view-products").style.display=v==="products"?"block":"none";
   document.getElementById("view-terpenes").style.display=v==="terpenes"?"block":"none";
   document.getElementById("view-sir").style.display=v==="sir"?"block":"none";
@@ -1052,6 +1052,7 @@ function renderPager(total){
 }
 function search(){ PAGE=1; return runSearch(); }
 function catalogActivated(){ if(ME && (ME.role==="admin" || !ME.store_id)) return true; if(!STORE || !STORE.id) return true; return !!STORE.catalog_activated_at; }
+function renderCatalogNotice(){ const g=document.getElementById("catalogGate"); if(!g) return; g.innerHTML=`<div class="cgate"><h2>No products yet</h2><div class="cgp">Upload your BCLDB or Direct Delivery catalog CSV file to add your products \u2014 then they will appear here. Head to Manage Account to upload the file.</div><button class="cgbtn" onclick="showView('manage')">Go to Manage Account</button></div>`; }
 function renderCatalogGate(){ const g=document.getElementById("catalogActivateBox"); if(!g) return;
   g.innerHTML=`<div class="cgate"><h2>Activate your product catalog</h2><div class="cgp">Upload your BCLDB or Direct Delivery catalog CSV file to add your products.</div><label class="cgdrop" id="cgpick">\ud83d\udcc4 Choose catalog file…<div class="muted" id="cgfname" style="margin-top:8px;font-weight:500"></div><input type="file" id="cgfile" accept=".csv,.txt" style="display:none"></label><button class="cgbtn" id="cgbtn">Upload catalog</button><div class="cgbar" id="cgbar"><i id="cgbari"></i></div><div class="cgmsg" id="cgmsg"></div></div>`;
   const f=g.querySelector("#cgfile"); f.onchange=()=>{ g.querySelector("#cgfname").textContent=(f.files&&f.files[0])?f.files[0].name:""; const m=g.querySelector("#cgmsg"); if(m) m.style.display="none"; };
@@ -1082,7 +1083,7 @@ async function activateCatalog(){ const g=document.getElementById("catalogGate")
   clearInterval(tick); bari.style.width="100%"; showMsg("Catalog loaded — "+n.toLocaleString()+" products","ok");
   setTimeout(()=>{ const cab=document.getElementById("catalogActivateBox"); if(cab) cab.style.display="none"; showView("products"); },900);
 }
-async function runSearch(){ if(!sb) return; if(!storeHasAccess()){ const vp=document.getElementById("view-products"); if(vp){ vp.classList.remove("gated"); vp.classList.add("vlocked"); } renderLockCard("products"); return; } { const vp=document.getElementById("view-products"); if(vp) vp.classList.remove("vlocked"); } if(!catalogActivated()){ return; } updateBadge(); await ensureOnhand();
+async function runSearch(){ if(!sb) return; if(!storeHasAccess()){ const vp=document.getElementById("view-products"); if(vp){ vp.classList.remove("gated"); vp.classList.add("vlocked"); } renderLockCard("products"); return; } { const vp=document.getElementById("view-products"); if(vp) vp.classList.remove("vlocked"); } if(!catalogActivated()){ const vp=document.getElementById("view-products"); if(vp) vp.classList.add("gated"); renderCatalogNotice(); return; } updateBadge(); await ensureOnhand();
   const sortField=(sortEl&&sortEl.value)||"name";
   const from=(PAGE-1)*PER, to=from+PER-1;
   let q=sb.from("products").select("*",{count:"exact"}).order(sortField,{ascending:SORT_ASC}).range(from,to);
