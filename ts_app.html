@@ -1804,7 +1804,8 @@ async function renderStoreDash(){ const box=document.getElementById("adminDashBo
 }
 async function renderCatalogSyncs(){
   const box=document.getElementById("adminSyncBox"); if(!box) return;
-  if(!ME || ME.role!=="admin"){ box.style.display="none"; box.innerHTML=""; return; }
+  const isAdmin=(ME && ME.role==="admin");
+  if(!isAdmin && !catalogActivated()){ box.style.display="none"; box.innerHTML=""; return; }
   box.style.display="block";
   box.innerHTML=`<div class="mcard collapsed"><div class="mch" onclick="this.closest('.mcard').classList.toggle('collapsed')"><h3>Current catalog files</h3><span class="mswitch"></span></div><div class="mbody"><div class="sub">The most recent catalog file loaded for each source.</div><div id="catSyncList" class="muted">Loading…</div></div></div>`;
   try{
@@ -1813,7 +1814,7 @@ async function renderCatalogSyncs(){
     if(!rows||!rows.length){ list.textContent="No catalog files synced yet."; return; }
     list.innerHTML=rows.map(r=>{
       const when=r.synced_at?new Date(r.synced_at).toLocaleString():"—";
-      return `<div class="dlrow"><div class="dlhead">${escH(r.catalog_source||"")}</div><div class="dld">${escH(r.file_name||"—")}</div><div class="dlwho">${r.product_count!=null?(r.product_count+" products · "):""}synced ${escH(when)}${r.synced_by?(" · by "+escH(r.synced_by)):""}</div></div>`;
+      return `<div class="dlrow"><div class="dlhead">${escH(r.catalog_source||"")}</div><div class="dld">${escH(r.file_name||"—")}</div><div class="dlwho">${r.product_count!=null?(r.product_count+" products · "):""}synced ${escH(when)}${(isAdmin && r.synced_by)?(" · by "+escH(r.synced_by)):""}</div></div>`;
     }).join("");
   }catch(e){ const list=document.getElementById("catSyncList"); if(list) list.textContent="Couldn't load catalog files."; }
 }
