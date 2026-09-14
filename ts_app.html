@@ -1398,6 +1398,10 @@ async function runSync(source, fileId, barId, msgId, btnId){
     if(!rows.length || !(rows[0].SKU||rows[0].PRODUCT_SKU_NO)){
       // fallback: let Papa auto-detect delimiter
       const p2=Papa.parse(text.trim(),{header:true,skipEmptyLines:true}); rows=p2.data; }
+    const _cols = rows.length ? Object.keys(rows[0]) : [];
+    const _has = c => _cols.indexOf(c) >= 0;
+    if(source==="BCLDB" && _has("PRODUCT_SKU_NO") && !_has("SKU")){ setP(0,"This looks like a Direct Delivery file \u2014 use the Direct Delivery sync, not BCLDB."); btn.disabled=false; return; }
+    if(source==="Direct Delivery" && _has("SKU") && !_has("PRODUCT_SKU_NO")){ setP(0,"This looks like a BCLDB file \u2014 use the BCLDB sync, not Direct Delivery."); btn.disabled=false; return; }
     const batch="b"+Date.now();
     const mapped=rows.map(r=>mapRow(r,source,batch)).filter(x=>x.sku);
     if(!mapped.length){ setP(0,"No rows with a SKU found — is this the right export?"); btn.disabled=false; return; }
