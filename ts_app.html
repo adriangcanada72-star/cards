@@ -746,10 +746,11 @@ async function submitCertQuiz(){
   showCertResult(num,isFinal,qs,sel,score,correct,passed);
 }
 async function certifyStaff(){ if(!sb||!ACTIVE) return;
-  const dateStr=new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+  const certISO = ACTIVE.certification_date || new Date().toISOString();
+  const dateStr=new Date(certISO).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
   const url=CERT_BASE+"certificate.html?name="+encodeURIComponent(ACTIVE.name)+"&date="+encodeURIComponent(dateStr);
-  await sb.from("staff").update({is_certified:true,final_exam_passed:true,certificate_url:url,certification_date:new Date().toISOString()}).eq("id",ACTIVE.id);
-  ACTIVE.is_certified=true; ACTIVE.certificate_url=url;
+  await sb.from("staff").update({is_certified:true,final_exam_passed:true,certificate_url:url,certification_date:certISO}).eq("id",ACTIVE.id);
+  ACTIVE.is_certified=true; ACTIVE.certificate_url=url; ACTIVE.certification_date=certISO;
 }
 function certLogoSrc(){ const b=document.getElementById("brandLogo"); return b?b.src:""; }
 function certHeader(){ const s=certLogoSrc(); return `<div class="certhead"><h1>Terpene Sommelier Level 1 Certification</h1></div>`; }
