@@ -357,6 +357,7 @@ nav a.navicon svg{width:32px;height:32px}
  <div id="adminBox" style="display:none"><div class="mcard collapsed"><div class="mch" onclick="this.closest('.mcard').classList.toggle('collapsed')"><h3>Store applications — review</h3><span class="mswitch"></span></div><div class="mbody"><div class="sub">Approve or reject BC retailer registrations. Check the store number and Selling It Right certificate before approving.</div><div id="adminList"></div></div></div></div>
  <div id="adminCodesBox" style="display:none"></div>
  <div id="adminDescBox" style="display:none"></div>
+ <div id="adminSyncBox" style="display:none"></div>
  <div id="syncWrap">
  <div class="mcard collapsed"><div class="mch" onclick="this.closest('.mcard').classList.toggle('collapsed')"><h3>BCLDB — Central Delivery catalog</h3><span class="mswitch"></span></div><div class="mbody"><div class="sub">Upload the weekly BCLDB Central Delivery export (.csv). Adds &amp; updates products and removes SKUs no longer in the file. Direct Delivery products are untouched.</div>
   <div class="mrow"><input type="file" id="fileBCLDB" accept=".csv,.txt"><button class="syncbtn" id="syncBCLDB">Sync BCLDB catalog</button></div>
@@ -1412,6 +1413,7 @@ async function runSync(source, fileId, barId, msgId, btnId){
     if(e2){ setP(0,"Error flagging removed: "+e2.message); btn.disabled=false; return; }
     setP(100, `Done — ${mapped.length} products synced${del&&del.length?`, ${del.length} moved to Removed SKUs`:""}.`);
     try{ if(STORE&&STORE.id&&!STORE.catalog_activated_at){ const _iso=new Date().toISOString(); await sb.from("stores").update({catalog_activated_at:_iso}).eq("id",STORE.id); STORE.catalog_activated_at=_iso; } }catch(e){}
+    try{ await sb.from("catalog_syncs").upsert({catalog_source:source, file_name:f.name, product_count:mapped.length, synced_at:new Date().toISOString(), synced_by:(ACTIVE&&ACTIVE.name)||(ME&&ME.email)||null},{onConflict:"catalog_source"}); }catch(e){}
     if(typeof search==="function") search();
   }catch(err){ setP(0,"Error: "+(err&&err.message||err)); }
   btn.disabled=false;
@@ -1718,6 +1720,7 @@ async function refreshManage(){
   renderAccessCodes();
   renderStoreDash();
   renderDescLog();
+  renderCatalogSyncs();
 }
 function renderStaffCard(manager){ const box=document.getElementById("inviteBox");
   if(!manager || !ME.store_id){ box.innerHTML=""; return; }
@@ -1798,6 +1801,21 @@ async function renderStoreDash(){ const box=document.getElementById("adminDashBo
   box.innerHTML=`<div class="mcard collapsed"><div class="mch" onclick="this.closest('.mcard').classList.toggle('collapsed')"><h3>Store dashboard</h3><span class="mswitch"></span></div><div class="mbody">
     <div class="dstats"><div class="dstat"><b>${stores.length}</b><span>stores</span></div><div class="dstat"><b>${paid}</b><span>paid/comped</span></div><div class="dstat"><b>${totStaff}</b><span>staff</span></div><div class="dstat"><b>${totCert}</b><span>certified</span></div></div>
     <div class="dtablewrap"><table class="dtable"><thead><tr><th>Store</th><th>Access</th><th>Staff</th><th>Certified</th><th>SIR this mo.</th></tr></thead><tbody>${rows}</tbody></table></div></div></div>`;
+}
+async function renderCatalogSyncs(){
+  const box=document.getElementById("adminSyncBox"); if(!box) return;
+  if(!ME || ME.role!=="admin"){ box.style.display="none"; box.innerHTML=""; return; }
+  box.style.display="block";
+  box.innerHTML=`<div class="mcard collapsed"><div class="mch" onclick="this.closest('.mcard').classList.toggle('collapsed')"><h3>Current catalog files</h3><span class="mswitch"></span></div><div class="mbody"><div class="sub">The most recent catalog file loaded for each source.</div><div id="catSyncList" class="muted">Loading…</div></div></div>`;
+  try{
+    const {data:rows}=await sb.from("catalog_syncs").select("*").order("synced_at",{ascending:false});
+    const list=document.getElementById("catSyncList"); if(!list) return;
+    if(!rows||!rows.length){ list.textContent="No catalog files synced yet."; return; }
+    list.innerHTML=rows.map(r=>{
+      const when=r.synced_at?new Date(r.synced_at).toLocaleString():"—";
+      return `<div class="dlrow"><div class="dlhead">${escH(r.catalog_source||"")}</div><div class="dld">${escH(r.file_name||"—")}</div><div class="dlwho">${r.product_count!=null?(r.product_count+" products · "):""}synced ${escH(when)}${r.synced_by?(" · by "+escH(r.synced_by)):""}</div></div>`;
+    }).join("");
+  }catch(e){ const list=document.getElementById("catSyncList"); if(list) list.textContent="Couldn't load catalog files."; }
 }
 async function renderDescLog(){
   const box=document.getElementById("adminDescBox"); if(!box) return;
