@@ -240,7 +240,7 @@ nav a.navicon svg{width:32px;height:32px}
 .syncbtn:hover:not(:disabled){background:var(--btn-h)}
 .syncbtn:disabled{opacity:.5;cursor:default}
 .pbar{height:14px;background:#e9eeeb;border-radius:999px;overflow:hidden;margin-top:12px}
-.pbar>i{display:block;height:100%;width:0;background:linear-gradient(90deg,#74C6EA,#5AA06E,#F58A34);transition:width .3s}
+.pbar>i{display:block;height:100%;width:0;background:linear-gradient(90deg,#3a9c63,#5AA06E,#F58A34);transition:width .3s}
 .pmsg{font-size:12px;color:var(--muted);margin-top:6px;min-height:16px}
 .authwrap{max-width:460px;margin:6vh auto;padding:0 16px;display:none}.authwrap.on{display:block}
 .authcard{background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px;box-shadow:0 10px 40px rgba(0,0,0,.06);text-align:center}
@@ -1075,7 +1075,7 @@ async function runSearch(){ if(!sb) return; updateBadge(); await ensureOnhand();
 function seg(a,c){let h="";for(let s=-5;s<=5;s++){const on=s===a?" "+c:"";h+=`<div class="seg${on}">${(s>0?"+":"")+s}</div>`;}return `<div class="scale">${h}</div>`;}
 function meterRow(n,v,c){return `<div class="meter"><div class="head"><span class="name">${n}</span><span>${v>0?"+":""}${v}</span></div>${seg(v,c)}</div>`;}
 function meterSkeleton(name,id,cls){return `<div class="m2"><div class="m2head"><span class="mname">${name}</span><span class="mval" id="${id}_v">0</span></div><div class="track"><div class="zero"></div><div class="fill" id="${id}_f"></div><div class="knob" id="${id}_k"></div></div><div class="ticks"><span>−5</span><span>0</span><span>+5</span></div></div>`;}
-const LEAN_COL={o:{c:"#F58A34",g:"rgba(245,138,52,.55)"},g:{c:"#5AA06E",g:"rgba(90,160,110,.55)"},b:{c:"#74C6EA",g:"rgba(90,160,110,.55)"}};
+const LEAN_COL={o:{c:"#F58A34",g:"rgba(245,138,52,.55)"},g:{c:"#5AA06E",g:"rgba(90,160,110,.55)"},b:{c:"#3a9c63",g:"rgba(90,160,110,.55)"}};
 function leanCol(val){ return val>=2?LEAN_COL.o : (val<=-2?LEAN_COL.b : LEAN_COL.g); }
 function setMeter(id,val){const p=(val+5)/10*100;const k=document.getElementById(id+"_k"),f=document.getElementById(id+"_f"),v=document.getElementById(id+"_v");if(!k)return;
   const col=leanCol(val);
