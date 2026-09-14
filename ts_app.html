@@ -172,7 +172,7 @@ nav a.navicon svg{width:32px;height:32px}
 .amlabel{width:150px;flex:none}
 .amlabel .amname{font-weight:800;font-size:16px}.amlabel .amsub{font-size:12px;color:var(--muted)}
 .amtrack{flex:1;min-width:120px}
-.amval{width:64px;height:50px;flex:none;display:flex;align-items:center;justify-content:center;background:#fff;border:1px solid var(--line);border-radius:12px;font-size:24px;font-weight:800}
+.amval{width:64px;height:50px;flex:none;display:flex;align-items:center;justify-content:center;background:var(--btn-soft);border:1px solid var(--line);border-radius:12px;font-size:24px;font-weight:800}
 .aprofile{display:flex;align-items:center;gap:10px;margin-top:8px}
 .potleaf{width:26px;height:26px;color:var(--green);flex:none;vertical-align:middle}
 .trow{display:flex;align-items:center;gap:10px;margin-bottom:9px}
@@ -1075,7 +1075,7 @@ async function runSearch(){ if(!sb) return; updateBadge(); await ensureOnhand();
 function seg(a,c){let h="";for(let s=-5;s<=5;s++){const on=s===a?" "+c:"";h+=`<div class="seg${on}">${(s>0?"+":"")+s}</div>`;}return `<div class="scale">${h}</div>`;}
 function meterRow(n,v,c){return `<div class="meter"><div class="head"><span class="name">${n}</span><span>${v>0?"+":""}${v}</span></div>${seg(v,c)}</div>`;}
 function meterSkeleton(name,id,cls){return `<div class="m2"><div class="m2head"><span class="mname">${name}</span><span class="mval" id="${id}_v">0</span></div><div class="track"><div class="zero"></div><div class="fill" id="${id}_f"></div><div class="knob" id="${id}_k"></div></div><div class="ticks"><span>−5</span><span>0</span><span>+5</span></div></div>`;}
-const LEAN_COL={o:{c:"#F58A34",g:"rgba(245,138,52,.55)"},g:{c:"#5AA06E",g:"rgba(90,160,110,.55)"},b:{c:"#74C6EA",g:"rgba(116,198,234,.55)"}};
+const LEAN_COL={o:{c:"#F58A34",g:"rgba(245,138,52,.55)"},g:{c:"#5AA06E",g:"rgba(90,160,110,.55)"},b:{c:"#74C6EA",g:"rgba(90,160,110,.55)"}};
 function leanCol(val){ return val>=2?LEAN_COL.o : (val<=-2?LEAN_COL.b : LEAN_COL.g); }
 function setMeter(id,val){const p=(val+5)/10*100;const k=document.getElementById(id+"_k"),f=document.getElementById(id+"_f"),v=document.getElementById(id+"_v");if(!k)return;
   const col=leanCol(val);
