@@ -1750,7 +1750,7 @@ function renderStaffList(){ const l=document.getElementById("staffList"); if(!l)
       <button class="clearbtn" data-del="${s.id}">Remove</button></span></div>
     <div id="sirh_${s.id}" class="sirhist" style="display:none;margin-top:6px"></div>
     <div id="modh_${s.id}" class="sirhist" style="display:none;margin-top:6px"></div></div>`).join("")||'<div class="pmeta muted">No staff yet.</div>';
-  l.querySelectorAll("button[data-del]").forEach(b=>b.onclick=async()=>{ if(!confirm("Remove this staff member?"))return; await sb.from("staff").delete().eq("id",b.dataset.del); await loadStoreStaff(); renderStaffList(); });
+  l.querySelectorAll("button[data-del]").forEach(b=>b.onclick=async()=>{ if(!confirm("Are you sure you want to delete this staff member? This can\u2019t be undone."))return; await sb.from("staff").delete().eq("id",b.dataset.del); await loadStoreStaff(); renderStaffList(); });
   l.querySelectorAll("button[data-role]").forEach(b=>b.onclick=async()=>{ const s=STAFF.find(x=>String(x.id)===b.dataset.role); if(!s)return; const nr=s.role==="manager"?"staff":"manager"; await sb.from("staff").update({role:nr}).eq("id",s.id); await loadStoreStaff(); renderStaffList(); });
   l.querySelectorAll("button[data-pin]").forEach(b=>b.onclick=async()=>{ const p=prompt("New 4-digit PIN:"); if(p==null)return; if(!/^[0-9]{4}$/.test(p)){ alert("PIN must be 4 digits."); return; } await sb.from("staff").update({pin:p}).eq("id",b.dataset.pin); await loadStoreStaff(); renderStaffList(); });
   l.querySelectorAll("button[data-sir]").forEach(b=>b.onclick=()=>toggleStaffSIR(b.dataset.sir));
